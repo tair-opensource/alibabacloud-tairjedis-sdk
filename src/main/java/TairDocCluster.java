@@ -1,3 +1,5 @@
+import java.util.List;
+
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 
@@ -32,16 +34,15 @@ public class TairDocCluster {
         return BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
-    // Cluster multi keys command is not support
-    //public List<String> jsonmget(String... args) {
-    //    getClient("").sendCommand(ModuleCommand.JSONMGET, args);
-    //    return getResponse(BuilderFactory.STRING_LIST);
-    //}
-    //
-    //public Response<List<byte[]>> jsonmget(byte[]... args) {
-    //    getClient("").sendCommand(ModuleCommand.JSONMGET, args);
-    //    return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
-    //}
+    public List<String> jsonmget(String sampleKey, String... args) {
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONMGET, args);
+        return BuilderFactory.STRING_LIST.build(obj);
+    }
+
+    public List<byte[]> jsonmget(byte[] sampleKey, byte[]... args) {
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONMGET, args);
+        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+    }
 
     public Long jsondel(String sampleKey, String... args) {
         Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONDEL, args);
