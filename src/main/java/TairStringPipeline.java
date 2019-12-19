@@ -70,12 +70,12 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Double> exincrByFloat(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBY, args);
+        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, args);
         return getResponse(BuilderFactory.DOUBLE);
     }
 
     public Response<Double> exincrByFloat(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBY, args);
+        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, args);
         return getResponse(BuilderFactory.DOUBLE);
     }
 

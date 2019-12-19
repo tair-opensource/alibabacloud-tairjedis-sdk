@@ -1,6 +1,5 @@
 import java.util.List;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -89,12 +88,12 @@ public class TairString {
     }
 
     public Double exincrByFloat(String... args) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBY, args);
+        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT, args);
         return BuilderFactory.DOUBLE.build(obj);
     }
 
     public Double exincrByFloat(byte[]... args) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBY, args);
+        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT, args);
         return BuilderFactory.DOUBLE.build(obj);
     }
 

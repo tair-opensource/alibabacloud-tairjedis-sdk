@@ -75,12 +75,12 @@ public class TairStringCluster {
     }
 
     public Double exincrByFloat(String sampleKey, String... args) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.EXINCRBY, args);
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.EXINCRBYFLOAT, args);
         return BuilderFactory.DOUBLE.build(obj);
     }
 
     public Double exincrByFloat(byte[] sampleKey, byte[]... args) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.EXINCRBY, args);
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.EXINCRBYFLOAT, args);
         return BuilderFactory.DOUBLE.build(obj);
     }
 
