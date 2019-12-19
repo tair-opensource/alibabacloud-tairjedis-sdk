@@ -1,6 +1,9 @@
 import java.util.HashSet;
 import java.util.Set;
 
+import com.kvstore.jedis.TairDoc;
+import com.kvstore.jedis.TairDocCluster;
+import com.kvstore.jedis.TairDocPipeline;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import redis.clients.jedis.HostAndPort;

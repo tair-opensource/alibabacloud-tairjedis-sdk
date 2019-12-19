@@ -1,3 +1,5 @@
+package com.kvstore.jedis;
+
 import java.util.List;
 
 import redis.clients.jedis.BuilderFactory;

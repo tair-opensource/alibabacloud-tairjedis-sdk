@@ -1,3 +1,5 @@
+package com.kvstore.jedis;
+
 import redis.clients.jedis.commands.ProtocolCommand;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -6,7 +8,7 @@ import redis.clients.jedis.util.SafeEncoder;
  * @date 2019/12/11
  */
 public enum ModuleCommand implements ProtocolCommand {
-    // TairDoc command
+    // com.kvstore.jedis.TairDoc command
     JSONDEL("JSON.DEL"),
     JSONGET("JSON.GET"),
     JSONMGET("JSON.MGET"),
@@ -53,7 +55,7 @@ public enum ModuleCommand implements ProtocolCommand {
     CAS("CAS"),
     CAD("CAD"),
 
-    // TairString command
+    // com.kvstore.jedis.TairString command
     EXSET("EXSET"),
     EXGET("EXGET"),
     EXSETVER("EXSETVER"),

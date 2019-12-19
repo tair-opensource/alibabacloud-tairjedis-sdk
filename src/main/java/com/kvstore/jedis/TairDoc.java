@@ -1,3 +1,5 @@
+package com.kvstore.jedis;
+
 import java.util.List;
 
 import redis.clients.jedis.BuilderFactory;
@@ -5,7 +7,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 /**
- * use TairDoc with Jedis.
+ * use com.kvstore.jedis.TairDoc with Jedis.
  *
  * @author bodong.ybd
  * @date 2019/12/11

@@ -1,25 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="utf-8"?>
 
-    <groupId>com.aliyun.kvstore</groupId>
-    <artifactId>kvstore-jedis</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <dependencies>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">  
+  <modelVersion>4.0.0</modelVersion>  
+  <parent> 
+    <groupId>com.taobao</groupId>  
+    <artifactId>parent</artifactId>  
+    <version>1.0.3</version> 
+  </parent>  
+  <groupId>com.aliyun.kvstore</groupId>  
+  <artifactId>kvstore-jedis</artifactId>  
+  <version>1.0-SNAPSHOT</version>  
+  <dependencies> 
+    <dependency> 
+      <groupId>redis.clients</groupId>  
+      <artifactId>jedis</artifactId>  
+      <version>3.1.0</version> 
+    </dependency>  
+    <dependency> 
+      <groupId>junit</groupId>  
+      <artifactId>junit</artifactId>  
+      <version>4.12</version>  
+      <scope>test</scope> 
+    </dependency> 
+  </dependencies>  
+  <contributors><contributor><properties><provider>bodong.ybd@alibaba-inc.com</provider><codeName>null</codeName><codeUrl>git@gitlab.alibaba-inc.com:tair3.0/kvstore-jedis.git commit:1c82845</codeUrl><description>contributors added by SCM Plugin, please don't modify it!</description></properties></contributor></contributors>
 </project>
