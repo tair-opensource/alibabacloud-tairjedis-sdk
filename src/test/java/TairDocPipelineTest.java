@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
  * @author bodong.ybd
  * @date 2019/12/17
  */
-public class TairDocPipelineTest extends TestBase {
+public class TairDocPipelineTest extends TairDocTestBase {
     private String jsonKey;
     private static final String JSON_STRING_EXAMPLE = "{\"foo\":\"bar\",\"baz\":42}";
     private static final String JSON_ARRAY_EXAMPLE = "{\"id\":[1,2,3]}";
