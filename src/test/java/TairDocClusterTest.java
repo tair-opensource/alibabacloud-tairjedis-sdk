@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
  * @author bodong.ybd
  * @date 2019/12/17
  */
-public class TairDocClusterTest extends TestBase {
+public class TairDocClusterTest extends TairDocTestBase {
     private String jsonKey;
     private static final String JSON_STRING_EXAMPLE = "{\"foo\":\"bar\",\"baz\":42}";
     private static final String JSON_ARRAY_EXAMPLE = "{\"id\":[1,2,3]}";
