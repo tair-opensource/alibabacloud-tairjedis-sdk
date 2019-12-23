@@ -4,6 +4,10 @@ import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
+import com.kvstore.jedis.TairDoc;
+import com.kvstore.jedis.TairDocCluster;
+import com.kvstore.jedis.TairDocPipeline;
+
 import java.util.HashSet;
 import java.util.Set;
 

@@ -7,7 +7,7 @@ import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 
 /**
- * @author bodong.ybd
+ * @author bodong.ybd & dwan
  * @date 2019/12/16
  */
 public class TairStringPipeline extends Pipeline {

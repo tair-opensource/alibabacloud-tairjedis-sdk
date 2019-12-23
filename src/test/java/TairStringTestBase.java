@@ -1,3 +1,6 @@
+import com.kvstore.jedis.TairString;
+import com.kvstore.jedis.TairStringCluster;
+import com.kvstore.jedis.TairStringPipeline;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import redis.clients.jedis.HostAndPort;
