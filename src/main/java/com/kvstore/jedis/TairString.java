@@ -3,6 +3,8 @@ package com.kvstore.jedis;
 import java.util.List;
 
 import com.kvstore.jedis.params.*;
+import com.kvstore.jedis.results.ExcasResult;
+import com.kvstore.jedis.results.ExgetResult;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -71,39 +73,13 @@ public class TairString {
     }
 
     public String exset(String key, String value, ExsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, params.getByteParams(key,value));
+        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
         return BuilderFactory.STRING.build(obj);
     }
 
     public String exset(byte[] key, byte[] value, ExsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, params.getByteParams(key,value));
+        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
         return BuilderFactory.STRING.build(obj);
-    }
-
-    public class ExgetResult<T> {
-        private long version;
-        private T value;
-
-        public ExgetResult(T value, long version) {
-            this.value = value;
-            this.version = version;
-        }
-
-        public long getVersion() {
-            return version;
-        }
-
-        public void setVersion(long version) {
-            this.version = version;
-        }
-
-        public T getValue() {
-            return value;
-        }
-
-        public void setValue(T value) {
-            this.value = value;
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -131,7 +107,7 @@ public class TairString {
     }
 
     public Long exsetver(String key, long version) {
-        return exsetver(SafeEncoder.encode(key),version);
+        return exsetver(SafeEncoder.encode(key), version);
     }
 
     public Long exsetver(byte[] key, long version) {
@@ -149,11 +125,11 @@ public class TairString {
     }
 
     public Long exincrBy(String key, long incr, ExincrbyParams params) {
-        return exincrBy(SafeEncoder.encode(key),incr,params);
+        return exincrBy(SafeEncoder.encode(key), incr, params);
     }
 
     public Long exincrBy(byte[] key, long incr, ExincrbyParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBY, params.getByteParams(key,toByteArray(incr)));
+        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBY, params.getByteParams(key, toByteArray(incr)));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -173,42 +149,6 @@ public class TairString {
     public Double exincrByFloat(byte[] key, Double incr, ExincrbyFloatParams params) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT, params.getByteParams(key, toByteArray(incr)));
         return BuilderFactory.DOUBLE.build(obj);
-    }
-
-    public class ExcasResult<T> {
-        private long version;
-        private T value;
-        private T msg;
-
-        public ExcasResult(T msg, T value, long version) {
-            this.msg = msg;
-            this.value = value;
-            this.version = version;
-        }
-
-        public T getMsg() {
-            return msg;
-        }
-
-        public void setMsg(T msg) {
-            this.msg = msg;
-        }
-
-        public long getVersion() {
-            return version;
-        }
-
-        public void setVersion(long version) {
-            this.version = version;
-        }
-
-        public T getValue() {
-            return value;
-        }
-
-        public void setValue(T value) {
-            this.value = value;
-        }
     }
 
     @SuppressWarnings("unchecked")
