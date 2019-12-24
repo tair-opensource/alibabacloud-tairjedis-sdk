@@ -2,9 +2,18 @@ package com.kvstore.jedis;
 
 import java.util.List;
 
+import com.kvstore.jedis.params.ExincrbyFloatParams;
+import com.kvstore.jedis.params.ExincrbyParams;
+import com.kvstore.jedis.params.ExsetParams;
+import com.kvstore.jedis.pipeline.PipelineBuilderFactory;
+import com.kvstore.jedis.results.ExcasResult;
+import com.kvstore.jedis.results.ExgetResult;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
+import redis.clients.jedis.util.SafeEncoder;
+
+import static redis.clients.jedis.Protocol.toByteArray;
 
 /**
  * @author bodong.ybd & dwan
@@ -31,73 +40,97 @@ public class TairStringPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<String> exset(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXSET, args);
+    public Response<String> exset(String key, String value) {
+        getClient("").sendCommand(ModuleCommand.EXSET, key, value);
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> exset(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXSET, args);
+    public Response<String> exset(byte[] key, byte[] value) {
+        getClient("").sendCommand(ModuleCommand.EXSET, key, value);
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<List<String>> exget(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXGET, args);
-        return getResponse(BuilderFactory.STRING_LIST);
+    public Response<String> exset(String key, String value, ExsetParams params) {
+        getClient("").sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<List<byte[]>> exget(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXGET, args);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    public Response<String> exset(byte[] key, byte[] value, ExsetParams params) {
+        getClient("").sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<Long> exsetver(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXSETVER, args);
+    public Response<ExgetResult<String>> exget(String key) {
+        getClient("").sendCommand(ModuleCommand.EXGET, key);
+        return getResponse(PipelineBuilderFactory.EXGET_RESULT_STRING);
+    }
+
+    public Response<ExgetResult<byte[]>> exget(byte[] key) {
+        getClient("").sendCommand(ModuleCommand.EXGET, key);
+        return getResponse(PipelineBuilderFactory.EXGET_RESULT_BYTE);
+    }
+
+    public Response<Long> exsetver(String key, long version) {
+        return exsetver(SafeEncoder.encode(key), version);
+    }
+
+    public Response<Long> exsetver(byte[] key, long version) {
+        getClient("").sendCommand(ModuleCommand.EXSETVER, key, toByteArray(version));
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> exsetver(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXSETVER, args);
+    public Response<Long> exincrBy(String key, long incr) {
+        return exincrBy(SafeEncoder.encode(key), incr);
+    }
+
+    public Response<Long> exincrBy(byte[] key, long incr) {
+        getClient("").sendCommand(ModuleCommand.EXINCRBY, key, toByteArray(incr));
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> exincrBy(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBY, args);
+    public Response<Long> exincrBy(String key, long incr, ExincrbyParams params) {
+        return exincrBy(SafeEncoder.encode(key), incr, params);
+    }
+
+    public Response<Long> exincrBy(byte[] key, long incr, ExincrbyParams params) {
+        getClient("").sendCommand(ModuleCommand.EXINCRBY, params.getByteParams(key, toByteArray(incr)));
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> exincrBy(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBY, args);
-        return getResponse(BuilderFactory.LONG);
+    public Response<Double> exincrByFloat(String key, Double incr) {
+        return exincrByFloat(SafeEncoder.encode(key), incr);
     }
 
-    public Response<Double> exincrByFloat(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, args);
+    public Response<Double> exincrByFloat(byte[] key, Double incr) {
+        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, key, toByteArray(incr));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> exincrByFloat(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, args);
+    public Response<Double> exincrByFloat(String key, Double incr, ExincrbyFloatParams params) {
+        return exincrByFloat(SafeEncoder.encode(key), incr, params);
+    }
+
+    public Response<Double> exincrByFloat(byte[] key, Double incr, ExincrbyFloatParams params) {
+        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, params.getByteParams(key, toByteArray(incr)));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<List<String>> excas(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXCAS, args);
-        return getResponse(BuilderFactory.STRING_LIST);
+    public Response<ExcasResult<String>> excas(String key, String value, long version) {
+        getClient("").sendCommand(ModuleCommand.EXCAS, key, value, String.valueOf(version));
+        return getResponse(PipelineBuilderFactory.EXCAS_RESULT_STRING);
     }
 
-    public Response<List<byte[]>> excas(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXCAS, args);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    public Response<ExcasResult<byte[]>> excas(byte[] key, byte[] value, long version) {
+        getClient("").sendCommand(ModuleCommand.EXCAS, key, value, toByteArray(version));
+        return getResponse(PipelineBuilderFactory.EXCAS_RESULT_BYTE);
     }
 
-    public Response<Long> excad(String... args) {
-        getClient("").sendCommand(ModuleCommand.EXCAD, args);
-        return getResponse(BuilderFactory.LONG);
+    public Response<Long> excad(String key, long version) {
+        return excad(SafeEncoder.encode(key), version);
     }
 
-    public Response<Long> excad(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.EXCAD, args);
+    public Response<Long> excad(byte[] key, long version) {
+        getClient("").sendCommand(ModuleCommand.EXCAD, key, toByteArray(version));
         return getResponse(BuilderFactory.LONG);
     }
 }

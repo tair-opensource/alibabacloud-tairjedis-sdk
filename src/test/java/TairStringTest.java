@@ -2,6 +2,8 @@ import com.kvstore.jedis.TairString;
 import com.kvstore.jedis.params.ExincrbyFloatParams;
 import com.kvstore.jedis.params.ExincrbyParams;
 import com.kvstore.jedis.params.ExsetParams;
+import com.kvstore.jedis.results.ExcasResult;
+import com.kvstore.jedis.results.ExgetResult;
 import org.junit.Test;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -35,7 +37,7 @@ public class TairStringTest extends TairStringTestBase {
         // String
         ret = tairString.exset(key, value);
         assertEquals("OK", ret);
-        TairString.ExgetResult<String> result = tairString.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, this.value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
@@ -43,7 +45,7 @@ public class TairStringTest extends TairStringTestBase {
         //binary
         ret = tairString.exset(bkey, bvalue);
         assertEquals("OK", ret);
-        TairString.ExgetResult<byte[]> bresult = tairString.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(bvalue, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
@@ -83,7 +85,7 @@ public class TairStringTest extends TairStringTestBase {
         // String
         ret = tairString.exset(key, value);
         assertEquals("OK", ret);
-        TairString.ExgetResult<String> result = tairString.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, this.value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
@@ -98,7 +100,7 @@ public class TairStringTest extends TairStringTestBase {
         //binary
         ret = tairString.exset(bkey, bvalue);
         assertEquals("OK", ret);
-        TairString.ExgetResult<byte[]> bresult = tairString.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(bvalue, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
@@ -125,7 +127,7 @@ public class TairStringTest extends TairStringTestBase {
         // String
         ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
-        TairString.ExgetResult<String> result = tairString.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
@@ -140,7 +142,7 @@ public class TairStringTest extends TairStringTestBase {
         //binary
         ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
-        TairString.ExgetResult<byte[]> bresult = tairString.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
@@ -163,8 +165,8 @@ public class TairStringTest extends TairStringTestBase {
         byte[] new_byte_value = SafeEncoder.encode("200");
         long new_long_value = 200;
         long ret_var = 0;
-        TairString.ExgetResult<String> result = null;
-        TairString.ExgetResult<byte[]> bresult = null;
+        ExgetResult<String> result = null;
+        ExgetResult<byte[]> bresult = null;
 
         ExincrbyParams params_nx_px = new ExincrbyParams();
         params_nx_px.nx();
@@ -254,19 +256,19 @@ public class TairStringTest extends TairStringTestBase {
         Double incr_value = Double.valueOf(100);
         String new_string_value = "200";
         byte[] new_byte_value = SafeEncoder.encode("200");
-        Double new_long_value = Double.valueOf(200);
+        Double new_float_value = Double.valueOf(200);
         Double ret_var = Double.valueOf(0);
 
         // String
         ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
-        TairString.ExgetResult<String> result = tairString.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
 
         ret_var = tairString.exincrByFloat(key, incr_value);
-        assertEquals(new_long_value, ret_var);
+        assertEquals(new_float_value, ret_var);
         result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
@@ -275,13 +277,13 @@ public class TairStringTest extends TairStringTestBase {
         //binary
         ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
-        TairString.ExgetResult<byte[]> bresult = tairString.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
 
         ret_var = tairString.exincrByFloat(bkey, incr_value);
-        assertEquals(new_long_value, ret_var);
+        assertEquals(new_float_value, ret_var);
         bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
@@ -296,10 +298,10 @@ public class TairStringTest extends TairStringTestBase {
         Double incr_value = Double.valueOf(100);
         String new_string_value = "200";
         byte[] new_byte_value = SafeEncoder.encode("200");
-        Double new_long_value = Double.valueOf(200);
+        Double new_float_value = Double.valueOf(200);
         Double ret_var = Double.valueOf(0);
-        TairString.ExgetResult<String> result = null;
-        TairString.ExgetResult<byte[]> bresult = null;
+        ExgetResult<String> result = null;
+        ExgetResult<byte[]> bresult = null;
 
         ExincrbyFloatParams params_nx_px = new ExincrbyFloatParams();
         params_nx_px.nx();
@@ -324,7 +326,7 @@ public class TairStringTest extends TairStringTestBase {
         ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
         ret_var = tairString.exincrByFloat(key, incr_value, params_xx_ex);
-        assertEquals(new_long_value, ret_var);
+        assertEquals(new_float_value, ret_var);
         result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
@@ -336,7 +338,7 @@ public class TairStringTest extends TairStringTestBase {
         ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
         ret_var = tairString.exincrByFloat(key, incr_value, params_xx_pxat);
-        assertEquals(new_long_value, ret_var);
+        assertEquals(new_float_value, ret_var);
         result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
@@ -359,7 +361,7 @@ public class TairStringTest extends TairStringTestBase {
         ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
         ret_var = tairString.exincrByFloat(bkey, incr_value, params_xx_ex);
-        assertEquals(new_long_value, ret_var);
+        assertEquals(new_float_value, ret_var);
         bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
@@ -371,7 +373,7 @@ public class TairStringTest extends TairStringTestBase {
         ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
         ret_var = tairString.exincrByFloat(bkey, incr_value, params_xx_pxat);
-        assertEquals(new_long_value, ret_var);
+        assertEquals(new_float_value, ret_var);
         bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
@@ -384,8 +386,8 @@ public class TairStringTest extends TairStringTestBase {
     @Test
     public void excasTest() {
         String ret = "";
-        TairString.ExcasResult<String> ret2 = null;
-        TairString.ExcasResult<byte[]> ret3 = null;
+        ExcasResult<String> ret2 = null;
+        ExcasResult<byte[]> ret3 = null;
 
         // String
         ret = tairString.exset(key, value);
