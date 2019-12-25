@@ -1,4 +1,4 @@
-package com.kvstore.jedis.pipeline;
+package com.kvstore.jedis.exstring;
 
 import com.kvstore.jedis.results.ExcasResult;
 import com.kvstore.jedis.results.ExgetResult;
@@ -6,7 +6,7 @@ import redis.clients.jedis.Builder;
 
 import java.util.List;
 
-public class PipelineBuilderFactory {
+public class StringBuilderFactory {
 
     public static final Builder<ExgetResult<String>> EXGET_RESULT_STRING = new Builder<ExgetResult<String>>() {
         @Override

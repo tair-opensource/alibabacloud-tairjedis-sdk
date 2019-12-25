@@ -1,11 +1,9 @@
 package com.kvstore.jedis;
 
-import java.util.List;
-
 import com.kvstore.jedis.params.ExincrbyFloatParams;
 import com.kvstore.jedis.params.ExincrbyParams;
 import com.kvstore.jedis.params.ExsetParams;
-import com.kvstore.jedis.pipeline.PipelineBuilderFactory;
+import com.kvstore.jedis.exstring.StringBuilderFactory;
 import com.kvstore.jedis.results.ExcasResult;
 import com.kvstore.jedis.results.ExgetResult;
 import redis.clients.jedis.BuilderFactory;
@@ -62,12 +60,12 @@ public class TairStringPipeline extends Pipeline {
 
     public Response<ExgetResult<String>> exget(String key) {
         getClient("").sendCommand(ModuleCommand.EXGET, key);
-        return getResponse(PipelineBuilderFactory.EXGET_RESULT_STRING);
+        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
     }
 
     public Response<ExgetResult<byte[]>> exget(byte[] key) {
         getClient("").sendCommand(ModuleCommand.EXGET, key);
-        return getResponse(PipelineBuilderFactory.EXGET_RESULT_BYTE);
+        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
     }
 
     public Response<Long> exsetver(String key, long version) {
@@ -117,12 +115,12 @@ public class TairStringPipeline extends Pipeline {
 
     public Response<ExcasResult<String>> excas(String key, String value, long version) {
         getClient("").sendCommand(ModuleCommand.EXCAS, key, value, String.valueOf(version));
-        return getResponse(PipelineBuilderFactory.EXCAS_RESULT_STRING);
+        return getResponse(StringBuilderFactory.EXCAS_RESULT_STRING);
     }
 
     public Response<ExcasResult<byte[]>> excas(byte[] key, byte[] value, long version) {
         getClient("").sendCommand(ModuleCommand.EXCAS, key, value, toByteArray(version));
-        return getResponse(PipelineBuilderFactory.EXCAS_RESULT_BYTE);
+        return getResponse(StringBuilderFactory.EXCAS_RESULT_BYTE);
     }
 
     public Response<Long> excad(String key, long version) {

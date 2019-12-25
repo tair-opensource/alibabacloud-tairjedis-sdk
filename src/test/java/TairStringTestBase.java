@@ -28,10 +28,10 @@ public class TairStringTestBase extends TestBase {
             jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
             jedisCluster = new JedisCluster(jedisClusterNodes);
 
-
             tairString = new TairString(jedis);
             tairStringPipeline = new TairStringPipeline();
             tairStringPipeline.setClient(jedis.getClient());
+            tairStringCluster = new TairStringCluster(jedisCluster);
         }
     }
 

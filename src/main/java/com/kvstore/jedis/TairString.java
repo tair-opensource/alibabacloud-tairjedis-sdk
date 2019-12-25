@@ -2,6 +2,7 @@ package com.kvstore.jedis;
 
 import java.util.List;
 
+import com.kvstore.jedis.exstring.StringBuilderFactory;
 import com.kvstore.jedis.params.*;
 import com.kvstore.jedis.results.ExcasResult;
 import com.kvstore.jedis.results.ExgetResult;
@@ -82,28 +83,14 @@ public class TairString {
         return BuilderFactory.STRING.build(obj);
     }
 
-    @SuppressWarnings("unchecked")
     public ExgetResult<String> exget(String key) {
-        List<Object> result = (List<Object>) getJedis().sendCommand(ModuleCommand.EXGET, key);
-        if (null == result || 0 == result.size()) {
-            return null;
-        } else {
-            String value = SafeEncoder.encode((byte[]) result.get(0));
-            long version = (Long) result.get(1);
-            return new ExgetResult<String>(value, version);
-        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXGET, key);
+        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
     }
 
-    @SuppressWarnings("unchecked")
     public ExgetResult<byte[]> exget(byte[] key) {
-        List<Object> result = (List<Object>) getJedis().sendCommand(ModuleCommand.EXGET, key);
-        if (null == result || 0 == result.size()) {
-            return null;
-        } else {
-            byte[] value = (byte[]) result.get(0);
-            long version = (Long) result.get(1);
-            return new ExgetResult<byte[]>(value, version);
-        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXGET, key);
+        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
     }
 
     public Long exsetver(String key, long version) {
@@ -151,30 +138,14 @@ public class TairString {
         return BuilderFactory.DOUBLE.build(obj);
     }
 
-    @SuppressWarnings("unchecked")
     public ExcasResult<String> excas(String key, String newvalue, long version) {
-        List<Object> result = (List<Object>) getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, String.valueOf(version));
-        if (null == result || 0 == result.size()) {
-            return null;
-        } else {
-            String msg = SafeEncoder.encode((byte[]) result.get(0));
-            String value = SafeEncoder.encode((byte[]) result.get(1));
-            long ver = (Long) result.get(2);
-            return new ExcasResult<String>(msg, value, ver);
-        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, String.valueOf(version));
+        return StringBuilderFactory.EXCAS_RESULT_STRING.build(obj);
     }
 
-    @SuppressWarnings("unchecked")
     public ExcasResult<byte[]> excas(byte[] key, byte[] newvalue, long version) {
-        List<Object> result = (List<Object>) getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, toByteArray(version));
-        if (null == result || 0 == result.size()) {
-            return null;
-        } else {
-            byte[] msg = (byte[]) result.get(0);
-            byte[] value = (byte[]) result.get(1);
-            long ver = (Long) result.get(2);
-            return new ExcasResult<byte[]>(msg, value, ver);
-        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, toByteArray(version));
+        return StringBuilderFactory.EXCAS_RESULT_BYTE.build(obj);
     }
 
     public Long excad(String key, long version) {

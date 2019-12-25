@@ -25,10 +25,10 @@ public class TairStringPipelineTest extends TairStringTestBase {
     private String value1;
     private String key2;
     private String value2;
-    byte[] bkey1;
-    byte[] bvalue1;
-    byte[] bkey2;
-    byte[] bvalue2;
+    private byte[] bkey1;
+    private byte[] bvalue1;
+    private byte[] bkey2;
+    private byte[] bvalue2;
 
     public TairStringPipelineTest() {
         key1 = "key1" + Thread.currentThread().getName() + UUID.randomUUID().toString();
@@ -46,8 +46,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         int i = 0;
 
         // String
-        tairStringPipeline.exset(key1,value1);
-        tairStringPipeline.exset(key2,value2);
+        tairStringPipeline.exset(key1, value1);
+        tairStringPipeline.exset(key2, value2);
         tairStringPipeline.exget(key1);
         tairStringPipeline.exget(key2);
 
@@ -60,8 +60,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(value2, ExgetResult.class.cast(objs.get(i++)).getValue());
 
         //binary
-        tairStringPipeline.exset(bkey1,bvalue1);
-        tairStringPipeline.exset(bkey2,bvalue2);
+        tairStringPipeline.exset(bkey1, bvalue1);
+        tairStringPipeline.exset(bkey2, bvalue2);
         tairStringPipeline.exget(bkey1);
         tairStringPipeline.exget(bkey2);
 
@@ -87,9 +87,9 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // String
         tairStringPipeline.exset(key1, value1, params_xx);
-        tairStringPipeline.exset(key2,value2, params_nx);
+        tairStringPipeline.exset(key2, value2, params_nx);
         tairStringPipeline.exget(key2);
-        tairStringPipeline.exset(key2,"new"+value2, params_xx);
+        tairStringPipeline.exset(key2, "new" + value2, params_xx);
         tairStringPipeline.exget(key2);
 
         List<Object> objs = tairStringPipeline.syncAndReturnAll();
@@ -99,13 +99,13 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals("OK", objs.get(i++));
         assertEquals(value2, ExgetResult.class.cast(objs.get(i++)).getValue());
         assertEquals("OK", objs.get(i++));
-        assertEquals("new"+value2, ExgetResult.class.cast(objs.get(i++)).getValue());
+        assertEquals("new" + value2, ExgetResult.class.cast(objs.get(i++)).getValue());
 
         // binary
         tairStringPipeline.exset(bkey1, bvalue1, params_xx);
-        tairStringPipeline.exset(bkey2,bvalue2, params_nx);
+        tairStringPipeline.exset(bkey2, bvalue2, params_nx);
         tairStringPipeline.exget(bkey2);
-        tairStringPipeline.exset(bkey2, SafeEncoder.encode("new"+bvalue2), params_xx);
+        tairStringPipeline.exset(bkey2, SafeEncoder.encode("new" + bvalue2), params_xx);
         tairStringPipeline.exget(bkey2);
 
         objs = tairStringPipeline.syncAndReturnAll();
@@ -113,9 +113,9 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals(null, objs.get(i++));
         assertEquals("OK", objs.get(i++));
-        assertEquals(true,Arrays.equals(bvalue2, (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
+        assertEquals(true, Arrays.equals(bvalue2, (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
         assertEquals("OK", objs.get(i++));
-        assertEquals(true, Arrays.equals(SafeEncoder.encode("new"+bvalue2), (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
+        assertEquals(true, Arrays.equals(SafeEncoder.encode("new" + bvalue2), (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
     }
 
     @Test
@@ -123,9 +123,9 @@ public class TairStringPipelineTest extends TairStringTestBase {
         int i = 0;
 
         // String
-        tairStringPipeline.exset(key1,value1);
+        tairStringPipeline.exset(key1, value1);
         tairStringPipeline.exget(key1);
-        tairStringPipeline.exsetver(key1,10);
+        tairStringPipeline.exsetver(key1, 10);
         tairStringPipeline.exget(key1);
 
         List<Object> objs = tairStringPipeline.syncAndReturnAll();
@@ -139,9 +139,9 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(10, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         //binary
-        tairStringPipeline.exset(bkey1,bvalue1);
+        tairStringPipeline.exset(bkey1, bvalue1);
         tairStringPipeline.exget(bkey1);
-        tairStringPipeline.exsetver(bkey1,10);
+        tairStringPipeline.exsetver(bkey1, 10);
         tairStringPipeline.exget(bkey1);
 
         objs = tairStringPipeline.syncAndReturnAll();
@@ -166,8 +166,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         long new_long_value = 200;
 
         // String
-        tairStringPipeline.exset(key1,num_string_value);
-        tairStringPipeline.exincrBy(key1,incr_value);
+        tairStringPipeline.exset(key1, num_string_value);
+        tairStringPipeline.exincrBy(key1, incr_value);
         tairStringPipeline.exget(key1);
 
         List<Object> objs = tairStringPipeline.syncAndReturnAll();
@@ -179,8 +179,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         //binary
-        tairStringPipeline.exset(bkey1,num_byte_value);
-        tairStringPipeline.exincrBy(bkey1,incr_value);
+        tairStringPipeline.exset(bkey1, num_byte_value);
+        tairStringPipeline.exincrBy(bkey1, incr_value);
         tairStringPipeline.exget(bkey1);
 
         objs = tairStringPipeline.syncAndReturnAll();
@@ -214,7 +214,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // String
         // nx_px start
-        tairStringPipeline.exincrBy(key1,incr_value, params_nx_px);
+        tairStringPipeline.exincrBy(key1, incr_value, params_nx_px);
         tairStringPipeline.exget(key1);
         List<Object> objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -230,8 +230,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_ex start
-        tairStringPipeline.exset(key1,num_string_value);
-        tairStringPipeline.exincrBy(key1,incr_value, params_xx_ex);
+        tairStringPipeline.exset(key1, num_string_value);
+        tairStringPipeline.exincrBy(key1, incr_value, params_xx_ex);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -248,8 +248,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_pxat start
-        tairStringPipeline.exset(key1,num_string_value);
-        tairStringPipeline.exincrBy(key1,incr_value, params_xx_pxat);
+        tairStringPipeline.exset(key1, num_string_value);
+        tairStringPipeline.exincrBy(key1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -268,7 +268,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // binary
         // nx_px start
-        tairStringPipeline.exincrBy(bkey1,incr_value, params_nx_px);
+        tairStringPipeline.exincrBy(bkey1, incr_value, params_nx_px);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -284,8 +284,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_ex start
-        tairStringPipeline.exset(bkey1,num_byte_value);
-        tairStringPipeline.exincrBy(bkey1,incr_value, params_xx_ex);
+        tairStringPipeline.exset(bkey1, num_byte_value);
+        tairStringPipeline.exincrBy(bkey1, incr_value, params_xx_ex);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -302,8 +302,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_pxat start
-        tairStringPipeline.exset(bkey1,num_byte_value);
-        tairStringPipeline.exincrBy(bkey1,incr_value, params_xx_pxat);
+        tairStringPipeline.exset(bkey1, num_byte_value);
+        tairStringPipeline.exincrBy(bkey1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -331,8 +331,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         Double new_float_value = Double.valueOf(200);
 
         // String
-        tairStringPipeline.exset(key1,num_string_value);
-        tairStringPipeline.exincrByFloat(key1,incr_value);
+        tairStringPipeline.exset(key1, num_string_value);
+        tairStringPipeline.exincrByFloat(key1, incr_value);
         tairStringPipeline.exget(key1);
 
         List<Object> objs = tairStringPipeline.syncAndReturnAll();
@@ -344,8 +344,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         //binary
-        tairStringPipeline.exset(bkey1,num_byte_value);
-        tairStringPipeline.exincrByFloat(bkey1,incr_value);
+        tairStringPipeline.exset(bkey1, num_byte_value);
+        tairStringPipeline.exincrByFloat(bkey1, incr_value);
         tairStringPipeline.exget(bkey1);
 
         objs = tairStringPipeline.syncAndReturnAll();
@@ -379,7 +379,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // String
         // nx_px start
-        tairStringPipeline.exincrByFloat(key1,incr_value, params_nx_px);
+        tairStringPipeline.exincrByFloat(key1, incr_value, params_nx_px);
         tairStringPipeline.exget(key1);
         List<Object> objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -395,8 +395,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_ex start
-        tairStringPipeline.exset(key1,num_string_value);
-        tairStringPipeline.exincrByFloat(key1,incr_value, params_xx_ex);
+        tairStringPipeline.exset(key1, num_string_value);
+        tairStringPipeline.exincrByFloat(key1, incr_value, params_xx_ex);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -413,8 +413,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_pxat start
-        tairStringPipeline.exset(key1,num_string_value);
-        tairStringPipeline.exincrByFloat(key1,incr_value, params_xx_pxat);
+        tairStringPipeline.exset(key1, num_string_value);
+        tairStringPipeline.exincrByFloat(key1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -433,7 +433,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // binary
         // nx_px start
-        tairStringPipeline.exincrByFloat(bkey1,incr_value, params_nx_px);
+        tairStringPipeline.exincrByFloat(bkey1, incr_value, params_nx_px);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -449,8 +449,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_ex start
-        tairStringPipeline.exset(bkey1,num_byte_value);
-        tairStringPipeline.exincrByFloat(bkey1,incr_value, params_xx_ex);
+        tairStringPipeline.exset(bkey1, num_byte_value);
+        tairStringPipeline.exincrByFloat(bkey1, incr_value, params_xx_ex);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -467,8 +467,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(null, objs.get(i++));
 
         // xx_pxat start
-        tairStringPipeline.exset(bkey1,num_byte_value);
-        tairStringPipeline.exincrByFloat(bkey1,incr_value, params_xx_pxat);
+        tairStringPipeline.exset(bkey1, num_byte_value);
+        tairStringPipeline.exincrByFloat(bkey1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -490,9 +490,9 @@ public class TairStringPipelineTest extends TairStringTestBase {
         int i = 0;
 
         // String
-        tairStringPipeline.exset(key1,value1);
-        tairStringPipeline.excas(key1,"new"+value1, 2);
-        tairStringPipeline.excas(key1,"new"+value1, 1);
+        tairStringPipeline.exset(key1, value1);
+        tairStringPipeline.excas(key1, "new" + value1, 2);
+        tairStringPipeline.excas(key1, "new" + value1, 1);
 
         List<Object> objs = tairStringPipeline.syncAndReturnAll();
 
@@ -505,9 +505,9 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExcasResult.class.cast(objs.get(i++)).getVersion());
 
         //binary
-        tairStringPipeline.exset(bkey1,bvalue1);
-        tairStringPipeline.excas(bkey1,SafeEncoder.encode("new"+bvalue1), 2);
-        tairStringPipeline.excas(bkey1,SafeEncoder.encode("new"+bvalue1), 1);
+        tairStringPipeline.exset(bkey1, bvalue1);
+        tairStringPipeline.excas(bkey1, SafeEncoder.encode("new" + bvalue1), 2);
+        tairStringPipeline.excas(bkey1, SafeEncoder.encode("new" + bvalue1), 1);
 
         objs = tairStringPipeline.syncAndReturnAll();
 
@@ -516,7 +516,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(true, Arrays.equals(bvalue1, (byte[]) ExcasResult.class.cast(objs.get(i)).getValue()));
         assertEquals(1, ExcasResult.class.cast(objs.get(i++)).getVersion());
         assertEquals(true, Arrays.equals(SafeEncoder.encode("OK"), (byte[]) ExcasResult.class.cast(objs.get(i)).getMsg()));
-        assertEquals(true, Arrays.equals(SafeEncoder.encode(""), (byte[] ) ExcasResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(SafeEncoder.encode(""), (byte[]) ExcasResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExcasResult.class.cast(objs.get(i++)).getVersion());
     }
 
@@ -525,7 +525,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         int i = 0;
 
         // String
-        tairStringPipeline.exset(key1,value1);
+        tairStringPipeline.exset(key1, value1);
         tairStringPipeline.excad(key1, 2);
         tairStringPipeline.excad(key1, 1);
 
@@ -537,7 +537,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals((long) 1, objs.get(i++));
 
         //binary
-        tairStringPipeline.exset(bkey1,bvalue1);
+        tairStringPipeline.exset(bkey1, bvalue1);
         tairStringPipeline.excad(bkey1, 2);
         tairStringPipeline.excad(bkey1, 1);
 
