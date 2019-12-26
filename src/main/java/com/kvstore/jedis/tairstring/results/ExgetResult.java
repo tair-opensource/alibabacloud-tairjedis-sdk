@@ -1,22 +1,12 @@
-package com.kvstore.jedis.results;
+package com.kvstore.jedis.tairstring.results;
 
-public class ExcasResult<T> {
+public class ExgetResult<T> {
     private long version;
     private T value;
-    private T msg;
 
-    public ExcasResult(T msg, T value, long version) {
-        this.msg = msg;
+    public ExgetResult(T value, long version) {
         this.value = value;
         this.version = version;
-    }
-
-    public T getMsg() {
-        return msg;
-    }
-
-    public void setMsg(T msg) {
-        this.msg = msg;
     }
 
     public long getVersion() {

@@ -1,9 +1,8 @@
-import com.kvstore.jedis.TairString;
-import com.kvstore.jedis.params.ExincrbyFloatParams;
-import com.kvstore.jedis.params.ExincrbyParams;
-import com.kvstore.jedis.params.ExsetParams;
-import com.kvstore.jedis.results.ExcasResult;
-import com.kvstore.jedis.results.ExgetResult;
+import com.kvstore.jedis.tairstring.params.ExincrbyFloatParams;
+import com.kvstore.jedis.tairstring.params.ExincrbyParams;
+import com.kvstore.jedis.tairstring.params.ExsetParams;
+import com.kvstore.jedis.tairstring.results.ExcasResult;
+import com.kvstore.jedis.tairstring.results.ExgetResult;
 import org.junit.Test;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -202,6 +201,7 @@ public class TairStringTest extends TairStringTestBase {
 
         ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         ret_var = tairString.exincrBy(key, incr_value, params_xx_pxat);
         assertEquals(new_long_value, ret_var);
         result = tairString.exget(key);
@@ -237,6 +237,7 @@ public class TairStringTest extends TairStringTestBase {
 
         ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         ret_var = tairString.exincrBy(bkey, incr_value, params_xx_pxat);
         assertEquals(new_long_value, ret_var);
         bresult = tairString.exget(bkey);
@@ -337,6 +338,7 @@ public class TairStringTest extends TairStringTestBase {
 
         ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         ret_var = tairString.exincrByFloat(key, incr_value, params_xx_pxat);
         assertEquals(new_float_value, ret_var);
         result = tairString.exget(key);
@@ -372,6 +374,7 @@ public class TairStringTest extends TairStringTestBase {
 
         ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         ret_var = tairString.exincrByFloat(bkey, incr_value, params_xx_pxat);
         assertEquals(new_float_value, ret_var);
         bresult = tairString.exget(bkey);

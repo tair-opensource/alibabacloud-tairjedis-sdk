@@ -1,11 +1,15 @@
-package com.kvstore.jedis.params;
+package com.kvstore.jedis.tairstring.params;
 
 import redis.clients.jedis.params.Params;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
 
-public class ExincrbyFloatParams extends Params {
+/**
+ * Created by qudong on 2018/5/13.
+ */
+public class ExincrbyParams extends Params {
+
     private static final String XX = "xx";
     private static final String NX = "nx";
 
@@ -19,28 +23,31 @@ public class ExincrbyFloatParams extends Params {
 
     private static final String MAX = "MAX";
     private static final String MIN = "MIN";
-    public ExincrbyFloatParams() {
+
+
+    public ExincrbyParams() {
     }
 
-    public static ExincrbyFloatParams ExincrbyParams() {
-        return new ExincrbyFloatParams();
+    public static ExincrbyParams ExincrbyParams() {
+        return new ExincrbyParams();
     }
 
-    public ExincrbyFloatParams max(double max) {
+    public ExincrbyParams max(long max) {
         addParam(MAX, max);
         return this;
     }
 
-    public ExincrbyFloatParams min(double min) {
+    public ExincrbyParams min(long min) {
         addParam(MIN, min);
         return this;
     }
+
 
     /**
      * Only set the key if it already exist.
      * @return SetParams
      */
-    public ExincrbyFloatParams xx() {
+    public ExincrbyParams xx() {
         addParam(XX);
         return this;
     }
@@ -49,7 +56,7 @@ public class ExincrbyFloatParams extends Params {
      * Only set the key if it does not already exist.
      * @return SetParams
      */
-    public ExincrbyFloatParams nx() {
+    public ExincrbyParams nx() {
         addParam(NX);
         return this;
     }
@@ -59,7 +66,7 @@ public class ExincrbyFloatParams extends Params {
      * @param secondsToExpire
      * @return SetParams
      */
-    public ExincrbyFloatParams ex(int secondsToExpire) {
+    public ExincrbyParams ex(int secondsToExpire) {
         addParam(EX, secondsToExpire);
         return this;
     }
@@ -69,7 +76,7 @@ public class ExincrbyFloatParams extends Params {
      * @param millisecondsToExpire
      * @return SetParams
      */
-    public ExincrbyFloatParams px(long millisecondsToExpire) {
+    public ExincrbyParams px(long millisecondsToExpire) {
         addParam(PX, millisecondsToExpire);
         return this;
     }
@@ -79,7 +86,7 @@ public class ExincrbyFloatParams extends Params {
      * @param secondsToExpire
      * @return SetParams
      */
-    public ExincrbyFloatParams exat(int secondsToExpire) {
+    public ExincrbyParams exat(int secondsToExpire) {
         addParam(EXAT, secondsToExpire);
         return this;
     }
@@ -89,7 +96,7 @@ public class ExincrbyFloatParams extends Params {
      * @param millisecondsToExpire
      * @return SetParams
      */
-    public ExincrbyFloatParams pxat(long millisecondsToExpire) {
+    public ExincrbyParams pxat(long millisecondsToExpire) {
         addParam(PXAT, millisecondsToExpire);
         return this;
     }
@@ -99,7 +106,7 @@ public class ExincrbyFloatParams extends Params {
      * @param version
      * @return SetParams
      */
-    public ExincrbyFloatParams ver(long version) {
+    public ExincrbyParams ver(long version) {
         addParam(VER, version);
         return this;
     }
@@ -109,7 +116,7 @@ public class ExincrbyFloatParams extends Params {
      * @param absoluteVersion
      * @return SetParams
      */
-    public ExincrbyFloatParams abs(long absoluteVersion) {
+    public ExincrbyParams abs(long absoluteVersion) {
         addParam(ABS, absoluteVersion);
         return this;
     }
@@ -120,7 +127,6 @@ public class ExincrbyFloatParams extends Params {
             byteParams.add(SafeEncoder.encode(String.valueOf(getParam(option))));
         }
     }
-
 
     public byte[][] getByteParams(byte[]... args) {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
