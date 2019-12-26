@@ -1,8 +1,8 @@
-import com.kvstore.jedis.params.ExincrbyFloatParams;
-import com.kvstore.jedis.params.ExincrbyParams;
-import com.kvstore.jedis.params.ExsetParams;
-import com.kvstore.jedis.results.ExcasResult;
-import com.kvstore.jedis.results.ExgetResult;
+import com.kvstore.jedis.tairstring.params.ExincrbyFloatParams;
+import com.kvstore.jedis.tairstring.params.ExincrbyParams;
+import com.kvstore.jedis.tairstring.params.ExsetParams;
+import com.kvstore.jedis.tairstring.results.ExcasResult;
+import com.kvstore.jedis.tairstring.results.ExgetResult;
 import org.junit.Test;
 import redis.clients.jedis.util.SafeEncoder;
 

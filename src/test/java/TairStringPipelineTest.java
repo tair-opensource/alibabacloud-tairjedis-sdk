@@ -1,12 +1,9 @@
-import com.kvstore.jedis.params.ExincrbyFloatParams;
-import com.kvstore.jedis.params.ExincrbyParams;
-import com.kvstore.jedis.params.ExsetParams;
-import com.kvstore.jedis.results.ExcasResult;
-import com.kvstore.jedis.results.ExgetResult;
-import org.junit.Assert;
+import com.kvstore.jedis.tairstring.params.ExincrbyFloatParams;
+import com.kvstore.jedis.tairstring.params.ExincrbyParams;
+import com.kvstore.jedis.tairstring.params.ExsetParams;
+import com.kvstore.jedis.tairstring.results.ExcasResult;
+import com.kvstore.jedis.tairstring.results.ExgetResult;
 import org.junit.Test;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.Arrays;
@@ -249,6 +246,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // xx_pxat start
         tairStringPipeline.exset(key1, num_string_value);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         tairStringPipeline.exincrBy(key1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
@@ -303,6 +301,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // xx_pxat start
         tairStringPipeline.exset(bkey1, num_byte_value);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         tairStringPipeline.exincrBy(bkey1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
@@ -414,6 +413,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // xx_pxat start
         tairStringPipeline.exset(key1, num_string_value);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         tairStringPipeline.exincrByFloat(key1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
@@ -468,6 +468,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         // xx_pxat start
         tairStringPipeline.exset(bkey1, num_byte_value);
+        params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
         tairStringPipeline.exincrByFloat(bkey1, incr_value, params_xx_pxat);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();

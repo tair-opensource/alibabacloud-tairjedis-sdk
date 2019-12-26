@@ -1,7 +1,7 @@
-package com.kvstore.jedis.exstring;
+package com.kvstore.jedis.tairstring.factory;
 
-import com.kvstore.jedis.results.ExcasResult;
-import com.kvstore.jedis.results.ExgetResult;
+import com.kvstore.jedis.tairstring.results.ExcasResult;
+import com.kvstore.jedis.tairstring.results.ExgetResult;
 import redis.clients.jedis.Builder;
 
 import java.util.List;

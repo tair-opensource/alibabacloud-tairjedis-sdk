@@ -1,18 +1,16 @@
-package com.kvstore.jedis;
+package com.kvstore.jedis.tairstring;
 
-import java.util.List;
-
-import com.kvstore.jedis.exstring.StringBuilderFactory;
-import com.kvstore.jedis.params.ExincrbyFloatParams;
-import com.kvstore.jedis.params.ExincrbyParams;
-import com.kvstore.jedis.params.ExsetParams;
-import com.kvstore.jedis.results.ExcasResult;
-import com.kvstore.jedis.results.ExgetResult;
+import com.kvstore.jedis.ModuleCommand;
+import com.kvstore.jedis.tairstring.params.ExincrbyFloatParams;
+import com.kvstore.jedis.tairstring.params.ExincrbyParams;
+import com.kvstore.jedis.tairstring.params.ExsetParams;
+import com.kvstore.jedis.tairstring.results.ExcasResult;
+import com.kvstore.jedis.tairstring.results.ExgetResult;
+import com.kvstore.jedis.tairstring.factory.StringBuilderFactory;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.util.SafeEncoder;
 
-import static redis.clients.jedis.Protocol.read;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 /**

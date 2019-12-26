@@ -1,12 +1,11 @@
-package com.kvstore.jedis.params;
+package com.kvstore.jedis.tairstring.params;
 
 import redis.clients.jedis.params.Params;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
 
-public class ExsetParams extends Params {
-
+public class ExincrbyFloatParams extends Params {
     private static final String XX = "xx";
     private static final String NX = "nx";
 
@@ -18,14 +17,30 @@ public class ExsetParams extends Params {
     private static final String VER = "ver";
     private static final String ABS = "abs";
 
-    private static final String MIN = "min";
-    private static final String MAX = "max";
+    private static final String MAX = "MAX";
+    private static final String MIN = "MIN";
+    public ExincrbyFloatParams() {
+    }
+
+    public static ExincrbyFloatParams ExincrbyFloatParams() {
+        return new ExincrbyFloatParams();
+    }
+
+    public ExincrbyFloatParams max(double max) {
+        addParam(MAX, max);
+        return this;
+    }
+
+    public ExincrbyFloatParams min(double min) {
+        addParam(MIN, min);
+        return this;
+    }
 
     /**
      * Only set the key if it already exist.
      * @return SetParams
      */
-    public ExsetParams xx() {
+    public ExincrbyFloatParams xx() {
         addParam(XX);
         return this;
     }
@@ -34,7 +49,7 @@ public class ExsetParams extends Params {
      * Only set the key if it does not already exist.
      * @return SetParams
      */
-    public ExsetParams nx() {
+    public ExincrbyFloatParams nx() {
         addParam(NX);
         return this;
     }
@@ -44,7 +59,7 @@ public class ExsetParams extends Params {
      * @param secondsToExpire
      * @return SetParams
      */
-    public ExsetParams ex(int secondsToExpire) {
+    public ExincrbyFloatParams ex(int secondsToExpire) {
         addParam(EX, secondsToExpire);
         return this;
     }
@@ -54,7 +69,7 @@ public class ExsetParams extends Params {
      * @param millisecondsToExpire
      * @return SetParams
      */
-    public ExsetParams px(long millisecondsToExpire) {
+    public ExincrbyFloatParams px(long millisecondsToExpire) {
         addParam(PX, millisecondsToExpire);
         return this;
     }
@@ -64,7 +79,7 @@ public class ExsetParams extends Params {
      * @param secondsToExpire
      * @return SetParams
      */
-    public ExsetParams exat(int secondsToExpire) {
+    public ExincrbyFloatParams exat(int secondsToExpire) {
         addParam(EXAT, secondsToExpire);
         return this;
     }
@@ -74,7 +89,7 @@ public class ExsetParams extends Params {
      * @param millisecondsToExpire
      * @return SetParams
      */
-    public ExsetParams pxat(long millisecondsToExpire) {
+    public ExincrbyFloatParams pxat(long millisecondsToExpire) {
         addParam(PXAT, millisecondsToExpire);
         return this;
     }
@@ -84,7 +99,7 @@ public class ExsetParams extends Params {
      * @param version
      * @return SetParams
      */
-    public ExsetParams ver(long version) {
+    public ExincrbyFloatParams ver(long version) {
         addParam(VER, version);
         return this;
     }
@@ -94,7 +109,7 @@ public class ExsetParams extends Params {
      * @param absoluteVersion
      * @return SetParams
      */
-    public ExsetParams abs(long absoluteVersion) {
+    public ExincrbyFloatParams abs(long absoluteVersion) {
         addParam(ABS, absoluteVersion);
         return this;
     }
@@ -106,32 +121,6 @@ public class ExsetParams extends Params {
         }
     }
 
-    public byte[][] getByteParams(String... args) {
-        ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
-        for (String arg : args) {
-            byteParams.add(SafeEncoder.encode(arg));
-        }
-
-        if (contains(XX)) {
-            byteParams.add(SafeEncoder.encode(XX));
-        }
-        if (contains(NX)) {
-            byteParams.add(SafeEncoder.encode(NX));
-        }
-
-        addParamWithValue(byteParams, EX);
-        addParamWithValue(byteParams, PX);
-        addParamWithValue(byteParams, EXAT);
-        addParamWithValue(byteParams, PXAT);
-
-        addParamWithValue(byteParams, VER);
-        addParamWithValue(byteParams, ABS);
-
-        addParamWithValue(byteParams, MIN);
-        addParamWithValue(byteParams, MAX);
-
-        return byteParams.toArray(new byte[byteParams.size()][]);
-    }
 
     public byte[][] getByteParams(byte[]... args) {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
@@ -160,4 +149,3 @@ public class ExsetParams extends Params {
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
 }
-
