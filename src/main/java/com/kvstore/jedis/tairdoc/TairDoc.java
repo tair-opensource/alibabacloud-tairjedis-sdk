@@ -1,13 +1,14 @@
-package com.kvstore.jedis;
+package com.kvstore.jedis.tairdoc;
 
 import java.util.List;
 
+import com.kvstore.jedis.ModuleCommand;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 /**
- * use com.kvstore.jedis.TairDoc with Jedis.
+ * use com.kvstore.jedis.tairdoc.TairDoc with Jedis.
  *
  * @author bodong.ybd
  * @date 2019/12/11

@@ -17,27 +17,9 @@ public class TairBloomTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        if (jedis == null) {
-            jedis = new Jedis(HOST, PORT);
-            if (!"PONG".equals(jedis.ping())) {
-                System.exit(-1);
-            }
-
-            Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
-            jedisCluster = new JedisCluster(jedisClusterNodes);
-
-            tairBloom = new TairBloom(jedis);
-            tairBloomPipeline = new TairBloomPipeline();
-            tairBloomPipeline.setClient(jedis.getClient());
-            tairBloomCluster = new TairBloomCluster(jedisCluster);
-        }
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        if (jedis != null) {
-            jedis.close();
-        }
+        tairBloom = new TairBloom(jedis);
+        tairBloomPipeline = new TairBloomPipeline();
+        tairBloomPipeline.setClient(jedis.getClient());
+        tairBloomCluster = new TairBloomCluster(jedisCluster);
     }
 }

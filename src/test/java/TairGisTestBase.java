@@ -22,27 +22,10 @@ public class TairGisTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        if (jedis == null) {
-            jedis = new Jedis(HOST, PORT);
-            if (!"PONG".equals(jedis.ping())) {
-                System.exit(-1);
-            }
+        tairGis = new TairGis(jedis);
+        tairGisPipeline = new TairGisPipeline();
+        tairGisPipeline.setClient(jedis.getClient());
+        tairGisCluster = new TairGisCluster(jedisCluster);
 
-            Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
-            jedisCluster = new JedisCluster(jedisClusterNodes);
-
-            tairGis = new TairGis(jedis);
-            tairGisPipeline = new TairGisPipeline();
-            tairGisPipeline.setClient(jedis.getClient());
-            tairGisCluster = new TairGisCluster(jedisCluster);
-        }
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        if (jedis != null) {
-            jedis.close();
-        }
     }
 }

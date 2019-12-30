@@ -18,27 +18,9 @@ public class TairStringTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        if (jedis == null) {
-            jedis = new Jedis(HOST, PORT);
-            if (!"PONG".equals(jedis.ping())) {
-                System.exit(-1);
-            }
-
-            Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
-            jedisCluster = new JedisCluster(jedisClusterNodes);
-
-            tairString = new TairString(jedis);
-            tairStringPipeline = new TairStringPipeline();
-            tairStringPipeline.setClient(jedis.getClient());
-            tairStringCluster = new TairStringCluster(jedisCluster);
-        }
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        if (jedis != null) {
-            jedis.close();
-        }
+        tairString = new TairString(jedis);
+        tairStringPipeline = new TairStringPipeline();
+        tairStringPipeline.setClient(jedis.getClient());
+        tairStringCluster = new TairStringCluster(jedisCluster);
     }
 }
