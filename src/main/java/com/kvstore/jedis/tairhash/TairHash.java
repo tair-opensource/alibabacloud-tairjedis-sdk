@@ -198,7 +198,7 @@ public class TairHash {
     }
 
     public Long exhincrBy(byte[] key, byte[] field, long value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHINCRBY, field, toByteArray(value));
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHINCRBY, key, field, toByteArray(value));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -230,6 +230,16 @@ public class TairHash {
         Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT,
             params.getByteParams(key, field, toByteArray(value)));
         return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public String exhget(final String key, final String field) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHGET, key, field);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public byte[] exhget(final byte[] key, final byte[] field) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHGET, key, field);
+        return BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public ExhgetwithverResult<String> exhgetwithver(final String key, final String field) {

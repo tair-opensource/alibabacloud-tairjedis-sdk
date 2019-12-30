@@ -181,7 +181,7 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Long> exhincrBy(byte[] key, byte[] field, long value) {
-        getClient("").sendCommand(ModuleCommand.EXHINCRBY, field, toByteArray(value));
+        getClient("").sendCommand(ModuleCommand.EXHINCRBY, key, field, toByteArray(value));
         return getResponse(BuilderFactory.LONG);
     }
 
@@ -213,6 +213,16 @@ public class TairHashPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT,
             params.getByteParams(key, field, toByteArray(value)));
         return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<String> exhget(final String key, final String field) {
+        getClient("").sendCommand(ModuleCommand.EXHGET, key, field);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<byte[]> exhget(final byte[] key, final byte[] field) {
+        getClient("").sendCommand(ModuleCommand.EXHGET, key, field);
+        return getResponse(BuilderFactory.BYTE_ARRAY);
     }
 
     public Response<ExhgetwithverResult<String>> exhgetwithver(final String key, final String field) {
