@@ -14,8 +14,7 @@ import com.kvstore.jedis.tairhash.params.ExhincrByParams;
 import com.kvstore.jedis.tairhash.params.ExhmsetwithoptsParams;
 import com.kvstore.jedis.tairhash.params.ExhsetParams;
 import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
@@ -24,55 +23,43 @@ import static redis.clients.jedis.Protocol.toByteArray;
 
 /**
  * @author bodong.ybd
- * @date 2019/12/23
+ * @date 2019/12/30
  */
-public class TairHash {
-    private Jedis jedis;
-    private JedisPool jedisPool;
+public class TairHashCluster {
+    private JedisCluster jc;
 
-    public TairHash(JedisPool jedisPool) {
-        this.jedisPool = jedisPool;
-    }
-
-    public TairHash(Jedis jedis) {
-        this.jedis = jedis;
-    }
-
-    private Jedis getJedis() {
-        if (jedisPool != null) {
-            return jedisPool.getResource();
-        }
-        return jedis;
+    public TairHashCluster(JedisCluster jc) {
+        this.jc = jc;
     }
 
     public Long exhset(final String key, final String field, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSET, key, field, value);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSET, key, field, value);
         return BuilderFactory.LONG.build(obj);
     }
 
     public Long exhset(final byte[] key, final byte[] field, final byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSET, key, field, value);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSET, key, field, value);
         return BuilderFactory.LONG.build(obj);
     }
 
     public Long exhset(final String key, final String field, final String value, final ExhsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSET,
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHSET,
             params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(field), SafeEncoder.encode(value)));
         return BuilderFactory.LONG.build(obj);
     }
 
     public Long exhset(final byte[] key, final byte[] field, final byte[] value, final ExhsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSET, params.getByteParams(key, field, value));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSET, params.getByteParams(key, field, value));
         return BuilderFactory.LONG.build(obj);
     }
 
     public Long exhsetnx(final String key, final String field, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSETNX, key, field, value);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSETNX, key, field, value);
         return BuilderFactory.LONG.build(obj);
     }
 
     public Long exhsetnx(final byte[] key, final byte[] field, final byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSETNX, key, field, value);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSETNX, key, field, value);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -93,7 +80,7 @@ public class TairHash {
             params.add(entry.getValue());
         }
 
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMSET, params.toArray(new byte[params.size()][]));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMSET, params.toArray(new byte[params.size()][]));
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -117,7 +104,7 @@ public class TairHash {
             p.add(toByteArray(entry.getExp()));
         }
 
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMSETWITHOPTS, p.toArray(new byte[params.size()][]));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMSETWITHOPTS, p.toArray(new byte[params.size()][]));
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -126,7 +113,7 @@ public class TairHash {
     }
 
     public Boolean exhpexpire(final byte[] key, final byte[] field, final int milliseconds) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -135,7 +122,7 @@ public class TairHash {
     }
 
     public Boolean exhpexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -144,7 +131,7 @@ public class TairHash {
     }
 
     public Boolean exhexpire(final byte[] key, final byte[] field, final int seconds) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -153,7 +140,7 @@ public class TairHash {
     }
 
     public Boolean exhexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -162,7 +149,7 @@ public class TairHash {
     }
 
     public Long exhpttl(final byte[] key, final byte[] field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHPTTL, key, field);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHPTTL, key, field);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -171,7 +158,7 @@ public class TairHash {
     }
 
     public Long exhttl(final byte[] key, final byte[] field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHTTL, key, field);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHTTL, key, field);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -180,7 +167,7 @@ public class TairHash {
     }
 
     public Long exhver(final byte[] key, final byte[] field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHVER, key, field);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHVER, key, field);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -189,7 +176,7 @@ public class TairHash {
     }
 
     public Boolean exhsetver(final byte[] key, final byte[] field, final long version) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSETVER, key, field, toByteArray(version));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSETVER, key, field, toByteArray(version));
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -198,7 +185,7 @@ public class TairHash {
     }
 
     public Long exhincrBy(byte[] key, byte[] field, long value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHINCRBY, field, toByteArray(value));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHINCRBY, field, toByteArray(value));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -207,7 +194,7 @@ public class TairHash {
     }
 
     public Long exhincrBy(final byte[] key, final byte[] field, final long value, final ExhincrByParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHINCRBY,
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHINCRBY,
             params.getByteParams(key, field, toByteArray(value)));
         return BuilderFactory.LONG.build(obj);
     }
@@ -217,7 +204,7 @@ public class TairHash {
     }
 
     public Double exhincrByFloat(byte[] key, byte[] field, final double value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHINCRBYFLOAT, key, field, toByteArray(value));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHINCRBYFLOAT, key, field, toByteArray(value));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
@@ -227,40 +214,40 @@ public class TairHash {
     }
 
     public Double exhincrByFloat(byte[] key, byte[] field, double value, ExhincrByParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT,
+        Object obj = jc.sendCommand(key, ModuleCommand.EXINCRBYFLOAT,
             params.getByteParams(key, field, toByteArray(value)));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
     public ExhgetwithverResult<String> exhgetwithver(final String key, final String field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHGETWITHVER, key, field);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHGETWITHVER, key, field);
         return HashBuilderFactory.EXHGETWITHVER_RESULT_STRING.build(obj);
     }
 
     public ExhgetwithverResult<byte[]> exhgetwithver(byte[] key, byte[] field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHGETWITHVER, key, field);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHGETWITHVER, key, field);
         return HashBuilderFactory.EXHGETWITHVER_RESULT_BYTE.build(obj);
     }
 
     public List<String> exhmget(final String key, final String... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGET,
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMGET,
             joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
     public List<byte[]> exhmget(byte[] key, byte[]... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGET, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGET, joinParameters(key, fields));
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<String>> exhmgetwithver(final String key, final String... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGETWITHVER,
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMGETWITHVER,
             joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_STRING_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<byte[]>> exhmgetwithver(byte[] key, byte[]... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGETWITHVER, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGETWITHVER, joinParameters(key, fields));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_BYTE_LIST.build(obj);
     }
 
@@ -269,7 +256,7 @@ public class TairHash {
     }
 
     public Long exhdel(byte[] key, byte[]... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHDEL, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHDEL, joinParameters(key, fields));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -278,7 +265,7 @@ public class TairHash {
     }
 
     public Long exhlen(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHLEN, key);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHLEN, key);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -287,7 +274,7 @@ public class TairHash {
     }
 
     public Boolean exhexists(byte[] key, byte[] field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHEXISTS, key, field);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHEXISTS, key, field);
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -296,37 +283,37 @@ public class TairHash {
     }
 
     public Long exhstrlen(byte[] key, byte[] field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSTRLEN, key, field);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSTRLEN, key, field);
         return BuilderFactory.LONG.build(obj);
     }
 
     public Set<String> exhkeys(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHKEYS, key);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHKEYS, key);
         return BuilderFactory.STRING_ZSET.build(obj);
     }
 
     public Set<byte[]> exhkeys(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHKEYS, key);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHKEYS, key);
         return BuilderFactory.BYTE_ARRAY_ZSET.build(obj);
     }
 
     public List<String> exhvals(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHVALS, key);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHVALS, key);
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
     public List<byte[]> exhvals(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHVALS, key);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHVALS, key);
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public Map<String, String> exhgetAll(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHGETALL, key);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHGETALL, key);
         return BuilderFactory.STRING_MAP.build(obj);
     }
 
     public Map<byte[], byte[]> exhgetAll(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHGETALL, key);
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHGETALL, key);
         return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
     }
 
@@ -342,7 +329,7 @@ public class TairHash {
         args.add(SafeEncoder.encode(subkey));
         args.addAll(params.getParams());
 
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
         return HashBuilderFactory.EXHSCAN_RESULT_STRING.build(obj);
     }
 
@@ -358,7 +345,7 @@ public class TairHash {
         args.add(subkey);
         args.addAll(params.getParams());
 
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
         return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
     }
 
