@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.UUID;
 
+import com.kvstore.jedis.tairdoc.params.JsonsetParams;
 import org.junit.Assert;
 import org.junit.Test;
 import redis.clients.jedis.exceptions.JedisDataException;
@@ -39,9 +40,9 @@ public class TairDocPipelineTest extends TairDocTestBase {
 
     @Test
     public void jsonSetWithNXXX() {
-        tairDocPipeline.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, "xx");
-        tairDocPipeline.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, "nx");
-        tairDocPipeline.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, "xx");
+        tairDocPipeline.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().xx());
+        tairDocPipeline.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().nx());
+        tairDocPipeline.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().xx());
 
         List<Object> objs = tairDocPipeline.syncAndReturnAll();
         assertNull(objs.get(0));

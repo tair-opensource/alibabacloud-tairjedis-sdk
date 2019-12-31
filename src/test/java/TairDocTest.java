@@ -1,5 +1,7 @@
 import java.util.UUID;
 
+import com.kvstore.jedis.tairdoc.params.JsongetParams;
+import com.kvstore.jedis.tairdoc.params.JsonsetParams;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,13 +38,13 @@ public class TairDocTest extends TairDocTestBase {
 
     @Test
     public void jsonSetWithNXXX() {
-        String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, "xx");
+        String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().xx());
         assertNull(ret);
 
-        ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, "nx");
+        ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().nx());
         assertEquals("OK", ret);
 
-        ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, "xx");
+        ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().xx());
         assertEquals("OK", ret);
     }
 
@@ -89,10 +91,10 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE);
         assertEquals("OK", ret);
 
-        ret = tairDoc.jsonget(jsonKey, ".", "format", "xml");
+        ret = tairDoc.jsonget(jsonKey, ".", JsongetParams.JsongetParams().format("xml"));
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><foo>bar</foo><baz>42</baz></root>", ret);
 
-        ret = tairDoc.jsonget(jsonKey, ".", "format", "yaml");
+        ret = tairDoc.jsonget(jsonKey, ".", JsongetParams.JsongetParams().format("yaml"));
         assertEquals("\nfoo: bar\nbaz: 42\n", ret);
     }
 
@@ -144,14 +146,14 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE);
         assertEquals("OK", ret);
 
-        double dret = tairDoc.jsonnumincrBy(jsonKey, ".baz", "1");
+        double dret = tairDoc.jsonnumincrBy(jsonKey, ".baz", 1D);
         assertEquals(43, dret, 0.1);
 
-        dret = tairDoc.jsonnumincrBy(jsonKey, ".baz", "1.5");
+        dret = tairDoc.jsonnumincrBy(jsonKey, ".baz", 1.5);
         assertEquals(44.5, dret, 0.1);
 
         try {
-            tairDoc.jsonnumincrBy(jsonKey, ".foo", "1");
+            tairDoc.jsonnumincrBy(jsonKey, ".foo", 1D);
         } catch (Exception e) {
             if (e.getMessage().contains("ERR node not exists")) {
                 Assert.assertTrue(true);
@@ -218,14 +220,14 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_ARRAY_EXAMPLE);
         assertEquals("OK", ret);
 
-        ret = tairDoc.jsonarrPop(jsonKey, ".id", "1");
+        ret = tairDoc.jsonarrPop(jsonKey, ".id", 1);
         assertEquals("2", ret);
 
-        ret = tairDoc.jsonarrPop(jsonKey, ".id", "-1");
+        ret = tairDoc.jsonarrPop(jsonKey, ".id", -1);
         assertEquals("3", ret);
 
         try {
-            tairDoc.jsonarrPop(jsonKey, ".id", "10");
+            tairDoc.jsonarrPop(jsonKey, ".id", 10);
         } catch (Exception e) {
             if (e.getMessage().contains("ERR array index outflow")) {
                 Assert.assertTrue(true);
@@ -280,14 +282,14 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", "{\"id\":[1,2,3,4,5,6]}");
         assertEquals("OK", ret);
 
-        long lret = tairDoc.jsonarrTrim(jsonKey, ".id", "3", "4");
+        long lret = tairDoc.jsonarrTrim(jsonKey, ".id", 3, 4);
         assertEquals(2, lret);
 
         ret = tairDoc.jsonget(jsonKey, ".id");
         assertEquals("[4,5]", ret);
 
         try {
-            tairDoc.jsonarrTrim(jsonKey, ".id", "3", "4");
+            tairDoc.jsonarrTrim(jsonKey, ".id", 3, 4);
         } catch (Exception e) {
             if (e.getMessage().contains("ERR array index outflow")) {
                 Assert.assertTrue(true);
