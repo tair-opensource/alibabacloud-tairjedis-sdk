@@ -1,7 +1,8 @@
-package com.kvstore.jedis;
+package com.kvstore.jedis.tairdoc;
 
 import java.util.List;
 
+import com.kvstore.jedis.ModuleCommand;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 
