@@ -19,16 +19,16 @@ public class TairDocClusterTest extends TairDocTestBase {
 
     @Test
     public void jsonSetTest() {
-        String ret = tairDocCluster.jsonset(jsonKey, jsonKey, ".", JSON_STRING_EXAMPLE);
+        String ret = tairDocCluster.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE);
         assertEquals("OK", ret);
 
-        ret = tairDocCluster.jsonget(jsonKey, jsonKey, ".");
+        ret = tairDocCluster.jsonget(jsonKey, ".");
         assertEquals(JSON_STRING_EXAMPLE, ret);
 
-        ret = tairDocCluster.jsonget(jsonKey, jsonKey, ".foo");
+        ret = tairDocCluster.jsonget(jsonKey, ".foo");
         assertEquals("\"bar\"", ret);
 
-        ret = tairDocCluster.jsonget(jsonKey, jsonKey, ".baz");
+        ret = tairDocCluster.jsonget(jsonKey, ".baz");
         assertEquals("42", ret);
     }
 }
