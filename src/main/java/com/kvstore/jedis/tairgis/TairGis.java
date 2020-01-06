@@ -32,6 +32,14 @@ public class TairGis {
         return jedis;
     }
 
+    /**
+     * Add a polygon named polygonName in key.
+     * @param key    the key
+     * @param polygonName the polygonName
+     * @param polygonWktText the polygonWktText
+     * example for polygonWktText: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))'
+     * @return Success: 1; Cover old value: 0.
+     */
     public Long gisadd(final String key, final String polygonName, final String polygonWktText) {
 
         Object obj = getJedis().sendCommand(ModuleCommand.GISADD, key, polygonName, polygonWktText);
@@ -44,6 +52,12 @@ public class TairGis {
         return BuilderFactory.LONG.build(obj);
     }
 
+    /**
+     * Get a polygon named polygonName in key.
+     * @param key    the key
+     * @param polygonName the polygonName
+     * @return Success: polygonWktText; Not exist: null; Fail: error.
+     */
     public String gisget(final String key, final String polygonName) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISGET, key, polygonName);
         return BuilderFactory.STRING.build(obj);
@@ -54,6 +68,12 @@ public class TairGis {
         return BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
+    /**
+     * Find a polygon named polygonName in key.
+     * @param key    the key
+     * @param pointWktText the pointWktText
+     * @return Success: polygonWktText; Not find: null; Fail: error.
+     */
     public Map<String, String> gissearch(final String key, final String pointWktText) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISSEARCH, key, pointWktText);
         List<Object> result = (List<Object>) obj;
@@ -76,6 +96,12 @@ public class TairGis {
         }
     }
 
+    /**
+     * Judge the contain relationship for the pointWktText (point or linestring or polygonname) and the key.
+     * @param key    the key
+     * @param pointWktText the pointWktText: <POINT/LINESTRING/POLYGONNAME>
+     * @return Success: polygonWktText; Not find: null; Fail: error.
+     */
     public Map<String, String> giscontains(final String key, final String pointWktText) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISCONTAINS, key, pointWktText);
         List<Object> result = (List<Object>) obj;
@@ -98,6 +124,12 @@ public class TairGis {
         }
     }
 
+    /**
+     * Judge the intersect relationship for the pointWktText (point or linestring or polygonname) and the key.
+     * @param key    the key
+     * @param pointWktText the pointWktText: <POINT/LINESTRING/POLYGONNAME>
+     * @return Success: polygonWktText; Not find: null; Fail: error.
+     */
     public Map<String, String> gisintersects(final String key, final String pointWktText) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISINTERSECTS, key, pointWktText);
         List<Object> result =  (List<Object>) obj;
@@ -120,6 +152,12 @@ public class TairGis {
         }
     }
 
+    /**
+     * Delete a polygon named polygonName in key.
+     * @param key    the key
+     * @param polygonName the pointWktText
+     * @return Success: OK; Not exist: null; Fail: error.
+     */
     public String gisdel(final String key, final String polygonName) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISDEL, key, polygonName);
         return BuilderFactory.STRING.build(obj);
