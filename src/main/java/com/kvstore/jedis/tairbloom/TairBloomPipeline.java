@@ -3,6 +3,7 @@ package com.kvstore.jedis.tairbloom;
 import com.kvstore.jedis.ModuleCommand;
 import com.kvstore.jedis.tairbloom.factory.BloomBuilderFactory;
 import com.kvstore.jedis.tairbloom.params.BfinsertParams;
+import com.kvstore.jedis.tairbloom.params.BfmaddParams;
 import com.kvstore.jedis.tairbloom.params.BfmexistParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
@@ -36,13 +37,15 @@ public class TairBloomPipeline extends Pipeline {
         return getResponse(BuilderFactory.BOOLEAN);
     }
 
-    public Response<Boolean[]> bfmadd(String... args) {
-        getClient("").sendCommand(ModuleCommand.BFMADD, args);
+    public Response<Boolean[]> bfmadd(String key, String... items) {
+        BfmaddParams params = new BfmaddParams();
+        getClient("").sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 
-    public Response<Boolean[]> bfmadd(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.BFMADD, args);
+    public Response<Boolean[]> bfmadd(byte[] key, byte[]... items) {
+        BfmaddParams params = new BfmaddParams();
+        getClient("").sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 

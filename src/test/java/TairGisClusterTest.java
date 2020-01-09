@@ -16,16 +16,12 @@ public class TairGisClusterTest extends TairGisTestBase{
 
     String area;
     byte[] barea;
-    private String jsonKey;
-    private byte[] bjsonKey;
 
     private static final String EXGIS_BIGKEY = "EXGIS_BIGKEY";
 
     public TairGisClusterTest() {
         area = "area" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         barea = ("barea" +Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
-        jsonKey = "jsonkey" + "-" + Thread.currentThread().getName() + "-" + UUID.randomUUID().toString();
-        bjsonKey = ("bjsonkey" + "-" + Thread.currentThread().getName() + "-" + UUID.randomUUID().toString()).getBytes();
     }
 
     @Test
@@ -40,29 +36,29 @@ public class TairGisClusterTest extends TairGisTestBase{
                 polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
 
         // String
-        updated = tairGisCluster.gisadd(jsonKey, area, polygonName, polygonWktText);
+        updated = tairGisCluster.gisadd(area, polygonName, polygonWktText);
         AssertUtil.assertEquals(1, updated);
 
         polygon = (Polygon)reader.read(polygonWktText);
-        retWktText = tairGisCluster.gisget(jsonKey, area, polygonName);
+        retWktText = tairGisCluster.gisget(area, polygonName);
         retPolygon = (Polygon)reader.read(retWktText);
         AssertUtil.assertTrue(polygon.equals(retPolygon));
 
-        Map<String, String> searchResults = tairGisCluster.gissearch(jsonKey, area, pointWktText);
+        Map<String, String> searchResults = tairGisCluster.gissearch(area, pointWktText);
         AssertUtil.assertEquals(1, searchResults.size());
         AssertUtil.assertTrue(searchResults.containsKey(polygonName));
         AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
 
         // binary
-        updated = tairGisCluster.gisadd(bjsonKey, barea, polygonName.getBytes(), polygonWktText.getBytes());
+        updated = tairGisCluster.gisadd(barea, polygonName.getBytes(), polygonWktText.getBytes());
         AssertUtil.assertEquals(1, updated);
 
         polygon = (Polygon)reader.read(polygonWktText);
-        bretWktText = tairGisCluster.gisget(bjsonKey, barea, polygonName.getBytes());
+        bretWktText = tairGisCluster.gisget(barea, polygonName.getBytes());
         retPolygon = (Polygon)reader.read(new String(bretWktText));
         AssertUtil.assertTrue(polygon.equals(retPolygon));
 
-        Map<byte[], byte[]> bsearchResults = tairGisCluster.gissearch(bjsonKey, barea, pointWktText.getBytes());
+        Map<byte[], byte[]> bsearchResults = tairGisCluster.gissearch(barea, pointWktText.getBytes());
         AssertUtil.assertEquals(1, bsearchResults.size());
         AssertUtil.assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
         AssertUtil.assertEquals(true, Arrays.equals(retWktText.getBytes(), bsearchResults.get(polygonName.getBytes())));
@@ -77,21 +73,21 @@ public class TairGisClusterTest extends TairGisTestBase{
         String polygonName1 = "alibaba-aliyun";
         String polygonWktText1 = "POLYGON((30 10,40 40))";
 
-        long l = tairGisCluster.gisadd(jsonKey, key, polygonName, polygonWktText);
+        long l = tairGisCluster.gisadd(key, polygonName, polygonWktText);
         AssertUtil.assertEquals(l, 1);
-        l = tairGisCluster.gisadd(jsonKey, key, polygonName1, polygonWktText1);
+        l = tairGisCluster.gisadd(key, polygonName1, polygonWktText1);
         AssertUtil.assertEquals(l, 1);
 
-        String retWktText = tairGisCluster.gisget(jsonKey, key, polygonName);
+        String retWktText = tairGisCluster.gisget(key, polygonName);
         AssertUtil.assertEquals(polygonWktText, retWktText);
 
-        String ret = tairGisCluster.gisdel(jsonKey, key, polygonName);
+        String ret = tairGisCluster.gisdel(key, polygonName);
         AssertUtil.assertEquals("OK", ret);
 
-        String retWktText1 = tairGisCluster.gisget(jsonKey, key, polygonName1);
+        String retWktText1 = tairGisCluster.gisget(key, polygonName1);
         AssertUtil.assertEquals(polygonWktText1, retWktText1);
 
-        Map<String, String> retMap = tairGisCluster.gissearch(jsonKey, key, polygonWktText1);
+        Map<String, String> retMap = tairGisCluster.gissearch(key, polygonWktText1);
         AssertUtil.assertEquals(1, retMap.size());
         AssertUtil.assertEquals(retMap.containsKey(polygonName1), true);
         AssertUtil.assertEquals(polygonWktText1, retMap.get(polygonName1));
@@ -103,7 +99,7 @@ public class TairGisClusterTest extends TairGisTestBase{
         String key = "hangzhou" + uuid;
         String polygonName = "alibaba-xixi-campus";
 
-        AssertUtil.assertEquals(null, tairGisCluster.gisdel(jsonKey, key, polygonName));
+        AssertUtil.assertEquals(null, tairGisCluster.gisdel(key, polygonName));
     }
 
     @Test
@@ -113,10 +109,10 @@ public class TairGisClusterTest extends TairGisTestBase{
         String polygonName = "alibaba-xixi-campus";
         String polygonWktText = "POLYGON((30 10,40 40,20 40,10 20,30 10))";
 
-        long l = tairGisCluster.gisadd(jsonKey, key, polygonName, polygonWktText);
+        long l = tairGisCluster.gisadd(key, polygonName, polygonWktText);
         AssertUtil.assertEquals(l, 1);
 
-        String ret = tairGisCluster.gisdel(jsonKey, key, "not-exists-polygon");
+        String ret = tairGisCluster.gisdel(key, "not-exists-polygon");
         AssertUtil.assertEquals(null, ret);
     }
 
@@ -128,7 +124,7 @@ public class TairGisClusterTest extends TairGisTestBase{
         String polygonWktText = "POLYGON((30 10,40 40,20 40,10 20,30 10))";
 
         try {
-            tairGisCluster.gisdel(jsonKey, key, "not-exists-polygon");
+            tairGisCluster.gisdel(key, "not-exists-polygon");
         } catch (Exception e) {
             if (!e.getMessage().contains("WRONGTYPE")) {
                 AssertUtil.fail("incorrect exception message: " + e.getMessage());
@@ -154,7 +150,7 @@ public class TairGisClusterTest extends TairGisTestBase{
         polygonWktText += "))";
 
         String polygonName = UUID.randomUUID().toString();
-        long updated = tairGisCluster.gisadd(jsonKey, EXGIS_BIGKEY, polygonName, polygonWktText);
+        long updated = tairGisCluster.gisadd(EXGIS_BIGKEY, polygonName, polygonWktText);
         AssertUtil.assertEquals(1, updated);
     }
 
@@ -164,16 +160,16 @@ public class TairGisClusterTest extends TairGisTestBase{
         String linestringWktText = "LINESTRING (10 10, 40 40)";
         String polygonWktText = "POLYGON ((31 20, 29 20, 29 21, 31 31))";
 
-        tairGisCluster.gissearch(jsonKey, EXGIS_BIGKEY, pointWktText);
-        tairGisCluster.giscontains(jsonKey, EXGIS_BIGKEY, pointWktText);
-        tairGisCluster.gisintersects(jsonKey, EXGIS_BIGKEY, pointWktText);
+        tairGisCluster.gissearch(EXGIS_BIGKEY, pointWktText);
+        tairGisCluster.giscontains(EXGIS_BIGKEY, pointWktText);
+        tairGisCluster.gisintersects(EXGIS_BIGKEY, pointWktText);
 
-        tairGisCluster.gissearch(jsonKey, EXGIS_BIGKEY, linestringWktText);
-        tairGisCluster.giscontains(jsonKey, EXGIS_BIGKEY, linestringWktText);
-        tairGisCluster.gisintersects(jsonKey, EXGIS_BIGKEY, linestringWktText);
+        tairGisCluster.gissearch(EXGIS_BIGKEY, linestringWktText);
+        tairGisCluster.giscontains(EXGIS_BIGKEY, linestringWktText);
+        tairGisCluster.gisintersects(EXGIS_BIGKEY, linestringWktText);
 
-        tairGisCluster.gissearch(jsonKey, EXGIS_BIGKEY, polygonWktText);
-        tairGisCluster.giscontains(jsonKey, EXGIS_BIGKEY, polygonWktText);
-        tairGisCluster.gisintersects(jsonKey, EXGIS_BIGKEY, polygonWktText);
+        tairGisCluster.gissearch(EXGIS_BIGKEY, polygonWktText);
+        tairGisCluster.giscontains(EXGIS_BIGKEY, polygonWktText);
+        tairGisCluster.gisintersects(EXGIS_BIGKEY, polygonWktText);
     }
 }

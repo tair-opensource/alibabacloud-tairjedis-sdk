@@ -1,5 +1,8 @@
 import org.junit.Test;
+import redis.clients.jedis.util.SafeEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;

@@ -29,5 +29,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>  
-  <contributors><contributor><properties><provider>bodong.ybd@alibaba-inc.com</provider><codeName>null</codeName><codeUrl>git@gitlab.alibaba-inc.com:tair3.0/kvstore-jedis.git commit:1c82845</codeUrl><description>contributors added by SCM Plugin, please don't modify it!</description></properties></contributor></contributors>
 </project>

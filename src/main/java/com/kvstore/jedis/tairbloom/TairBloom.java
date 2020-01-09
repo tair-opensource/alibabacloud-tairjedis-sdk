@@ -3,13 +3,17 @@ package com.kvstore.jedis.tairbloom;
 import com.kvstore.jedis.ModuleCommand;
 import com.kvstore.jedis.tairbloom.factory.BloomBuilderFactory;
 import com.kvstore.jedis.tairbloom.params.BfinsertParams;
+import com.kvstore.jedis.tairbloom.params.BfmaddParams;
 import com.kvstore.jedis.tairbloom.params.BfmexistParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.SafeEncoder;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
@@ -73,17 +77,19 @@ public class TairBloom {
 
     /**
      * Add items to bloomfilter.
-     *
-     * @param args the args: key item [item...]
+     * @param key  the key
+     * @param items the items: item [item...]
      * @return Boolean array; Success: true, fail: false
      */
-    public Boolean[] bfmadd(String... args) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMADD, args);
+    public Boolean[] bfmadd(String key, String... items) {
+        BfmaddParams params = new BfmaddParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
         return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
     }
 
-    public Boolean[] bfmadd(byte[]... args) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMADD, args);
+    public Boolean[] bfmadd(byte[] key, byte[]... items) {
+        BfmaddParams params = new BfmaddParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
         return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
     }
 
@@ -108,18 +114,18 @@ public class TairBloom {
      * find if the items in bloomfilter.
      *
      * @param key  the key
-     * @param item the item: item [item...]
+     * @param items the items: item [item...]
      * @return Boolean array; Success: true, fail: false
      */
-    public Boolean[] bfmexists(String key, String... item) {
+    public Boolean[] bfmexists(String key, String... items) {
         BfmexistParams params = new BfmexistParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, item));
+        Object obj = getJedis().sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, items));
         return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
     }
 
-    public Boolean[] bfmexists(byte[] key, byte[]... item) {
+    public Boolean[] bfmexists(byte[] key, byte[]... items) {
         BfmexistParams params = new BfmexistParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, item));
+        Object obj = getJedis().sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, items));
         return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
     }
 

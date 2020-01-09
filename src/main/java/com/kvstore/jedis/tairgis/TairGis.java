@@ -34,8 +34,8 @@ public class TairGis {
 
     /**
      * Add a polygon named polygonName in key.
-     * @param key    the key
-     * @param polygonName the polygonName
+     * @param key            the key
+     * @param polygonName    the polygonName
      * @param polygonWktText the polygonWktText
      * example for polygonWktText: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))'
      * @return Success: 1; Cover old value: 0.
@@ -54,7 +54,7 @@ public class TairGis {
 
     /**
      * Get a polygon named polygonName in key.
-     * @param key    the key
+     * @param key         the key
      * @param polygonName the polygonName
      * @return Success: polygonWktText; Not exist: null; Fail: error.
      */
@@ -70,7 +70,7 @@ public class TairGis {
 
     /**
      * Find a polygon named polygonName in key.
-     * @param key    the key
+     * @param key          the key
      * @param pointWktText the pointWktText
      * @return Success: polygonWktText; Not find: null; Fail: error.
      */
@@ -98,7 +98,7 @@ public class TairGis {
 
     /**
      * Judge the contain relationship for the pointWktText (point or linestring or polygonname) and the key.
-     * @param key    the key
+     * @param key          the key
      * @param pointWktText the pointWktText: <POINT/LINESTRING/POLYGONNAME>
      * @return Success: polygonWktText; Not find: null; Fail: error.
      */
@@ -126,7 +126,7 @@ public class TairGis {
 
     /**
      * Judge the intersect relationship for the pointWktText (point or linestring or polygonname) and the key.
-     * @param key    the key
+     * @param key          the key
      * @param pointWktText the pointWktText: <POINT/LINESTRING/POLYGONNAME>
      * @return Success: polygonWktText; Not find: null; Fail: error.
      */
@@ -154,7 +154,7 @@ public class TairGis {
 
     /**
      * Delete a polygon named polygonName in key.
-     * @param key    the key
+     * @param key         the key
      * @param polygonName the pointWktText
      * @return Success: OK; Not exist: null; Fail: error.
      */

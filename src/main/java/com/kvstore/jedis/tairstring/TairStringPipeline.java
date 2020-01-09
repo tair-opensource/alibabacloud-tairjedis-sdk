@@ -1,6 +1,7 @@
 package com.kvstore.jedis.tairstring;
 
 import com.kvstore.jedis.ModuleCommand;
+import com.kvstore.jedis.tairstring.params.CasParams;
 import com.kvstore.jedis.tairstring.params.ExincrbyFloatParams;
 import com.kvstore.jedis.tairstring.params.ExincrbyParams;
 import com.kvstore.jedis.tairstring.params.ExsetParams;
@@ -19,23 +20,31 @@ import static redis.clients.jedis.Protocol.toByteArray;
  * @date 2019/12/16
  */
 public class TairStringPipeline extends Pipeline {
-    public Response<Long> cas(String... args) {
-        getClient("").sendCommand(ModuleCommand.CAS, args);
+
+    public Response<Long> cas(String key, String oldvalue, String newvalue) {
+        return cas(SafeEncoder.encode(key), SafeEncoder.encode(oldvalue), SafeEncoder.encode(newvalue));
+    }
+
+    public Response<Long> cas(byte[] key, byte[] oldvalue, byte[] newvalue) {
+        getClient("").sendCommand(ModuleCommand.CAS, key, oldvalue, newvalue);
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> cas(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.CAS, args);
+    public Response<Long> cas(String key, String oldvalue, String newvalue, CasParams params) {
+        return cas(SafeEncoder.encode(key), SafeEncoder.encode(oldvalue), SafeEncoder.encode(newvalue), params);
+    }
+
+    public Response<Long> cas(byte[] key, byte[] oldvalue, byte[] newvalue, CasParams params) {
+        getClient("").sendCommand(ModuleCommand.CAS, params.getByteParams(key, oldvalue, newvalue));
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> cad(String... args) {
-        getClient("").sendCommand(ModuleCommand.CAD, args);
-        return getResponse(BuilderFactory.LONG);
+    public Response<Long> cad(String key, String value) {
+        return cad(SafeEncoder.encode(key), SafeEncoder.encode(value));
     }
 
-    public Response<Long> cad(byte[]... args) {
-        getClient("").sendCommand(ModuleCommand.CAD, args);
+    public Response<Long> cad(byte[] key, byte[] value) {
+        getClient("").sendCommand(ModuleCommand.CAD, key, value);
         return getResponse(BuilderFactory.LONG);
     }
 
