@@ -19,30 +19,30 @@ public class TairGisCluster {
         this.jc = jc;
     }
 
-    public Long gisadd(String sampleKey, final String key, final String polygonName, final String polygonWktText) {
+    public Long gisadd(final String key, final String polygonName, final String polygonWktText) {
 
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISADD, key, polygonName, polygonWktText);
+        Object obj = jc.sendCommand(key, ModuleCommand.GISADD, key, polygonName, polygonWktText);
         return BuilderFactory.LONG.build(obj);
     }
 
-    public Long gisadd(byte[] sampleKey, final byte[] key, final byte[] polygonName, final byte[] polygonWktText) {
+    public Long gisadd(final byte[] key, final byte[] polygonName, final byte[] polygonWktText) {
 
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISADD, key, polygonName, polygonWktText);
+        Object obj = jc.sendCommand(key, ModuleCommand.GISADD, key, polygonName, polygonWktText);
         return BuilderFactory.LONG.build(obj);
     }
 
-    public String gisget(String sampleKey, final String key, final String polygonName) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISGET, key, polygonName);
+    public String gisget(final String key, final String polygonName) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISGET, key, polygonName);
         return BuilderFactory.STRING.build(obj);
     }
 
-    public byte[] gisget(byte[] sampleKey, final byte[] key, final byte[] polygonName) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISGET, key, polygonName);
+    public byte[] gisget(final byte[] key, final byte[] polygonName) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISGET, key, polygonName);
         return BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
-    public Map<String, String> gissearch(String sampleKey, final String key, final String pointWktText) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISSEARCH, key, pointWktText);
+    public Map<String, String> gissearch(final String key, final String pointWktText) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISSEARCH, key, pointWktText);
         List<Object> result = (List<Object>) obj;
         if (null == result || 0 == result.size()) {
             return new HashMap<String, String>();
@@ -52,8 +52,8 @@ public class TairGisCluster {
         }
     }
 
-    public Map<byte[], byte[]> gissearch(byte[] sampleKey, final byte[] key, final byte[] pointWktText) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISSEARCH, key, pointWktText);
+    public Map<byte[], byte[]> gissearch(final byte[] key, final byte[] pointWktText) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISSEARCH, key, pointWktText);
         List<Object> result = (List<Object>) obj;
         if (null == result || 0 == result.size()) {
             return new HashMap<byte[], byte[]>();
@@ -63,8 +63,8 @@ public class TairGisCluster {
         }
     }
 
-    public Map<String, String> giscontains(String sampleKey, final String key, final String pointWktText) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISCONTAINS, key, pointWktText);
+    public Map<String, String> giscontains(final String key, final String pointWktText) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISCONTAINS, key, pointWktText);
         List<Object> result = (List<Object>) obj;
         if (null == result || 0 == result.size()) {
             return new HashMap<String, String>();
@@ -74,8 +74,8 @@ public class TairGisCluster {
         }
     }
 
-    public Map<byte[], byte[]> giscontains(byte[] sampleKey, final byte[] key, final byte[] pointWktText) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISCONTAINS, key, pointWktText);
+    public Map<byte[], byte[]> giscontains(final byte[] key, final byte[] pointWktText) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISCONTAINS, key, pointWktText);
         List<Object> result = (List<Object>) obj;
         if (null == result || 0 == result.size()) {
             return new HashMap<byte[], byte[]>();
@@ -85,8 +85,8 @@ public class TairGisCluster {
         }
     }
 
-    public Map<String, String> gisintersects(String sampleKey, final String key, final String pointWktText) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISINTERSECTS, key, pointWktText);
+    public Map<String, String> gisintersects(final String key, final String pointWktText) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISINTERSECTS, key, pointWktText);
         List<Object> result =  (List<Object>) obj;
         if (null == result || 0 == result.size()) {
             return new HashMap<String, String>();
@@ -96,8 +96,8 @@ public class TairGisCluster {
         }
     }
 
-    public Map<byte[], byte[]> gisintersects(byte[] sampleKey, final byte[] key, final byte[] pointWktText) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISINTERSECTS, key, pointWktText);
+    public Map<byte[], byte[]> gisintersects(final byte[] key, final byte[] pointWktText) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISINTERSECTS, key, pointWktText);
         List<Object> result =  (List<Object>) obj;
         if (null == result || 0 == result.size()) {
             return new HashMap<byte[], byte[]>();
@@ -107,13 +107,13 @@ public class TairGisCluster {
         }
     }
 
-    public String gisdel(String sampleKey, final String key, final String polygonName) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISDEL, key, polygonName);
+    public String gisdel(final String key, final String polygonName) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISDEL, key, polygonName);
         return BuilderFactory.STRING.build(obj);
     }
 
-    public byte[] gisdel(byte[] sampleKey, final byte[] key, final byte[] polygonName) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.GISDEL, key, polygonName);
+    public byte[] gisdel(final byte[] key, final byte[] polygonName) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISDEL, key, polygonName);
         return BuilderFactory.BYTE_ARRAY.build(obj);
     }
 }
