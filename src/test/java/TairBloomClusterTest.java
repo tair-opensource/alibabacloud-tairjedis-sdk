@@ -4,10 +4,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @author dwan
- * @date 2019/12/26
- */
 public class TairBloomClusterTest extends TairBloomTestBase {
     private String bbf;
     private byte[] bcf = "bcf".getBytes();

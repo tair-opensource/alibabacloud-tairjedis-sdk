@@ -8,10 +8,6 @@ import redis.clients.jedis.Response;
 
 import java.util.*;
 
-/**
- * @author dwan
- * @date 2019/12/26
- */
 public class TairGisPipelineTest extends TairGisTestBase{
 
     String area;

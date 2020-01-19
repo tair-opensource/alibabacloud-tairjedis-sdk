@@ -1,9 +1,6 @@
-import com.kvstore.jedis.tairhash.TairHash;
-import com.kvstore.jedis.tairhash.TairHashCluster;
-import com.kvstore.jedis.tairhash.TairHashPipeline;
-import com.kvstore.jedis.tairstring.TairString;
-import com.kvstore.jedis.tairstring.TairStringCluster;
-import com.kvstore.jedis.tairstring.TairStringPipeline;
+import com.aliyun.tairjedis.tairhash.TairHash;
+import com.aliyun.tairjedis.tairhash.TairHashCluster;
+import com.aliyun.tairjedis.tairhash.TairHashPipeline;
 import org.junit.BeforeClass;
 
 public class TairHashTestBase extends TestBase {

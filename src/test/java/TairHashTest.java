@@ -12,9 +12,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import com.kvstore.jedis.tairhash.params.ExhgetwithverResult;
-import com.kvstore.jedis.tairhash.params.ExhmsetwithoptsParams;
-import com.kvstore.jedis.tairhash.params.ExhsetParams;
+import com.aliyun.tairjedis.tairhash.params.ExhgetwithverResult;
+import com.aliyun.tairjedis.tairhash.params.ExhmsetwithoptsParams;
+import com.aliyun.tairjedis.tairhash.params.ExhsetParams;
 import org.junit.Assert;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
@@ -28,10 +28,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-/**
- * @author bodong.ybd
- * @date 2019/12/30
- */
 public class TairHashTest extends TairHashTestBase {
     String foo;
     byte[] bfoo = {0x01, 0x02, 0x03, 0x04};

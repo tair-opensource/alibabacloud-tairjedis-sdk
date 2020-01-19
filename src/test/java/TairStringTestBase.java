@@ -1,14 +1,7 @@
-import com.kvstore.jedis.tairstring.TairString;
-import com.kvstore.jedis.tairstring.TairStringCluster;
-import com.kvstore.jedis.tairstring.TairStringPipeline;
-import org.junit.AfterClass;
+import com.aliyun.tairjedis.tairstring.TairString;
+import com.aliyun.tairjedis.tairstring.TairStringCluster;
+import com.aliyun.tairjedis.tairstring.TairStringPipeline;
 import org.junit.BeforeClass;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class TairStringTestBase extends TestBase {
 

@@ -8,10 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-/**
- * @author dwan
- * @date 2019/12/26
- */
 public class TairGisClusterTest extends TairGisTestBase{
 
     String area;

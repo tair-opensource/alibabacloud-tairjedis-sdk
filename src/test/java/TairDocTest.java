@@ -1,17 +1,13 @@
 import java.util.UUID;
 
-import com.kvstore.jedis.tairdoc.params.JsongetParams;
-import com.kvstore.jedis.tairdoc.params.JsonsetParams;
+import com.aliyun.tairjedis.tairdoc.params.JsongetParams;
+import com.aliyun.tairjedis.tairdoc.params.JsonsetParams;
 import org.junit.Assert;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 
-/**
- * @author bodong.ybd
- * @date 2019/12/17
- */
 public class TairDocTest extends TairDocTestBase {
     private String jsonKey;
     private static final String JSON_STRING_EXAMPLE = "{\"foo\":\"bar\",\"baz\":42}";

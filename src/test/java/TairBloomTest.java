@@ -7,10 +7,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @author dwan
- * @date 2019/12/26
- */
 public class TairBloomTest extends TairBloomTestBase {
     private String bbf;
     private byte[] bcf = "bcf".getBytes();

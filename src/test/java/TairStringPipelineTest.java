@@ -1,8 +1,8 @@
-import com.kvstore.jedis.tairstring.params.ExincrbyFloatParams;
-import com.kvstore.jedis.tairstring.params.ExincrbyParams;
-import com.kvstore.jedis.tairstring.params.ExsetParams;
-import com.kvstore.jedis.tairstring.results.ExcasResult;
-import com.kvstore.jedis.tairstring.results.ExgetResult;
+import com.aliyun.tairjedis.tairstring.params.ExincrbyFloatParams;
+import com.aliyun.tairjedis.tairstring.params.ExincrbyParams;
+import com.aliyun.tairjedis.tairstring.params.ExsetParams;
+import com.aliyun.tairjedis.tairstring.results.ExcasResult;
+import com.aliyun.tairjedis.tairstring.results.ExgetResult;
 import org.junit.Test;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -13,10 +13,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @author dwan
- * @date 2019/12/18
- */
 public class TairStringPipelineTest extends TairStringTestBase {
     private String key1;
     private String value1;

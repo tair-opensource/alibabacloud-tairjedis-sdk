@@ -1,15 +1,8 @@
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
 
-import com.kvstore.jedis.tairdoc.TairDoc;
-import com.kvstore.jedis.tairdoc.TairDocCluster;
-import com.kvstore.jedis.tairdoc.TairDocPipeline;
-
-import java.util.HashSet;
-import java.util.Set;
+import com.aliyun.tairjedis.tairdoc.TairDoc;
+import com.aliyun.tairjedis.tairdoc.TairDocCluster;
+import com.aliyun.tairjedis.tairdoc.TairDocPipeline;
 
 public class TairDocTestBase extends TestBase {
 

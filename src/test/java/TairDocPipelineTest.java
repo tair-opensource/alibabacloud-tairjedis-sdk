@@ -1,8 +1,7 @@
 import java.util.List;
 import java.util.UUID;
 
-import com.kvstore.jedis.tairdoc.params.JsonsetParams;
-import org.junit.Assert;
+import com.aliyun.tairjedis.tairdoc.params.JsonsetParams;
 import org.junit.Test;
 import redis.clients.jedis.exceptions.JedisDataException;
 
@@ -10,10 +9,6 @@ import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author bodong.ybd
- * @date 2019/12/17
- */
 public class TairDocPipelineTest extends TairDocTestBase {
     private String jsonKey;
     private static final String JSON_STRING_EXAMPLE = "{\"foo\":\"bar\",\"baz\":42}";
