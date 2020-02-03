@@ -1,6 +1,6 @@
 # alibabacloud-tairjedis-sdk
 
-alibabacloud-tairjedis-sdk是基于[Jedis](https://github.com/xetorthio/jedis)封装的，操作[云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) Moule数据结构的客户端，主要包含下列功能：
+alibabacloud-tairjedis-sdk是基于[Jedis](https://github.com/xetorthio/jedis)封装的，操作[云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) Module数据结构的客户端，主要包含下列功能：
 
 - 支持普通命令
 - 支持Pipeline
