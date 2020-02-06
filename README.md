@@ -1,10 +1,27 @@
-# alibabacloud-tairjedis-sdk
+![](https://aliyunsdk-pages.alicdn.com/icons/AlibabaCloud.svg)
 
-alibabacloud-tairjedis-sdk是基于[Jedis](https://github.com/xetorthio/jedis)封装的，操作[云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) Module数据结构的客户端，主要包含下列功能：
+# 概述
 
-- 支持普通命令
-- 支持Pipeline
-- 支持Cluster
+alibabacloud-tairjedis-sdk是基于[Jedis](https://github.com/xetorthio/jedis)封装的，操作[云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) 的客户端，主要包含下列功能：
+
+- 支持企业版多种[Module](https://help.aliyun.com/document_detail/146579.html)的操作命令
+- 支持Redis原生集群下mset/mget/del命令【未完成】
+
+# 安装方法
+
+```
+<dependency>
+  <groupId>com.aliyun.tair</groupId>
+  <artifactId>alibabacloud-tairjedis-sdk</artifactId>
+  <version>1.0.0（建议使用最新版本）</version>
+</dependency>
+```
+
+最新版本查阅：[这里](https://oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)
+
+# 快速使用
+
+文档地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
 
 初始化
 ```
@@ -102,11 +119,91 @@ Cluster
     }
 ```
 
-# 原理
+# 代码示例
 
-使用Jedis sendCommand接口，发送原生的Redis协议到引擎执行。
+## 分布式锁
 
-# 限制
+加锁：redis set with nx，and expire time  
+解锁：cad(compare and delete) instead of lua
+```
+public class DistributeLock {
+    private TairString tairString;
+    private Jedis jedis;
 
-Jedis版本 >= 3.1.0 (受限于Jedis sendCommand接口提供的版本)
-如果用户自己依赖了Jedis，需要升级或者排除。
+    public DistributeLock(Jedis j) {
+        jedis = j;
+        tairString = new TairString(j);
+    }
+
+    public boolean tryGetDistributedLock(String lockKey, String requestId, int expireTime) {
+        try {
+            String result = jedis.set(lockKey, requestId, SetParams.setParams().nx().ex(expireTime));
+            if ("OK".equals(result)) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean releaseDistributedLock(String lockKey, String requestId) {
+        try {
+            Long ret = tairString.cad(lockKey, requestId);
+            if (1 == ret) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}
+```
+
+## TairDoc示例
+
+将学生信息存储为JSON格式，直接通过path更新部分JSON对象，并给年龄+1。
+```
+public class TairDocTest {
+    private static TairDoc tairDoc;
+
+    public static void main(String[] args) {
+        Jedis jedis = new Jedis("127.0.0.1", 6379);
+        tairDoc = new TairDoc(jedis);
+
+        Student student = new Student("Tom", 18);
+
+        // 存储
+        tairDoc.jsonset("tominfo", ".", JSON.toJSONString(student));
+
+        // 更新姓名为Danny, 年龄+1
+        tairDoc.jsonset("tominfo", ".name", "\"Danny\"");
+        tairDoc.jsonnumincrBy("tominfo", ".age", 2.0);
+
+        // 重新获取
+        String tomInfo = tairDoc.jsonget("tominfo");
+        System.out.println(tomInfo);
+
+        jedis.close();
+    }
+
+    static class Student {
+        private String name;
+        private int age;
+
+        Student(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+    }
+}
+```
