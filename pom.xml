@@ -1,27 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">  
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.aliyun</groupId>
-  <artifactId>alibabacloud-tairjedis-sdk</artifactId>
-  <version>1.0.0</version>
-  <dependencies> 
-    <dependency> 
-      <groupId>redis.clients</groupId>  
-      <artifactId>jedis</artifactId>  
-      <version>3.1.0</version> 
-    </dependency>
-    <dependency> 
-      <groupId>junit</groupId>  
-      <artifactId>junit</artifactId>  
-      <version>4.12</version>  
-      <scope>test</scope> 
-    </dependency>
-    <dependency>
-      <groupId>org.locationtech.jts</groupId>
-      <artifactId>jts-core</artifactId>
-      <version>1.15.0</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.aliyun.tair</groupId>
+    <artifactId>alibabacloud-tairjedis-sdk</artifactId>
+    <version>1.0.0</version>
+    <name>alibabacloud-tairjedis-sdk</name>
+    <description>alibabacloud tair 3.0 redis-enterprise client</description>
+    <url>https://github.com/aliyun/alibabacloud-tairjedis-sdk</url>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.15.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <scm>
+        <url>https://github.com/aliyun/alibabacloud-tairjedis-sdk</url>
+        <connection>https://github.com/aliyun/alibabacloud-tairjedis-sdk.git</connection>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
 </project>
