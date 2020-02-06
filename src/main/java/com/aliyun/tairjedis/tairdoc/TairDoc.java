@@ -23,7 +23,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.SET <key> <path> <json> [NX|XX]
+     * JSON.SET key path json NX|XX
      * Sets the JSON value at `path` in `key`
      *
      * For new Redis keys the `path` must be the root. For existing keys, when the entire `path` exists,
@@ -57,7 +57,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.GET <key> [PATH] [FORMAT <XML/YAML>] [ROOTNAME <root>] [ARRNAME <arr>]
+     * JSON.GET key PATH FORMAT XML/YAML ROOTNAME root ARRNAME arr
      * Return the value at `path` in JSON serialized form.
      *
      * `PATH` the path of json
@@ -100,7 +100,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.MGET <key> [<key> ...] <path>
+     * JSON.MGET key... path
      * Returns the values at `path` from multiple `key`s. Non-existing keys and non-existing paths
      * are reported as null.
      * Reply: Array of Bulk Strings, specifically the JSON serialization of
@@ -117,7 +117,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.DEL <key> [path]
+     * JSON.DEL key path
      * Delete a value.
      *
      * `path` defaults to root if not provided. Non-existing keys as well as non-existing paths are
@@ -146,7 +146,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.TYPE <key> [path]
+     * JSON.TYPE key path
      * Reports the type of JSON value at `path`.
      * `path` defaults to root if not provided. If the `key` or `path` do not exist, null is returned.
      * Reply: Simple string, specifically the type.
@@ -172,9 +172,9 @@ public class TairDoc {
     }
 
     /**
-     * JSON.NUMICRBY <key> [path] <value>
-     * long value range: [-2^53, 2^53] [-9007199254740992, 9007199254740992]
-     * double value range: [Double.MIN_VALUE, Double.MAX_VALUE]
+     * JSON.NUMICRBY key path value
+     * long value range: -2^53, 2^53, -9007199254740992, 9007199254740992
+     * double value range: Double.MIN_VALUE, Double.MAX_VALUE
      *
      * Increments the value stored under `path` by `value`.
      * `path` must exist path and must be a number value.
@@ -202,7 +202,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.STRAPPEND <key> [path] <json-string>
+     * JSON.STRAPPEND key path json-string
      * Append the `json-string` value(s) the string at `path`.
      * `path` defaults to root if not provided.
      * Reply: Integer, -1 : key not exists, other: specifically the string's new length.
@@ -228,7 +228,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.STRLEN <key> [path]
+     * JSON.STRLEN key path
      * Report the length of the JSON value at `path` in `key`.
      *
      * `path` defaults to root if not provided. If the `key` or `path` do not exist, null is returned.
@@ -256,7 +256,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.ARRAPPEND <key> <path> <json> [<json> ...]
+     * JSON.ARRAPPEND key path json...
      * Append the `json` value(s) into the array at `path` after the last element in it.
      * Reply: Integer, specifically the array's new size
      */
@@ -271,7 +271,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.ARRPOP <key> <path> [index]
+     * JSON.ARRPOP key path index
      * Remove and return element from the index in the array.
      *
      * `path` the array pointer. `index` is the position in the array to start
@@ -301,7 +301,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.ARRINSERT <key> <path> <index> <json> [<json> ...]
+     * JSON.ARRINSERT key path index json...
      * Insert the `json` value(s) into the array at `path` before the `index` (shifts to the right).
      *
      * The index must be in the array's range. Inserting at `index` 0 prepends to the array.
@@ -320,7 +320,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.ARRLEN <key> [path]
+     * JSON.ARRLEN key path
      * Report the length of the array at `path` in `key`.
      *
      * `path` defaults to root if not provided. If the `key` or `path` do not exist, null is returned.
@@ -348,7 +348,7 @@ public class TairDoc {
     }
 
     /**
-     * JSON.ARRTRIM <key> <path> <start> <stop>
+     * JSON.ARRTRIM key path start stop
      * Trim an array so that it contains only the specified inclusive range of elements.
      *
      * Reply: Integer, specifically the array's new size.

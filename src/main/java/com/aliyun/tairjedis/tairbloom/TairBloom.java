@@ -25,7 +25,7 @@ public class TairBloom {
     }
 
     /**
-     * Create a empty bloomfilter with the initCapacity & errorRate.
+     * Create a empty bloomfilter with the initCapacity and errorRate.
      *
      * @param key          the key
      * @param initCapacity the initCapacity

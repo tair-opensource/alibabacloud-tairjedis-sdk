@@ -90,7 +90,7 @@ public class TairGis {
      * Judge the contain relationship for the pointWktText (point or linestring or polygonname) and the key.
      *
      * @param key          the key
-     * @param pointWktText the pointWktText: <POINT/LINESTRING/POLYGONNAME>
+     * @param pointWktText the pointWktText: POINT/LINESTRING/POLYGONNAME
      * @return Success: polygonWktText; Not find: null; Fail: error.
      */
     public Map<String, String> giscontains(final String key, final String pointWktText) {
@@ -119,7 +119,7 @@ public class TairGis {
      * Judge the intersect relationship for the pointWktText (point or linestring or polygonname) and the key.
      *
      * @param key          the key
-     * @param pointWktText the pointWktText: <POINT/LINESTRING/POLYGONNAME>
+     * @param pointWktText the pointWktText: POINT/LINESTRING/POLYGONNAME
      * @return Success: polygonWktText; Not find: null; Fail: error.
      */
     public Map<String, String> gisintersects(final String key, final String pointWktText) {
