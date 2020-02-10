@@ -1,6 +1,6 @@
-import com.aliyun.tairjedis.tairbloom.TairBloom;
-import com.aliyun.tairjedis.tairbloom.TairBloomCluster;
-import com.aliyun.tairjedis.tairbloom.TairBloomPipeline;
+import com.aliyun.tair.tairbloom.TairBloom;
+import com.aliyun.tair.tairbloom.TairBloomCluster;
+import com.aliyun.tair.tairbloom.TairBloomPipeline;
 import org.junit.BeforeClass;
 
 public class TairBloomTestBase extends TestBase {

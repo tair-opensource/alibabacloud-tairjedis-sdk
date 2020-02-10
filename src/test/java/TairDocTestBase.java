@@ -1,8 +1,8 @@
 import org.junit.BeforeClass;
 
-import com.aliyun.tairjedis.tairdoc.TairDoc;
-import com.aliyun.tairjedis.tairdoc.TairDocCluster;
-import com.aliyun.tairjedis.tairdoc.TairDocPipeline;
+import com.aliyun.tair.tairdoc.TairDoc;
+import com.aliyun.tair.tairdoc.TairDocCluster;
+import com.aliyun.tair.tairdoc.TairDocPipeline;
 
 public class TairDocTestBase extends TestBase {
 

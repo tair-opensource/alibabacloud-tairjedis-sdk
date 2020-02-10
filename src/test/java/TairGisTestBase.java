@@ -1,6 +1,6 @@
-import com.aliyun.tairjedis.tairgis.TairGis;
-import com.aliyun.tairjedis.tairgis.TairGisCluster;
-import com.aliyun.tairjedis.tairgis.TairGisPipeline;
+import com.aliyun.tair.tairgis.TairGis;
+import com.aliyun.tair.tairgis.TairGisCluster;
+import com.aliyun.tair.tairgis.TairGisPipeline;
 import org.junit.BeforeClass;
 
 public class TairGisTestBase extends TestBase {
