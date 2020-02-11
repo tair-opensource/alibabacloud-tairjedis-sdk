@@ -1,6 +1,7 @@
 import java.util.HashSet;
 import java.util.Set;
 
+import com.aliyun.tair.mcommamd.TairCluster;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
@@ -12,6 +13,7 @@ public class TestBase {
 
     protected static Jedis jedis;
     protected static JedisCluster jedisCluster;
+    protected static TairCluster tairCluster;
 
     static {
         jedis = new Jedis(HOST, PORT);
@@ -22,5 +24,6 @@ public class TestBase {
         Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
         jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
         jedisCluster = new JedisCluster(jedisClusterNodes);
+        tairCluster = new TairCluster(jedisClusterNodes);
     }
 }
