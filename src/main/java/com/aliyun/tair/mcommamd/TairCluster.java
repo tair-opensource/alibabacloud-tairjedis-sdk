@@ -53,6 +53,8 @@ public class TairCluster extends JedisCluster {
 
     @Override
     public void close() {
+        super.close();
+
         if (backend != null) {
             backend.shutdown();
         }
@@ -210,6 +212,50 @@ public class TairCluster extends JedisCluster {
     }
 
     @Override
+    public Long exists(final byte[]... keys) {
+        long ret = 0;
+        Map<Integer, List<byte[]>> map = preTreatK(keys);
+        List<FutureTask<Long>> list = new ArrayList<FutureTask<Long>>();
+        for (final Map.Entry<Integer, List<byte[]>> entry : map.entrySet()) {
+            final byte[][] subkeys = new byte[entry.getValue().size()][];
+            entry.getValue().toArray(subkeys);
+            FutureTask<Long> task = new FutureTask<Long>(new Callable<Long>() {
+                public Long call() throws Exception {
+                    return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
+                        @Override
+                        public Long execute(Jedis connection) {
+                            return connection.exists(subkeys);
+                        }
+                    }.runBinary(subkeys.length, subkeys);
+                }
+            });
+            backend.submit(task);
+            list.add(task);
+        }
+
+        Exception exc = null;
+        for (FutureTask<Long> task : list) {
+            if (exc == null) {
+                try {
+                    ret += task.get();
+                } catch (Exception e) {
+                    exc = e;
+                    LOGGER.error("TairCluster.exists " + e.toString());
+                }
+            } else {
+                task.cancel(false);
+            }
+        }
+        if (exc != null) {
+            if (exc.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)exc.getCause();
+            }
+            return null;
+        }
+        return ret;
+    }
+
+    @Override
     public Long del(final String... keys) {
         long ret = 0;
         Map<Integer, List<String>> map = preTreatK(keys);
@@ -225,6 +271,50 @@ public class TairCluster extends JedisCluster {
                             return connection.del(subkeys);
                         }
                     }.run(subkeys.length, subkeys);
+                }
+            });
+            backend.submit(task);
+            list.add(task);
+        }
+
+        Exception exc = null;
+        for (FutureTask<Long> task : list) {
+            if (exc == null) {
+                try {
+                    ret += task.get();
+                } catch (Exception e) {
+                    exc = e;
+                    LOGGER.error("TairCluster.del " + e.toString());
+                }
+            } else {
+                task.cancel(false);
+            }
+        }
+        if (exc != null) {
+            if (exc.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)exc.getCause();
+            }
+            return null;
+        }
+        return ret;
+    }
+
+    @Override
+    public Long del(final byte[]... keys) {
+        long ret = 0;
+        Map<Integer, List<byte[]>> map = preTreatK(keys);
+        List<FutureTask<Long>> list = new ArrayList<FutureTask<Long>>();
+        for (final Map.Entry<Integer, List<byte[]>> entry : map.entrySet()) {
+            final byte[][] subkeys = new byte[entry.getValue().size()][];
+            entry.getValue().toArray(subkeys);
+            FutureTask<Long> task = new FutureTask<Long>(new Callable<Long>() {
+                public Long call() throws Exception {
+                    return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
+                        @Override
+                        public Long execute(Jedis connection) {
+                            return connection.del(subkeys);
+                        }
+                    }.runBinary(subkeys.length, subkeys);
                 }
             });
             backend.submit(task);
@@ -308,7 +398,62 @@ public class TairCluster extends JedisCluster {
     }
 
     @Override
-    public String mset(String... keysvalues) {
+    public List<byte[]> mget(final byte[]... keys) {
+        Map<Integer, List<byte[]>> map = preTreatK(keys);
+        List<byte[]> ret = new ArrayList<byte[]>();
+        Map<byte[][], FutureTask<List<byte[]>>> retMap = new HashMap<byte[][], FutureTask<List<byte[]>>>();
+        for (final Map.Entry<Integer, List<byte[]>> entry : map.entrySet()) {
+            final byte[][] subkeys = new byte[entry.getValue().size()][];
+            entry.getValue().toArray(subkeys);
+            FutureTask<List<byte[]>> task = new FutureTask<List<byte[]>>(new Callable<List<byte[]>>() {
+                public List<byte[]> call() throws Exception {
+                    return new JedisClusterCommand<List<byte[]>>(connectionHandler, maxAttempts) {
+                        @Override
+                        public List<byte[]> execute(Jedis connection) {
+                            return connection.mget(subkeys);
+                        }
+                    }.runBinary(subkeys.length, subkeys);
+                }
+            });
+            backend.submit(task);
+            retMap.put(subkeys, task);
+        }
+
+        Map<byte[], byte[]> resultMerge = new HashMap<byte[], byte[]>();
+        Exception exc = null;
+        for (Map.Entry<byte[][], FutureTask<List<byte[]>>> entry : retMap.entrySet()) {
+            if (exc == null) {
+                try {
+                    List<byte[]> subResult = entry.getValue().get();
+                    for (int i = 0; i < entry.getKey().length; i++) {
+                        resultMerge.put(entry.getKey()[i], subResult.get(i));
+                    }
+                } catch (Exception e) {
+                    exc = e;
+                    LOGGER.error("TairCluster.mget " + e.toString());
+                }
+            } else {
+                entry.getValue().cancel(false);
+            }
+        }
+        if (exc != null) {
+            if (exc.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) exc.getCause();
+            }
+            return null;
+        }
+        for (byte[] key : keys) {
+            if (resultMerge.containsKey(key)) {
+                ret.add(resultMerge.get(key));
+            } else {
+                ret.add(null);
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public String mset(final String... keysvalues) {
         String ret = null;
         Map<Integer, Map<String, String>> map = preTreatKeyAndValue(keysvalues);
         List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
@@ -363,6 +508,62 @@ public class TairCluster extends JedisCluster {
         return ret;
     }
 
+    @Override
+    public String mset(final byte[]... keysvalues) {
+        String ret = null;
+        Map<Integer, Map<byte[], byte[]>> map = preTreatKeyAndValue(keysvalues);
+        List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
+        for (final Map.Entry<Integer, Map<byte[], byte[]>> entry : map.entrySet()) {
+            int i = 0, j = 0;
+            final byte[][] subkeysvalues = new byte[entry.getValue().size() * 2][];
+            final byte[][] subkeys = new byte[entry.getValue().size()][];
+
+            for (Map.Entry<byte[], byte[]> en : entry.getValue().entrySet()) {
+                subkeys[j++] = en.getKey();
+                subkeysvalues[i++] = en.getKey();
+                subkeysvalues[i++] = en.getValue();
+            }
+            FutureTask<String> task = new FutureTask<String>(new Callable<String>() {
+                public String call() throws Exception {
+                    return new JedisClusterCommand<String>(connectionHandler, maxAttempts) {
+                        @Override
+                        public String execute(Jedis connection) {
+                            return connection.mset(subkeysvalues);
+                        }
+                    }.runBinary(subkeys.length, subkeys);
+                }
+            });
+            backend.submit(task);
+            list.add(task);
+        }
+        Exception exc = null;
+        for (FutureTask<String> task : list) {
+            if (exc == null) {
+                try {
+                    String subRet = task.get();
+                    if (!"OK".equals(subRet)) {
+                        ret = subRet;
+                        break;
+                    } else {
+                        ret = "OK";
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("TairCluster.mset " + e.toString());
+                    exc = e;
+                }
+            } else {
+                task.cancel(false);
+            }
+        }
+        if (exc != null) {
+            if (exc.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)exc.getCause();
+            }
+            return null;
+        }
+        return ret;
+    }
+
     // =====================================================
     // Common function
     // =====================================================
@@ -379,12 +580,36 @@ public class TairCluster extends JedisCluster {
         return map;
     }
 
+    private Map<Integer, List<byte[]>> preTreatK(byte[]... keys) {
+        Map<Integer, List<byte[]>> map = new HashMap<Integer, List<byte[]>>();
+        for (byte[] key : keys) {
+            int slot = JedisClusterCRC16.getSlot(key);
+            if (!map.containsKey(slot)) {
+                map.put(slot, new ArrayList<byte[]>());
+            }
+            map.get(slot).add(key);
+        }
+        return map;
+    }
+
     private Map<Integer, Map<String, String>> preTreatKeyAndValue(String... keysvalues) {
         Map<Integer, Map<String, String>> map = new HashMap<Integer, Map<String, String>>();
         for (int i = 0; i < keysvalues.length - 1; i += 2) {
             int slot = JedisClusterCRC16.getSlot(keysvalues[i]);
             if (!map.containsKey(slot)) {
                 map.put(slot, new HashMap<String, String>());
+            }
+            map.get(slot).put(keysvalues[i], keysvalues[i + 1]);
+        }
+        return map;
+    }
+
+    private Map<Integer, Map<byte[], byte[]>> preTreatKeyAndValue(byte[]... keysvalues) {
+        Map<Integer, Map<byte[], byte[]>> map = new HashMap<Integer, Map<byte[], byte[]>>();
+        for (int i = 0; i < keysvalues.length - 1; i += 2) {
+            int slot = JedisClusterCRC16.getSlot(keysvalues[i]);
+            if (!map.containsKey(slot)) {
+                map.put(slot, new HashMap<byte[], byte[]>());
             }
             map.get(slot).put(keysvalues[i], keysvalues[i + 1]);
         }
