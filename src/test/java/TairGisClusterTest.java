@@ -1,9 +1,11 @@
+import com.aliyun.tair.tairgis.params.GisParams;
 import org.junit.Test;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -167,5 +169,73 @@ public class TairGisClusterTest extends TairGisTestBase{
         tairGisCluster.gissearch(EXGIS_BIGKEY, polygonWktText);
         tairGisCluster.giscontains(EXGIS_BIGKEY, polygonWktText);
         tairGisCluster.gisintersects(EXGIS_BIGKEY, polygonWktText);
+    }
+
+    @Test
+    public void gisContainsTest() {
+        String uuid = UUID.randomUUID().toString();
+        String key = "hangzhou" + uuid;
+        String polygonName = "alibaba-xixi-campus";
+        String polygonWktText = "POLYGON((30 10,40 40,20 40,10 20,30 10))";
+        String pointWkt = "POINT (30 11)";
+
+        long l = tairGisCluster.gisadd(key, polygonName, polygonWktText);
+        AssertUtil.assertEquals(l, 1);
+
+        // giscontains
+        Map<String, String> retMap = tairGisCluster.giscontains(key, pointWkt);
+        AssertUtil.assertEquals(1, retMap.size());
+        AssertUtil.assertTrue(retMap.containsKey(polygonName));
+        AssertUtil.assertEquals(polygonWktText, retMap.get(polygonName));
+
+        // giscontains withoutwkt
+        List<String> retList = tairGisCluster.giscontains(key, pointWkt, GisParams.gisParams().withoutWkt());
+        AssertUtil.assertEquals(1, retList.size());
+        AssertUtil.assertEquals(polygonName, retList.get(0));
+
+        // giscontains binary
+        Map<byte[], byte[]> bretMap = tairGisCluster.giscontains(key.getBytes(), pointWkt.getBytes());
+        AssertUtil.assertEquals(1, bretMap.size());
+        AssertUtil.assertTrue(bretMap.containsKey(polygonName.getBytes()));
+        AssertUtil.assertTrue(Arrays.equals(polygonWktText.getBytes(), bretMap.get(polygonName.getBytes())));
+
+        // giscontains withoutwkt binary
+        List<byte[]> bretList = tairGisCluster.giscontains(key.getBytes(), pointWkt.getBytes(),
+            GisParams.gisParams().withoutWkt());
+        AssertUtil.assertEquals(1, bretList.size());
+        AssertUtil.assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
+    }
+
+    @Test
+    public void gisGetallTest() {
+        String uuid = UUID.randomUUID().toString();
+        String key = "hangzhou" + uuid;
+        String polygonName = "alibaba-xixi-campus";
+        String polygonWktText = "POLYGON((30 10,40 40,20 40,10 20,30 10))";
+
+        long l = tairGisCluster.gisadd(key, polygonName, polygonWktText);
+        AssertUtil.assertEquals(l, 1);
+
+        // gisgetall
+        Map<String, String> retMap = tairGisCluster.gisgetall(key);
+        AssertUtil.assertEquals(1, retMap.size());
+        AssertUtil.assertTrue(retMap.containsKey(polygonName));
+        AssertUtil.assertEquals(polygonWktText, retMap.get(polygonName));
+
+        // gisgetall withoutwkt
+        List<String> retList = tairGisCluster.gisgetall(key, GisParams.gisParams().withoutWkt());
+        AssertUtil.assertEquals(1, retList.size());
+        AssertUtil.assertEquals(polygonName, retList.get(0));
+
+        // gisgetall binary
+        Map<byte[], byte[]> bretMap = tairGisCluster.gisgetall(key.getBytes());
+        AssertUtil.assertEquals(1, bretMap.size());
+        AssertUtil.assertTrue(bretMap.containsKey(polygonName.getBytes()));
+        AssertUtil.assertTrue(Arrays.equals(polygonWktText.getBytes(), bretMap.get(polygonName.getBytes())));
+
+        // gisgetall withoutwkt binary
+        List<byte[]> bretList = tairGisCluster.gisgetall(key.getBytes(), GisParams.gisParams().withoutWkt());
+        AssertUtil.assertEquals(1, bretList.size());
+        AssertUtil.assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
     }
 }

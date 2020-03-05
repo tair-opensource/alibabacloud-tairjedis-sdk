@@ -3,6 +3,7 @@ package com.aliyun.tair.tairgis.factory;
 import redis.clients.jedis.Builder;
 import redis.clients.jedis.util.SafeEncoder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +60,48 @@ public class GisBuilderFactory {
         @Override
         public String toString() {
             return "gisResult";
+        }
+    };
+
+    public static final Builder<List<String>> GISSEARCH_RESULT_LIST_STRING = new Builder<List<String>>() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public List<String> build(Object data) {
+            if (null == data) {
+                return null;
+            }
+
+            List<byte[]> l = (List)((List<Object>)data).get(1);
+            final ArrayList<String> result = new ArrayList<String>(l.size());
+            for (final byte[] barray : l) {
+                if (barray == null) {
+                    result.add(null);
+                } else {
+                    result.add(SafeEncoder.encode(barray));
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "gisResult<List<String>>";
+        }
+    };
+
+    public static final Builder<List<byte[]>> GISSEARCH_RESULT_BYTE_ARRAY_LIST = new Builder<List<byte[]>>() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public List<byte[]> build(Object data) {
+            if (null == data) {
+                return null;
+            }
+            return (List<byte[]>)data;
+        }
+
+        @Override
+        public String toString() {
+            return "gisResult<List<byte[]>>";
         }
     };
 }

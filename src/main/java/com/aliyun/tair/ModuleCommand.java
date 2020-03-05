@@ -67,6 +67,7 @@ public enum ModuleCommand implements ProtocolCommand {
     GISSEARCH("GIS.SEARCH"),
     GISCONTAINS("GIS.CONTAINS"),
     GISINTERSECTS("GIS.INTERSECTS"),
+    GISGETALL("GIS.GETALL"),
 
     // TairBloom command
     BFADD("BF.ADD"),

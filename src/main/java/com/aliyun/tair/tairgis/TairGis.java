@@ -1,9 +1,12 @@
 package com.aliyun.tair.tairgis;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairgis.params.GisParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.util.SafeEncoder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +103,18 @@ public class TairGis {
         }
     }
 
+    public List<String> giscontains(final String key, final String pointWktText, final GisParams gisParams) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISCONTAINS,
+            gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(pointWktText)));
+        List<Object> result = (List<Object>) obj;
+        if (null == result || 0 == result.size()) {
+            return new ArrayList<String>();
+        } else {
+            List<byte[]> rawResults = (List) result.get(1);
+            return BuilderFactory.STRING_LIST.build(rawResults);
+        }
+    }
+
     public Map<byte[], byte[]> giscontains(final byte[] key, final byte[] pointWktText) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISCONTAINS, key, pointWktText);
         List<Object> result = (List<Object>) obj;
@@ -108,6 +123,17 @@ public class TairGis {
         } else {
             List<byte[]> rawResults = (List) result.get(1);
             return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+        }
+    }
+
+    public List<byte[]> giscontains(final byte[] key, final byte[] pointWktText, final GisParams gisParams) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISCONTAINS, gisParams.getByteParams(key, pointWktText));
+        List<Object> result = (List<Object>) obj;
+        if (null == result || 0 == result.size()) {
+            return new ArrayList<byte[]>();
+        } else {
+            List<byte[]> rawResults = (List) result.get(1);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
         }
     }
 
@@ -154,4 +180,31 @@ public class TairGis {
         Object obj = getJedis().sendCommand(ModuleCommand.GISDEL, key, polygonName);
         return BuilderFactory.BYTE_ARRAY.build(obj);
     }
+
+    /**
+     * Get all polygon in key
+     * @param key the key
+     * @return
+     */
+    public Map<String, String> gisgetall(final String key) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL, key);
+        return BuilderFactory.STRING_MAP.build(obj);
+    }
+
+    public List<String> gisgetall(final String key, final GisParams gisParams) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL,
+            gisParams.getByteParams(SafeEncoder.encode(key)));
+        return BuilderFactory.STRING_LIST.build(obj);
+    }
+
+    public Map<byte[], byte[]> gisgetall(final byte[] key) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL, key);
+        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+    }
+
+    public List<byte[]> gisgetall(final byte[] key, final GisParams gisParams) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL, gisParams.getByteParams(key));
+        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+    }
+
 }

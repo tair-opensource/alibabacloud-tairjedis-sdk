@@ -1,3 +1,4 @@
+import com.aliyun.tair.tairgis.params.GisParams;
 import org.junit.Test;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
@@ -67,7 +68,6 @@ public class TairGisPipelineTest extends TairGisTestBase{
 
     @Test
     public void gisdelTest() throws Exception {
-        int i = 0;
         String uuid = UUID.randomUUID().toString();
         String key = "hangzhou" + uuid;
         String polygonName = "alibaba-xixi-campus";
@@ -81,9 +81,11 @@ public class TairGisPipelineTest extends TairGisTestBase{
         tairGisPipeline.gisdel(key, polygonName);
         tairGisPipeline.gisget(key, polygonName1);
         tairGisPipeline.gissearch(key, polygonWktText1);
+        tairGisPipeline.giscontains(key, polygonWktText1, GisParams.gisParams().withoutWkt());
+        tairGisPipeline.gisgetall(key);
         List<Object> objs = tairGisPipeline.syncAndReturnAll();
 
-        i = 0;
+        int i = 0;
         AssertUtil.assertEquals((long)1, objs.get(i++));
         AssertUtil.assertEquals((long)1, objs.get(i++));
         AssertUtil.assertEquals(polygonWktText, objs.get(i++));
@@ -92,7 +94,16 @@ public class TairGisPipelineTest extends TairGisTestBase{
 
         AssertUtil.assertEquals(1, Map.class.cast(objs.get(i)).size());
         AssertUtil.assertTrue(Map.class.cast(objs.get(i)).containsKey(polygonName1));
-        AssertUtil.assertEquals(polygonWktText1, Map.class.cast(objs.get(i++)).get(polygonName1));
+        AssertUtil.assertEquals(polygonWktText1, Map.class.cast(objs.get(i)).get(polygonName1));
+
+        i += 1;
+        AssertUtil.assertEquals(1, List.class.cast(objs.get(i)).size());
+        AssertUtil.assertEquals(polygonName1, List.class.cast(objs.get(i)).get(0));
+
+        i += 1;
+        AssertUtil.assertEquals(1, Map.class.cast(objs.get(i)).size());
+        AssertUtil.assertTrue(Map.class.cast(objs.get(i)).containsKey(polygonName1));
+        AssertUtil.assertEquals(polygonWktText1, Map.class.cast(objs.get(i)).get(polygonName1));
     }
 
     @Test
