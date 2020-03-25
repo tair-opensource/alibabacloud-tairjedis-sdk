@@ -12,9 +12,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import com.aliyun.tairjedis.tairhash.params.ExhgetwithverResult;
-import com.aliyun.tairjedis.tairhash.params.ExhmsetwithoptsParams;
-import com.aliyun.tairjedis.tairhash.params.ExhsetParams;
+import com.aliyun.tair.tairhash.params.ExhgetwithverResult;
+import com.aliyun.tair.tairhash.params.ExhmsetwithoptsParams;
+import com.aliyun.tair.tairhash.params.ExhsetParams;
 import org.junit.Assert;
 import org.junit.ComparisonFailure;
 import org.junit.Test;

@@ -1,8 +1,8 @@
-import com.aliyun.tairjedis.tairstring.params.ExincrbyFloatParams;
-import com.aliyun.tairjedis.tairstring.params.ExincrbyParams;
-import com.aliyun.tairjedis.tairstring.params.ExsetParams;
-import com.aliyun.tairjedis.tairstring.results.ExcasResult;
-import com.aliyun.tairjedis.tairstring.results.ExgetResult;
+import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
+import com.aliyun.tair.tairstring.params.ExincrbyParams;
+import com.aliyun.tair.tairstring.params.ExsetParams;
+import com.aliyun.tair.tairstring.results.ExcasResult;
+import com.aliyun.tair.tairstring.results.ExgetResult;
 import org.junit.Test;
 import redis.clients.jedis.util.SafeEncoder;
 

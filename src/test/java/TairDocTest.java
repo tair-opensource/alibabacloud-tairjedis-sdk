@@ -1,7 +1,7 @@
 import java.util.UUID;
 
-import com.aliyun.tairjedis.tairdoc.params.JsongetParams;
-import com.aliyun.tairjedis.tairdoc.params.JsonsetParams;
+import com.aliyun.tair.tairdoc.params.JsongetParams;
+import com.aliyun.tair.tairdoc.params.JsonsetParams;
 import org.junit.Assert;
 import org.junit.Test;
 

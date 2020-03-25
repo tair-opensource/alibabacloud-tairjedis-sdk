@@ -1,6 +1,6 @@
-import com.aliyun.tairjedis.tairstring.TairString;
-import com.aliyun.tairjedis.tairstring.TairStringCluster;
-import com.aliyun.tairjedis.tairstring.TairStringPipeline;
+import com.aliyun.tair.tairstring.TairString;
+import com.aliyun.tair.tairstring.TairStringCluster;
+import com.aliyun.tair.tairstring.TairStringPipeline;
 import org.junit.BeforeClass;
 
 public class TairStringTestBase extends TestBase {

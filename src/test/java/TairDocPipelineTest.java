@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.UUID;
 
-import com.aliyun.tairjedis.tairdoc.params.JsonsetParams;
+import com.aliyun.tair.tairdoc.params.JsonsetParams;
 import org.junit.Test;
 import redis.clients.jedis.exceptions.JedisDataException;
 
