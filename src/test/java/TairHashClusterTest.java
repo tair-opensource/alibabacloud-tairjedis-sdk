@@ -45,6 +45,14 @@ public class TairHashClusterTest extends TairHashTestBase {
     }
 
     @Test
+    public void exhsetWithParams() {
+        ExhsetParams params = new ExhsetParams();
+        params.ex(10);
+        assertEquals(1,
+            (long)tairHashCluster.exhset(foo, "", "", params));
+    }
+
+    @Test
     public void exhmsetwithopts() {
         // Binary
         List<ExhmsetwithoptsParams<byte[]>> bparams = new LinkedList<ExhmsetwithoptsParams<byte[]>>();

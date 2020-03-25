@@ -55,7 +55,7 @@ public class CasParams extends Params {
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
-            byteParams.add(SafeEncoder.encode(String.valueOf(getParam(option))));
+            byteParams.add(SafeEncoder.encode(String.valueOf((Object)getParam(option))));
         }
     }
 
