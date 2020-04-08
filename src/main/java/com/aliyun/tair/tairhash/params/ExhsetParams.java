@@ -17,6 +17,8 @@ public class ExhsetParams extends Params {
     private static final String VER = "ver";
     private static final String ABS = "abs";
 
+    private static final String NOACTIVE = "noactive";
+
     public ExhsetParams() {}
 
     public static ExhsetParams ExhsetParams() {
@@ -109,6 +111,11 @@ public class ExhsetParams extends Params {
         return this;
     }
 
+    public ExhsetParams noactive( ) {
+        addParam(NOACTIVE, "");
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -136,6 +143,10 @@ public class ExhsetParams extends Params {
 
         addParamWithValue(byteParams, VER);
         addParamWithValue(byteParams, ABS);
+
+        if(contains(NOACTIVE)){
+            byteParams.add(SafeEncoder.encode(NOACTIVE));
+        }
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

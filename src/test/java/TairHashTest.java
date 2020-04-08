@@ -12,9 +12,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import com.aliyun.tair.tairhash.params.ExhgetwithverResult;
-import com.aliyun.tair.tairhash.params.ExhmsetwithoptsParams;
-import com.aliyun.tair.tairhash.params.ExhsetParams;
+import com.aliyun.tair.tairhash.params.*;
+import com.sun.org.apache.xalan.internal.res.XSLTErrorResources_en;
 import org.junit.Assert;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
@@ -43,6 +42,24 @@ public class TairHashTest extends TairHashTestBase {
     public TairHashTest() {
         foo = "foo" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bfoo = ("bfoo" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+    }
+
+    @Test
+    public void exhsetwitnoactive() throws InterruptedException {
+        // Binary
+        ExhsetParams exhsetParams = new ExhsetParams();
+        exhsetParams.ex(1);
+        assertEquals(1,(long)tairHash.exhset(bfoo, bbar, bcar,exhsetParams));
+        Thread.sleep(2000);
+        assertEquals(0,(long)tairHash.exhlen(bfoo));
+
+        exhsetParams.noactive();
+        assertEquals(1,(long)tairHash.exhset(bfoo, bbar, bcar,exhsetParams));
+        Thread.sleep(2000);
+        assertEquals(1,(long)tairHash.exhlen(bfoo));
+        assertEquals(0,(long)tairHash.exhlen(bfoo,true));
+        assertEquals(false,tairHash.exhexists(bfoo,bbar));
+        assertEquals(0,(long)tairHash.exhlen(bfoo));
     }
 
     @Test
@@ -80,7 +97,6 @@ public class TairHashTest extends TairHashTestBase {
         Response<Long> bver = tairHashPipeline.exhver(bfoo, bbar);
         tairHashPipeline.sync();
         assertEquals(10, (long)bver.get());
-
     }
 
     @Test
@@ -100,6 +116,74 @@ public class TairHashTest extends TairHashTestBase {
         tairHash.exhset(bfoo, bbar, bbar);
         Boolean status = tairHash.exhexpireAt(bfoo, bbar, unixTime);
         assertEquals(true, status);
+    }
+
+    @Test
+    public void exhexpireWithNoActive() throws InterruptedException {
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhexpire(bfoo, bbar, 1));
+        Thread.sleep(2000);
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhexpire(bfoo, bbar, 1,true));
+        Thread.sleep(2000);
+        assertEquals(1,(long)tairHash.exhlen(bfoo));
+        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
+        assertEquals(false, tairHash.exhexists(bfoo,bbar));
+        assertEquals(0,(long)tairHash.exhlen(bfoo));
+    }
+
+    @Test
+    public void exhexpireAtWithNoActive() throws InterruptedException {
+        long unixTime = (System.currentTimeMillis() / 1000L) + 1;
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhexpireAt(bfoo, bbar, unixTime));
+        Thread.sleep(2000);
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+
+        unixTime = (System.currentTimeMillis() / 1000L) + 1;
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhexpireAt(bfoo, bbar, unixTime,true));
+        Thread.sleep(2000);
+        assertEquals(1,(long)tairHash.exhlen(bfoo));
+        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
+        assertEquals(false, tairHash.exhexists(bfoo,bbar));
+        assertEquals(0,(long)tairHash.exhlen(bfoo));
+    }
+
+    @Test
+    public void exhpexpireWithNoActive() throws InterruptedException {
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhpexpire(bfoo, bbar, 1000));
+        Thread.sleep(2000);
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhpexpire(bfoo, bbar, 1,true));
+        Thread.sleep(2000);
+        assertEquals(1,(long)tairHash.exhlen(bfoo));
+        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
+        assertEquals(false, tairHash.exhexists(bfoo,bbar));
+        assertEquals(0,(long)tairHash.exhlen(bfoo));
+    }
+
+    @Test
+    public void exhpexpireAtWithNoActive() throws InterruptedException {
+        long unixTime = (System.currentTimeMillis() / 1000L) + 1000;
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhpexpireAt(bfoo, bbar, unixTime));
+        Thread.sleep(2000);
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+
+        unixTime = (System.currentTimeMillis() / 1000L) + 1000;
+        tairHash.exhset(bfoo, bbar, bbar);
+        assertEquals(true, tairHash.exhpexpireAt(bfoo, bbar, unixTime,true));
+        Thread.sleep(2000);
+        assertEquals(1,(long)tairHash.exhlen(bfoo));
+        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
+        assertEquals(false, tairHash.exhexists(bfoo,bbar));
+        assertEquals(0,(long)tairHash.exhlen(bfoo));
     }
 
     @Test
@@ -244,7 +328,74 @@ public class TairHashTest extends TairHashTestBase {
         assertEquals(0, bvalue);
         bvalue = tairHash.exhincrBy(bfoo, bbar, -10);
         assertEquals(-10, bvalue);
+    }
 
+    @Test
+    public void exhincrByWithBoundary() {
+        // Binary
+        ExhincrByParams exhincrByParams = new ExhincrByParams();
+        exhincrByParams.min(0);
+        exhincrByParams.max(10);
+
+        try {
+            tairHash.exhincrBy(bfoo, bbar, 11,exhincrByParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("increment or decrement would overflow"));
+        }
+
+        try {
+            tairHash.exhincrBy(bfoo, bbar, -1,exhincrByParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("increment or decrement would overflow"));
+        }
+
+        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+
+        exhincrByParams.min(10);
+        exhincrByParams.max(0);
+
+        try {
+            tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("min value is bigger than max value"));
+        }
+    }
+
+    @Test
+    public void exhincrByWithExpire() throws InterruptedException {
+        ExhincrByParams exhincrByParams = new ExhincrByParams();
+        exhincrByParams.ex(1);
+        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        // active expire
+        Thread.sleep(2000);
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        // no active expire
+        exhincrByParams.noactive();
+        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        // active expire
+        Thread.sleep(2000);
+        assertEquals(1,(long) tairHash.exhlen(bfoo));
+        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
+        assertEquals(false,  tairHash.exhexists(bfoo,bbar));
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+    }
+
+    @Test
+    public void exhincrByWithVersion() {
+        ExhincrByParams exhincrByParams = new ExhincrByParams();
+        exhincrByParams.ver(1);
+        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(10,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(15,(long) tairHash.exhincrBy(bfoo, bbar, 5));
+        try {
+            tairHash.exhincrBy(bfoo, bbar,5 ,exhincrByParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("update version is stale"));
+        }
+        assertEquals(20,(long)  tairHash.exhincrBy(bfoo, bbar,5 ,new ExhincrByParams().abs(5)));
+        assertEquals(5,(long)  tairHash.exhver(bfoo, bbar));
+        assertEquals(25,(long)  tairHash.exhincrBy(bfoo, bbar,5 ,new ExhincrByParams().ver(0)));
+        assertEquals(6,(long)  tairHash.exhver(bfoo, bbar));
     }
 
     @Test
@@ -256,7 +407,74 @@ public class TairHashTest extends TairHashTestBase {
         assertEquals(Double.compare(0d, bvalue), 0);
         bvalue = tairHash.exhincrByFloat(bfoo, bbar, -10.7d);
         assertEquals(Double.compare(-10.7d, bvalue), 0);
+    }
 
+    @Test
+    public void exhincrByFloatWithBoundary() {
+        // Binary
+        ExhincrByFloatParams exhincrByFloatParams = new ExhincrByFloatParams();
+        exhincrByFloatParams.min(0.1);
+        exhincrByFloatParams.max(10.1);
+
+        try {
+            tairHash.exhincrByFloat(bfoo, bbar, 11.1,exhincrByFloatParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("increment or decrement would overflow"));
+        }
+
+        try {
+            tairHash.exhincrByFloat(bfoo, bbar, -1.1,exhincrByFloatParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("increment or decrement would overflow"));
+        }
+
+        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+
+        exhincrByFloatParams.min(10.1);
+        exhincrByFloatParams.max(0.1);
+
+        try {
+            tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("min value is bigger than max value"));
+        }
+    }
+
+    @Test
+    public void exhincrByFloatWithExpire() throws InterruptedException {
+        ExhincrByFloatParams exhincrByFloatParams = new ExhincrByFloatParams();
+        exhincrByFloatParams.ex(1);
+        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        // active expire
+        Thread.sleep(2000);
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        // no active expire
+        exhincrByFloatParams.noactive();
+        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        // active expire
+        Thread.sleep(2000);
+        assertEquals(1,(long) tairHash.exhlen(bfoo));
+        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
+        assertEquals(false, tairHash.exhexists(bfoo,bbar));
+        assertEquals(0,(long) tairHash.exhlen(bfoo));
+    }
+
+    @Test
+    public void exhincrByFloatWithVersion() {
+        ExhincrByFloatParams exhincrByFloatParams = new ExhincrByFloatParams();
+        exhincrByFloatParams.ver(1);
+        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(10.2,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(15.3,tairHash.exhincrByFloat(bfoo, bbar, 5.1)),0);
+        try {
+            tairHash.exhincrByFloat(bfoo, bbar,5.1 ,exhincrByFloatParams);
+        }catch (Exception e){
+            assertTrue(e.getMessage().contains("update version is stale"));
+        }
+        assertEquals(Double.compare(20.4,tairHash.exhincrByFloat(bfoo, bbar,5.1 ,new ExhincrByFloatParams().abs(5))),0);
+        assertEquals(5,(long)  tairHash.exhver(bfoo, bbar));
+        assertEquals(Double.compare(25.5,tairHash.exhincrByFloat(bfoo, bbar,5.1 ,new ExhincrByFloatParams().ver(0))),0);
+        assertEquals(6,(long)  tairHash.exhver(bfoo, bbar));
     }
 
     @Test
