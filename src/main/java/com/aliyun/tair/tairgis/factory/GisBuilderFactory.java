@@ -1,6 +1,8 @@
 package com.aliyun.tair.tairgis.factory;
 
+import com.aliyun.tair.tairgis.params.GisSearchResponse;
 import redis.clients.jedis.Builder;
+import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -104,4 +106,51 @@ public class GisBuilderFactory {
             return "gisResult<List<byte[]>>";
         }
     };
+
+    public static final Builder<List<GisSearchResponse>> GISSEARCH_WITH_PARAMS_RESULT = new Builder<List<GisSearchResponse>>() {
+        @Override
+        public List<GisSearchResponse> build(Object data) {
+            List<Object> objectList = (List<Object>)data;
+            if (objectList == null || objectList.isEmpty()) {
+                return  null;
+            }
+
+            long number = (Long) objectList.get(0);
+            List<Object> rawResults = (List) objectList.get(1);
+            List<GisSearchResponse> responses = new ArrayList<>();
+            if ((number == 0) || (rawResults.isEmpty())) {
+                return responses;
+            }
+
+            int size = rawResults.size() / (int)number;
+
+            for (int i = 0; i < number; i++) {
+                GisSearchResponse resp = new GisSearchResponse();
+                resp.setField((byte[])rawResults.get(i * size));
+                for (int j = i * size + 1; j < (i + 1) * size; j++) {
+                    Object obj = rawResults.get(j);
+                    if (canConvertToDouble(obj)) {
+                        resp.setDistance(BuilderFactory.DOUBLE.build(obj));
+                    } else {
+                        resp.setValue((byte[])obj);
+                    }
+                }
+                responses.add(resp);
+            }
+            return responses;
+        }
+    };
+
+    private static boolean canConvertToDouble(Object data) {
+        String string = BuilderFactory.STRING.build(data);
+        if (string == null) return false;
+
+        try {
+             Double.valueOf(string);
+             return true;
+        } catch (NumberFormatException e) {
+            if (string.equals("inf") || string.equals("+inf") || string.equals("-inf")) return true;
+            return false;
+        }
+    }
 }

@@ -1,8 +1,13 @@
 import com.aliyun.tair.tairgis.params.GisParams;
+import com.aliyun.tair.tairgis.params.GisSearchResponse;
+import com.taobao.eagleeye.EagleEye;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
+import redis.clients.jedis.GeoUnit;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +25,16 @@ public class TairGisClusterTest extends TairGisTestBase{
     public TairGisClusterTest() {
         area = "area" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         barea = ("barea" +Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+    }
+
+    @Before
+    public void startUp() throws Exception {
+        EagleEye.startTrace(null, "test123", 0);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EagleEye.endTrace("00");
     }
 
     @Test
@@ -237,5 +252,67 @@ public class TairGisClusterTest extends TairGisTestBase{
         List<byte[]> bretList = tairGisCluster.gisgetall(key.getBytes(), GisParams.gisParams().withoutWkt());
         AssertUtil.assertEquals(1, bretList.size());
         AssertUtil.assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
+    }
+
+    @Test
+    public void gisSearchWithParams() {
+        String uuid = UUID.randomUUID().toString();
+        String key = "hangzhou" + uuid;
+
+        tairGisCluster.gisadd(key, "Palermo", "POINT (13.361389 38.115556)");
+        tairGisCluster.gisadd(key, "Catania", "POINT (15.087269 37.502669)");
+        tairGisCluster.gisadd(key, "Agrigento", "POINT (13.583333 37.316667)");
+
+        // withoutvalue
+        List<GisSearchResponse> responses = tairGisCluster.gissearch(key, 15, 37, 200,
+            GeoUnit.KM, new GisParams().withoutValue());
+        AssertUtil.assertEquals(3, responses.size());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertNull(responses.get(0).getValueByString());
+        equalsWithinEpsilon(0, responses.get(0).getDistance());
+
+        // withvalue
+        responses = tairGisCluster.gissearch(key, 15, 37, 200,
+            GeoUnit.KM, new GisParams());
+        AssertUtil.assertEquals(3, responses.size());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(0, responses.get(0).getDistance());
+
+        // withdist
+        responses = tairGisCluster.gissearch(key, 15, 37, 200,
+            GeoUnit.KM, new GisParams().withDist());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(190.4424, responses.get(0).getDistance());
+
+        // SORT ASC
+        responses = tairGisCluster.gissearch(key, 15, 37, 200,
+            GeoUnit.KM, new GisParams().withDist().sortAscending());
+        AssertUtil.assertEquals("Catania", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(15.087269 37.502669)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(56.4413, responses.get(0).getDistance());
+
+        // SORT DESC
+        responses = tairGisCluster.gissearch(key, 15, 37, 200,
+            GeoUnit.KM, new GisParams().withDist().sortDescending());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(190.4424, responses.get(0).getDistance());
+
+        // COUNT 2
+        responses = tairGisCluster.gissearch(key, 15, 37, 200,
+            GeoUnit.KM, new GisParams().withDist().sortDescending().count(2));
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(190.4424, responses.get(0).getDistance());
+        AssertUtil.assertEquals("Agrigento", responses.get(1).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.583333 37.316667)", responses.get(1).getValueByString());
+        equalsWithinEpsilon(130.4233, responses.get(1).getDistance());
+    }
+
+    private boolean equalsWithinEpsilon(double d1, double d2) {
+        double epsilon = 1E-5;
+        return Math.abs(d1 - d2) < epsilon;
     }
 }

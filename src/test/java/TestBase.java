@@ -16,14 +16,18 @@ public class TestBase {
     protected static TairCluster tairCluster;
 
     static {
-        jedis = new Jedis(HOST, PORT);
-        if (!"PONG".equals(jedis.ping())) {
-            System.exit(-1);
-        }
+        try {
+            jedis = new Jedis(HOST, PORT);
+            if (!"PONG".equals(jedis.ping())) {
+                System.exit(-1);
+            }
 
-        Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-        jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
-        jedisCluster = new JedisCluster(jedisClusterNodes);
-        tairCluster = new TairCluster(jedisClusterNodes);
+            Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
+            jedisCluster = new JedisCluster(jedisClusterNodes);
+            tairCluster = new TairCluster(jedisClusterNodes);
+        } catch (Exception e) {
+
+        }
     }
 }

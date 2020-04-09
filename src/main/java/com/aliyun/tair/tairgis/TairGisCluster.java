@@ -1,9 +1,13 @@
 package com.aliyun.tair.tairgis;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairgis.factory.GisBuilderFactory;
 import com.aliyun.tair.tairgis.params.GisParams;
+import com.aliyun.tair.tairgis.params.GisSearchResponse;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.GeoUnit;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.Protocol;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -60,6 +64,40 @@ public class TairGisCluster {
             List<byte[]> rawResults = (List) result.get(1);
             return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
         }
+    }
+
+    public List<GisSearchResponse> gissearch(final String key, final double longitude, final double latitude,
+        final double radius, final GeoUnit unit, final GisParams gisParams) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.GISSEARCH,
+            gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(GisParams.RADIUS),
+                Protocol.toByteArray(longitude), Protocol.toByteArray(latitude),
+                Protocol.toByteArray(radius), unit.raw));
+        return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
+    }
+
+    public List<GisSearchResponse> gissearch(final byte[] key, final double longitude, final double latitude,
+        final double radius, final GeoUnit unit, final GisParams gisParams) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISSEARCH,
+            gisParams.getByteParams(key, SafeEncoder.encode(GisParams.RADIUS),
+                Protocol.toByteArray(longitude), Protocol.toByteArray(latitude),
+                Protocol.toByteArray(radius), unit.raw));
+        return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
+    }
+
+    public List<GisSearchResponse> gissearchByMember(final String key, String member, final double radius,
+        final GeoUnit unit, final GisParams gisParams) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.GISSEARCH,
+            gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(GisParams.MEMBER),
+                SafeEncoder.encode(member), Protocol.toByteArray(radius), unit.raw));
+        return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
+    }
+
+    public List<GisSearchResponse> gissearchByMember(final byte[] key, byte[] member, final double radius,
+        final GeoUnit unit, final GisParams gisParams) {
+        Object obj = jc.sendCommand(key, ModuleCommand.GISSEARCH,
+            gisParams.getByteParams(key, SafeEncoder.encode(GisParams.MEMBER), member,
+                Protocol.toByteArray(radius), unit.raw));
+        return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
     }
 
     public Map<String, String> giscontains(final String key, final String pointWktText) {
