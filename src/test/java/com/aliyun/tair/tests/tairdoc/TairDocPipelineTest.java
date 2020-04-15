@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairdoc;
+
 import java.util.List;
 import java.util.UUID;
 

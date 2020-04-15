@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairstring;
+
 import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
 import com.aliyun.tair.tairstring.params.ExincrbyParams;
 import com.aliyun.tair.tairstring.params.ExsetParams;
@@ -9,16 +11,15 @@ import redis.clients.jedis.util.SafeEncoder;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
-public class TairStringClusterTest extends TairStringTestBase {
+public class TairStringTest extends TairStringTestBase {
     private String key;
     private String value;
     private byte[] bkey;
     private byte[] bvalue;
 
-    public TairStringClusterTest() {
+    public TairStringTest() {
         key = "key" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         value = "value" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bkey = ("bkey" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
@@ -26,21 +27,21 @@ public class TairStringClusterTest extends TairStringTestBase {
     }
 
     @Test
-    public void exsetClusterTest() {
+    public void exsetTest() {
         String ret = "";
 
         // String
-        ret = tairStringCluster.exset(key, value);
+        ret = tairString.exset(key, value);
         assertEquals("OK", ret);
-        ExgetResult<String> result = tairStringCluster.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, this.value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
 
         //binary
-        ret = tairStringCluster.exset(bkey, bvalue);
+        ret = tairString.exset(bkey, bvalue);
         assertEquals("OK", ret);
-        ExgetResult<byte[]> bresult = tairStringCluster.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(bvalue, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
@@ -56,19 +57,19 @@ public class TairStringClusterTest extends TairStringTestBase {
         String ret_nx = "";
 
         // String
-        ret_xx = tairStringCluster.exset(key, value, params_xx);
+        ret_xx = tairString.exset(key, value, params_xx);
         assertEquals(null, ret_xx);
-        ret_nx = tairStringCluster.exset(key, value, params_nx);
+        ret_nx = tairString.exset(key, value, params_nx);
         assertEquals("OK", ret_nx);
-        ret_xx = tairStringCluster.exset(key, value, params_xx);
+        ret_xx = tairString.exset(key, value, params_xx);
         assertEquals("OK", ret_xx);
 
         //binary
-        ret_xx = tairStringCluster.exset(bkey, bvalue, params_xx);
+        ret_xx = tairString.exset(bkey, bvalue, params_xx);
         assertEquals(null, ret_xx);
-        ret_nx = tairStringCluster.exset(bkey, bvalue, params_nx);
+        ret_nx = tairString.exset(bkey, bvalue, params_nx);
         assertEquals("OK", ret_nx);
-        ret_xx = tairStringCluster.exset(bkey, bvalue, params_xx);
+        ret_xx = tairString.exset(bkey, bvalue, params_xx);
         assertEquals("OK", ret_xx);
     }
 
@@ -78,31 +79,31 @@ public class TairStringClusterTest extends TairStringTestBase {
         long ret_var = 0;
 
         // String
-        ret = tairStringCluster.exset(key, value);
+        ret = tairString.exset(key, value);
         assertEquals("OK", ret);
-        ExgetResult<String> result = tairStringCluster.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, this.value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
 
-        ret_var = tairStringCluster.exsetver(key, 10);
+        ret_var = tairString.exsetver(key, 10);
         assertEquals(1, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, this.value.equals(result.getValue()));
         assertEquals((long) 10, result.getVersion());
 
         //binary
-        ret = tairStringCluster.exset(bkey, bvalue);
+        ret = tairString.exset(bkey, bvalue);
         assertEquals("OK", ret);
-        ExgetResult<byte[]> bresult = tairStringCluster.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(bvalue, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
 
-        ret_var = tairStringCluster.exsetver(bkey, 10);
+        ret_var = tairString.exsetver(bkey, 10);
         assertEquals(1, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(bvalue, bresult.getValue()));
         assertEquals((long) 10, bresult.getVersion());
@@ -120,31 +121,31 @@ public class TairStringClusterTest extends TairStringTestBase {
         long ret_var = 0;
 
         // String
-        ret = tairStringCluster.exset(key, num_string_value);
+        ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
-        ExgetResult<String> result = tairStringCluster.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
 
-        ret_var = tairStringCluster.exincrBy(key, incr_value);
+        ret_var = tairString.exincrBy(key, incr_value);
         assertEquals(new_long_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long) 2, result.getVersion());
 
         //binary
-        ret = tairStringCluster.exset(bkey, num_byte_value);
+        ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
-        ExgetResult<byte[]> bresult = tairStringCluster.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
 
-        ret_var = tairStringCluster.exincrBy(bkey, incr_value);
+        ret_var = tairString.exincrBy(bkey, incr_value);
         assertEquals(new_long_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long) 2, bresult.getVersion());
@@ -173,75 +174,75 @@ public class TairStringClusterTest extends TairStringTestBase {
         params_xx_pxat.xx();
         params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
 
-        ret_var = tairStringCluster.exincrBy(key, incr_value, params_nx_px);
+        ret_var = tairString.exincrBy(key, incr_value, params_nx_px);
         assertEquals(incr_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
         Thread.sleep(1000);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertEquals(null, result);
 
-        ret = tairStringCluster.exset(key, num_string_value);
+        ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
-        ret_var = tairStringCluster.exincrBy(key, incr_value, params_xx_ex);
+        ret_var = tairString.exincrBy(key, incr_value, params_xx_ex);
         assertEquals(new_long_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long) 2, result.getVersion());
         Thread.sleep(1000);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertEquals(null, result);
 
-        ret = tairStringCluster.exset(key, num_string_value);
+        ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
         params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
-        ret_var = tairStringCluster.exincrBy(key, incr_value, params_xx_pxat);
+        ret_var = tairString.exincrBy(key, incr_value, params_xx_pxat);
         assertEquals(new_long_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long) 2, result.getVersion());
         Thread.sleep(1000);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertEquals(null, result);
 
         //binary
-        ret_var = tairStringCluster.exincrBy(bkey, incr_value, params_nx_px);
+        ret_var = tairString.exincrBy(bkey, incr_value, params_nx_px);
         assertEquals(incr_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
         Thread.sleep(1000);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
 
-        ret = tairStringCluster.exset(bkey, num_byte_value);
+        ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
-        ret_var = tairStringCluster.exincrBy(bkey, incr_value, params_xx_ex);
+        ret_var = tairString.exincrBy(bkey, incr_value, params_xx_ex);
         assertEquals(new_long_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long) 2, bresult.getVersion());
         Thread.sleep(1000);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
 
-        ret = tairStringCluster.exset(bkey, num_byte_value);
+        ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
         params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
-        ret_var = tairStringCluster.exincrBy(bkey, incr_value, params_xx_pxat);
+        ret_var = tairString.exincrBy(bkey, incr_value, params_xx_pxat);
         assertEquals(new_long_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long) 2, bresult.getVersion());
         Thread.sleep(2000);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
     }
 
@@ -257,31 +258,31 @@ public class TairStringClusterTest extends TairStringTestBase {
         Double ret_var = Double.valueOf(0);
 
         // String
-        ret = tairStringCluster.exset(key, num_string_value);
+        ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
-        ExgetResult<String> result = tairStringCluster.exget(key);
+        ExgetResult<String> result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
 
-        ret_var = tairStringCluster.exincrByFloat(key, incr_value);
+        ret_var = tairString.exincrByFloat(key, incr_value);
         assertEquals(new_float_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long) 2, result.getVersion());
 
         //binary
-        ret = tairStringCluster.exset(bkey, num_byte_value);
+        ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
-        ExgetResult<byte[]> bresult = tairStringCluster.exget(bkey);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
 
-        ret_var = tairStringCluster.exincrByFloat(bkey, incr_value);
+        ret_var = tairString.exincrByFloat(bkey, incr_value);
         assertEquals(new_float_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long) 2, bresult.getVersion());
@@ -310,75 +311,75 @@ public class TairStringClusterTest extends TairStringTestBase {
         params_xx_pxat.xx();
         params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
 
-        ret_var = tairStringCluster.exincrByFloat(key, incr_value, params_nx_px);
+        ret_var = tairString.exincrByFloat(key, incr_value, params_nx_px);
         assertEquals(incr_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long) 1, result.getVersion());
         Thread.sleep(1000);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertEquals(null, result);
 
-        ret = tairStringCluster.exset(key, num_string_value);
+        ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
-        ret_var = tairStringCluster.exincrByFloat(key, incr_value, params_xx_ex);
+        ret_var = tairString.exincrByFloat(key, incr_value, params_xx_ex);
         assertEquals(new_float_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long) 2, result.getVersion());
         Thread.sleep(1000);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertEquals(null, result);
 
-        ret = tairStringCluster.exset(key, num_string_value);
+        ret = tairString.exset(key, num_string_value);
         assertEquals("OK", ret);
         params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
-        ret_var = tairStringCluster.exincrByFloat(key, incr_value, params_xx_pxat);
+        ret_var = tairString.exincrByFloat(key, incr_value, params_xx_pxat);
         assertEquals(new_float_value, ret_var);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long) 2, result.getVersion());
         Thread.sleep(1000);
-        result = tairStringCluster.exget(key);
+        result = tairString.exget(key);
         assertEquals(null, result);
 
         //binary
-        ret_var = tairStringCluster.exincrByFloat(bkey, incr_value, params_nx_px);
+        ret_var = tairString.exincrByFloat(bkey, incr_value, params_nx_px);
         assertEquals(incr_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long) 1, bresult.getVersion());
         Thread.sleep(1000);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
 
-        ret = tairStringCluster.exset(bkey, num_byte_value);
+        ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
-        ret_var = tairStringCluster.exincrByFloat(bkey, incr_value, params_xx_ex);
+        ret_var = tairString.exincrByFloat(bkey, incr_value, params_xx_ex);
         assertEquals(new_float_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long) 2, bresult.getVersion());
         Thread.sleep(1000);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
 
-        ret = tairStringCluster.exset(bkey, num_byte_value);
+        ret = tairString.exset(bkey, num_byte_value);
         assertEquals("OK", ret);
         params_xx_pxat.pxat(System.currentTimeMillis() + 1000);
-        ret_var = tairStringCluster.exincrByFloat(bkey, incr_value, params_xx_pxat);
+        ret_var = tairString.exincrByFloat(bkey, incr_value, params_xx_pxat);
         assertEquals(new_float_value, ret_var);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long) 2, bresult.getVersion());
         Thread.sleep(2000);
-        bresult = tairStringCluster.exget(bkey);
+        bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
     }
 
@@ -389,23 +390,23 @@ public class TairStringClusterTest extends TairStringTestBase {
         ExcasResult<byte[]> ret3 = null;
 
         // String
-        ret = tairStringCluster.exset(key, value);
+        ret = tairString.exset(key, value);
         assertEquals("OK", ret);
-        ret2 = tairStringCluster.excas(key, "new" + value, 2);
+        ret2 = tairString.excas(key, "new" + value, 2);
         assertEquals(value, ret2.getValue());
         assertEquals((long) 1, ret2.getVersion());
-        ret2 = tairStringCluster.excas(key, "new" + value, 1);
+        ret2 = tairString.excas(key, "new" + value, 1);
         assertEquals("OK", ret2.getMsg());
         assertEquals("", ret2.getValue());
         assertEquals((long) 2, ret2.getVersion());
 
         //binary
-        ret = tairStringCluster.exset(bkey, bvalue);
+        ret = tairString.exset(bkey, bvalue);
         assertEquals("OK", ret);
-        ret3 = tairStringCluster.excas(bkey, SafeEncoder.encode("new" + bvalue), 2);
+        ret3 = tairString.excas(bkey, SafeEncoder.encode("new" + bvalue), 2);
         assertEquals(true, Arrays.equals(bvalue, ret3.getValue()));
         assertEquals((long) 1, ret3.getVersion());
-        ret3 = tairStringCluster.excas(bkey, SafeEncoder.encode("new" + bvalue), 1);
+        ret3 = tairString.excas(bkey, SafeEncoder.encode("new" + bvalue), 1);
         assertEquals(true, Arrays.equals(SafeEncoder.encode("OK"), ret3.getMsg()));
         assertEquals(true, Arrays.equals(SafeEncoder.encode(""), ret3.getValue()));
         assertEquals((long) 2, ret3.getVersion());
@@ -417,19 +418,20 @@ public class TairStringClusterTest extends TairStringTestBase {
         long ret2 = 0;
 
         // String
-        ret = tairStringCluster.exset(key, value);
+        ret = tairString.exset(key, value);
         assertEquals("OK", ret);
-        ret2 = tairStringCluster.excad(key, 2);
+        ret2 = tairString.excad(key, 2);
         assertEquals((long) 0, ret2);
-        ret2 = tairStringCluster.excad(key, 1);
+        ret2 = tairString.excad(key, 1);
         assertEquals((long) 1, ret2);
 
         //binary
-        ret = tairStringCluster.exset(bkey, bvalue);
+        ret = tairString.exset(bkey, bvalue);
         assertEquals("OK", ret);
-        ret2 = tairStringCluster.excad(bkey, 2);
+        ret2 = tairString.excad(bkey, 2);
         assertEquals((long) 0, ret2);
-        ret2 = tairStringCluster.excad(bkey, 1);
+        ret2 = tairString.excad(bkey, 1);
         assertEquals((long) 1, ret2);
     }
+
 }

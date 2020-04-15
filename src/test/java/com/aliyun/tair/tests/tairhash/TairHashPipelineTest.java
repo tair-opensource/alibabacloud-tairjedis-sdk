@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairhash;
+
 import com.aliyun.tair.tairhash.params.ExhincrByFloatParams;
 import com.aliyun.tair.tairhash.params.ExhincrByParams;
 import com.aliyun.tair.tairhash.params.ExhsetParams;

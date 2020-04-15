@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairbloom;
+
 import org.junit.Test;
 
 import java.util.UUID;

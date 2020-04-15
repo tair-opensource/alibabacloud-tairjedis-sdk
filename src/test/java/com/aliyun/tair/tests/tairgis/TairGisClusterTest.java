@@ -1,5 +1,8 @@
+package com.aliyun.tair.tests.tairgis;
+
 import com.aliyun.tair.tairgis.params.GisParams;
 import com.aliyun.tair.tairgis.params.GisSearchResponse;
+import com.aliyun.tair.tests.AssertUtil;
 import com.taobao.eagleeye.EagleEye;
 import org.junit.After;
 import org.junit.Before;

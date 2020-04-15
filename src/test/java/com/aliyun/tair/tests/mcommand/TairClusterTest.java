@@ -1,6 +1,9 @@
+package com.aliyun.tair.tests.mcommand;
+
 import java.util.List;
 import java.util.UUID;
 
+import com.aliyun.tair.tests.TestBase;
 import org.junit.Assert;
 import org.junit.Test;
 

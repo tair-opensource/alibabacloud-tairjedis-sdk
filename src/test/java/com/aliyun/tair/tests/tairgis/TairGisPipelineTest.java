@@ -1,11 +1,11 @@
+package com.aliyun.tair.tests.tairgis;
+
 import com.aliyun.tair.tairgis.params.GisParams;
+import com.aliyun.tair.tests.AssertUtil;
 import org.junit.Test;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
-
-import static redis.clients.jedis.Protocol.toByteArray;
-import redis.clients.jedis.Response;
 
 import java.util.*;
 

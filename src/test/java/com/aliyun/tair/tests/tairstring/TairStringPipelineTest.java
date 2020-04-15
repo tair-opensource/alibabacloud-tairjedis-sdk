@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairstring;
+
 import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
 import com.aliyun.tair.tairstring.params.ExincrbyParams;
 import com.aliyun.tair.tairstring.params.ExsetParams;
@@ -11,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TairStringPipelineTest extends TairStringTestBase {
     private String key1;

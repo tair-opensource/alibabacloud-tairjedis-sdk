@@ -43,7 +43,7 @@ public enum ModuleCommand implements ProtocolCommand {
     EXHSTRLEN("EXHSTRLEN"),
     EXHKEYS("EXHKEYS"),
     EXHVALS("EXHVALS"),
-    EXHGETALL("EXHGETALL"),
+    EXHGETALL("EXHGETALL2"),
     EXHMGETWITHVER("EXHMGETWITHVER"),
     EXHSCAN("EXHSCAN"),
 
@@ -84,6 +84,7 @@ public enum ModuleCommand implements ProtocolCommand {
         raw = SafeEncoder.encode(alt);
     }
 
+    @Override
     public byte[] getRaw() {
         return raw;
     }

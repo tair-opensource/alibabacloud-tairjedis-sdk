@@ -1,5 +1,8 @@
+package com.aliyun.tair.tests.tairgis;
+
 import com.aliyun.tair.tairgis.params.GisParams;
 import com.aliyun.tair.tairgis.params.GisSearchResponse;
+import com.aliyun.tair.tests.AssertUtil;
 import org.junit.Test;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;

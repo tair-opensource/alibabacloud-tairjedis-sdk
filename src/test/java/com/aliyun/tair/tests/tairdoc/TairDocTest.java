@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairdoc;
+
 import java.util.UUID;
 
 import com.aliyun.tair.tairdoc.params.JsongetParams;

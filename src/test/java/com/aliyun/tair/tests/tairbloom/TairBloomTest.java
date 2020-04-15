@@ -1,8 +1,7 @@
-import org.junit.Test;
-import redis.clients.jedis.util.SafeEncoder;
+package com.aliyun.tair.tests.tairbloom;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.Test;
+
 import java.util.UUID;
 
 import static org.junit.Assert.*;
