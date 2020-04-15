@@ -10,8 +10,12 @@ public class TairDocClusterTest extends TairDocTestBase {
     private String jsonKey;
     private static final String JSON_STRING_EXAMPLE = "{\"foo\":\"bar\",\"baz\":42}";
     private static final String JSON_ARRAY_EXAMPLE = "{\"id\":[1,2,3]}";
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     public TairDocClusterTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         jsonKey = "jsonkey" + "-" + Thread.currentThread().getName() + "-" + UUID.randomUUID().toString();
     }
 

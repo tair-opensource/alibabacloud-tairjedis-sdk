@@ -15,16 +15,22 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public class TairGisTest extends TairGisTestBase{
+import static org.junit.Assert.assertTrue;
+
+public class TairGisTest extends TairGisTestBase {
 
     String area;
     byte[] barea;
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     private static final String EXGIS_BIGKEY = "EXGIS_BIGKEY";
 
     public TairGisTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         area = "area" + Thread.currentThread().getName() + UUID.randomUUID().toString();
-        barea = ("barea" +Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        barea = ("barea" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
 
     @Test
@@ -36,7 +42,7 @@ public class TairGisTest extends TairGisTestBase{
         Polygon retPolygon = null;
         WKTReader reader = new WKTReader(new GeometryFactory());
         String polygonName = "alibaba-xixi-campus",
-                polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
+            polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
 
         // String
         updated = tairGis.gisadd(area, polygonName, polygonWktText);
@@ -45,11 +51,11 @@ public class TairGisTest extends TairGisTestBase{
         polygon = (Polygon)reader.read(polygonWktText);
         retWktText = tairGis.gisget(area, polygonName);
         retPolygon = (Polygon)reader.read(retWktText);
-        AssertUtil.assertTrue(polygon.equals(retPolygon));
+        assertTrue(polygon.equals(retPolygon));
 
         Map<String, String> searchResults = tairGis.gissearch(area, pointWktText);
         AssertUtil.assertEquals(1, searchResults.size());
-        AssertUtil.assertTrue(searchResults.containsKey(polygonName));
+        assertTrue(searchResults.containsKey(polygonName));
         AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
 
         // binary
@@ -59,11 +65,11 @@ public class TairGisTest extends TairGisTestBase{
         polygon = (Polygon)reader.read(polygonWktText);
         bretWktText = tairGis.gisget(barea, polygonName.getBytes());
         retPolygon = (Polygon)reader.read(new String(bretWktText));
-        AssertUtil.assertTrue(polygon.equals(retPolygon));
+        assertTrue(polygon.equals(retPolygon));
 
         Map<byte[], byte[]> bsearchResults = tairGis.gissearch(barea, pointWktText.getBytes());
         AssertUtil.assertEquals(1, bsearchResults.size());
-        AssertUtil.assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
+        assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
         AssertUtil.assertEquals(true, Arrays.equals(bretWktText, bsearchResults.get(polygonName.getBytes())));
     }
 
@@ -176,7 +182,6 @@ public class TairGisTest extends TairGisTestBase{
         tairGis.gisintersects(EXGIS_BIGKEY, polygonWktText);
     }
 
-
     @Test
     public void gisContainsTest() {
         String uuid = UUID.randomUUID().toString();
@@ -191,7 +196,7 @@ public class TairGisTest extends TairGisTestBase{
         // giscontains
         Map<String, String> retMap = tairGis.giscontains(key, pointWkt);
         AssertUtil.assertEquals(1, retMap.size());
-        AssertUtil.assertTrue(retMap.containsKey(polygonName));
+        assertTrue(retMap.containsKey(polygonName));
         AssertUtil.assertEquals(polygonWktText, retMap.get(polygonName));
 
         // giscontains withoutwkt
@@ -202,14 +207,14 @@ public class TairGisTest extends TairGisTestBase{
         // giscontains binary
         Map<byte[], byte[]> bretMap = tairGis.giscontains(key.getBytes(), pointWkt.getBytes());
         AssertUtil.assertEquals(1, bretMap.size());
-        AssertUtil.assertTrue(bretMap.containsKey(polygonName.getBytes()));
-        AssertUtil.assertTrue(Arrays.equals(polygonWktText.getBytes(), bretMap.get(polygonName.getBytes())));
+        assertTrue(bretMap.containsKey(polygonName.getBytes()));
+        assertTrue(Arrays.equals(polygonWktText.getBytes(), bretMap.get(polygonName.getBytes())));
 
         // giscontains withoutwkt binary
         List<byte[]> bretList = tairGis.giscontains(key.getBytes(), pointWkt.getBytes(),
             GisParams.gisParams().withoutWkt());
         AssertUtil.assertEquals(1, bretList.size());
-        AssertUtil.assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
+        assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
     }
 
     @Test
@@ -225,7 +230,7 @@ public class TairGisTest extends TairGisTestBase{
         // gisgetall
         Map<String, String> retMap = tairGis.gisgetall(key);
         AssertUtil.assertEquals(1, retMap.size());
-        AssertUtil.assertTrue(retMap.containsKey(polygonName));
+        assertTrue(retMap.containsKey(polygonName));
         AssertUtil.assertEquals(polygonWktText, retMap.get(polygonName));
 
         // gisgetall withoutwkt
@@ -236,13 +241,13 @@ public class TairGisTest extends TairGisTestBase{
         // gisgetall binary
         Map<byte[], byte[]> bretMap = tairGis.gisgetall(key.getBytes());
         AssertUtil.assertEquals(1, bretMap.size());
-        AssertUtil.assertTrue(bretMap.containsKey(polygonName.getBytes()));
-        AssertUtil.assertTrue(Arrays.equals(polygonWktText.getBytes(), bretMap.get(polygonName.getBytes())));
+        assertTrue(bretMap.containsKey(polygonName.getBytes()));
+        assertTrue(Arrays.equals(polygonWktText.getBytes(), bretMap.get(polygonName.getBytes())));
 
         // gisgetall withoutwkt binary
         List<byte[]> bretList = tairGis.gisgetall(key.getBytes(), GisParams.gisParams().withoutWkt());
         AssertUtil.assertEquals(1, bretList.size());
-        AssertUtil.assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
+        assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
     }
 
     @Test
@@ -255,7 +260,7 @@ public class TairGisTest extends TairGisTestBase{
         tairGis.gisadd(key, "Agrigento", "POINT (13.583333 37.316667)");
 
         // withoutvalue
-        List<GisSearchResponse> responses = tairGis.gissearchByMember(key, "Palermo",200,
+        List<GisSearchResponse> responses = tairGis.gissearchByMember(key, "Palermo", 200,
             GeoUnit.KM, new GisParams().withoutValue());
         AssertUtil.assertEquals(3, responses.size());
         AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
@@ -271,7 +276,7 @@ public class TairGisTest extends TairGisTestBase{
         equalsWithinEpsilon(0, responses.get(0).getDistance());
 
         // withdist
-        responses = tairGis.gissearchByMember(key, "Palermo",200,
+        responses = tairGis.gissearchByMember(key, "Palermo", 200,
             GeoUnit.KM, new GisParams().withDist());
         AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
         AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
@@ -363,5 +368,87 @@ public class TairGisTest extends TairGisTestBase{
     private boolean equalsWithinEpsilon(double d1, double d2) {
         double epsilon = 1E-5;
         return Math.abs(d1 - d2) < epsilon;
+    }
+
+    @Test
+    public void gisaddException() {
+        try {
+            jedis.set(randomkey_, "bar");
+            tairGis.gisadd(randomkey_, "", "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void gisgetException() {
+        tairGis.gisget(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairGis.gisget(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void gisdelException() {
+        tairGis.gisdel(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairGis.gisdel(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void gissearchException() {
+        tairGis.gissearch(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairGis.gissearch(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void giscontainsException() {
+        tairGis.giscontains(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairGis.giscontains(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void gisintersectsException() {
+        tairGis.gisintersects(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairGis.gisintersects(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void gisgetallException() {
+        tairGis.gisgetall(randomkey_);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairGis.gisgetall(randomkey_);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
     }
 }

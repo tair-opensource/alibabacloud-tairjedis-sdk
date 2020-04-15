@@ -10,10 +10,14 @@ import static org.junit.Assert.assertEquals;
 public class TairBloomPipelineTest extends TairBloomTestBase {
     private String bbf;
     private byte[] bcf = "bcf".getBytes();
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     private static final String EXBLOOM_BIGKEY = "EXBLOOM_BIGKEY";
 
     public TairBloomPipelineTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bbf = "bbf" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bcf = ("bcf" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
@@ -105,7 +109,8 @@ public class TairBloomPipelineTest extends TairBloomTestBase {
         assertEquals(true, Boolean[].class.cast(objs.get(i++))[1]);
 
         // binary
-        tairBloomPipeline.bfinsert(bcf, "CAPACITY".getBytes(), 100, "ERROR".getBytes(), 0.001, "ITEMS".getBytes(), "val1".getBytes(), "val2".getBytes());
+        tairBloomPipeline.bfinsert(bcf, "CAPACITY".getBytes(), 100, "ERROR".getBytes(), 0.001, "ITEMS".getBytes(),
+            "val1".getBytes(), "val2".getBytes());
         tairBloomPipeline.bfmadd(bcf, "val1".getBytes(), "val2".getBytes());
         tairBloomPipeline.bfmexists(bcf, "val1".getBytes(), "val2".getBytes());
 

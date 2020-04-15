@@ -38,8 +38,12 @@ public class TairHashClusterTest extends TairHashTestBase {
     final byte[] bbar3 = {0x05, 0x06, 0x07, 0x08, 0x0C};
     final byte[] bbarstar = {0x05, 0x06, 0x07, 0x08, '*'};
     private static final String EXHASH_BIGKEY = "EXHASH_BIGKEY";
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     public TairHashClusterTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         foo = "foo" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bfoo = ("bfoo" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
@@ -52,23 +56,22 @@ public class TairHashClusterTest extends TairHashTestBase {
             (long)tairHashCluster.exhset(foo, "", "", params));
     }
 
-
     @Test
     public void exhsetwitnoactive() throws InterruptedException {
         // Binary
         ExhsetParams exhsetParams = new ExhsetParams();
         exhsetParams.ex(1);
-        assertEquals(1,(long)tairHashCluster.exhset(bfoo, bbar, bcar,exhsetParams));
+        assertEquals(1, (long)tairHashCluster.exhset(bfoo, bbar, bcar, exhsetParams));
         Thread.sleep(2000);
-        assertEquals(0,(long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
 
         exhsetParams.noactive();
-        assertEquals(1,(long)tairHashCluster.exhset(bfoo, bbar, bcar,exhsetParams));
+        assertEquals(1, (long)tairHashCluster.exhset(bfoo, bbar, bcar, exhsetParams));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHashCluster.exhlen(bfoo));
-        assertEquals(0,(long)tairHashCluster.exhlen(bfoo,true));
-        assertEquals(false,tairHashCluster.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHashCluster.exhlen(bfoo));
+        assertEquals(1, (long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo, true));
+        assertEquals(false, tairHashCluster.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
     }
 
     @Test
@@ -126,15 +129,15 @@ public class TairHashClusterTest extends TairHashTestBase {
         tairHashCluster.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHashCluster.exhexpire(bfoo, bbar, 1));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
 
         tairHashCluster.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHashCluster.exhexpire(bfoo, bbar, 1,true));
+        assertEquals(true, tairHashCluster.exhexpire(bfoo, bbar, 1, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHashCluster.exhlen(bfoo));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo,true));
-        assertEquals(false, tairHashCluster.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHashCluster.exhlen(bfoo));
+        assertEquals(1, (long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo, true));
+        assertEquals(false, tairHashCluster.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
     }
 
     @Test
@@ -143,16 +146,16 @@ public class TairHashClusterTest extends TairHashTestBase {
         tairHashCluster.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHashCluster.exhexpireAt(bfoo, bbar, unixTime));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
 
         unixTime = (System.currentTimeMillis() / 1000L) + 1;
         tairHashCluster.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHashCluster.exhexpireAt(bfoo, bbar, unixTime,true));
+        assertEquals(true, tairHashCluster.exhexpireAt(bfoo, bbar, unixTime, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHashCluster.exhlen(bfoo));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo,true));
-        assertEquals(false, tairHashCluster.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHashCluster.exhlen(bfoo));
+        assertEquals(1, (long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo, true));
+        assertEquals(false, tairHashCluster.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
     }
 
     @Test
@@ -160,15 +163,15 @@ public class TairHashClusterTest extends TairHashTestBase {
         tairHashCluster.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHashCluster.exhpexpire(bfoo, bbar, 1000));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
 
         tairHashCluster.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHashCluster.exhpexpire(bfoo, bbar, 1,true));
+        assertEquals(true, tairHashCluster.exhpexpire(bfoo, bbar, 1, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHashCluster.exhlen(bfoo));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo,true));
-        assertEquals(false, tairHashCluster.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHashCluster.exhlen(bfoo));
+        assertEquals(1, (long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo, true));
+        assertEquals(false, tairHashCluster.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
     }
 
     @Test
@@ -177,16 +180,16 @@ public class TairHashClusterTest extends TairHashTestBase {
         tairHashCluster.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHashCluster.exhpexpireAt(bfoo, bbar, unixTime));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
 
         unixTime = (System.currentTimeMillis() / 1000L) + 1000;
         tairHashCluster.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHashCluster.exhpexpireAt(bfoo, bbar, unixTime,true));
+        assertEquals(true, tairHashCluster.exhpexpireAt(bfoo, bbar, unixTime, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHashCluster.exhlen(bfoo));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo,true));
-        assertEquals(false, tairHashCluster.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHashCluster.exhlen(bfoo));
+        assertEquals(1, (long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo, true));
+        assertEquals(false, tairHashCluster.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
     }
 
     @Test
@@ -306,25 +309,25 @@ public class TairHashClusterTest extends TairHashTestBase {
         exhincrByParams.max(10);
 
         try {
-            tairHashCluster.exhincrBy(bfoo, bbar, 11,exhincrByParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrBy(bfoo, bbar, 11, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
         try {
-            tairHashCluster.exhincrBy(bfoo, bbar, -1,exhincrByParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrBy(bfoo, bbar, -1, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
-        assertEquals(5,(long) tairHashCluster.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(5, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5, exhincrByParams));
 
         exhincrByParams.min(10);
         exhincrByParams.max(0);
 
         try {
-            tairHashCluster.exhincrBy(bfoo, bbar, 5,exhincrByParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrBy(bfoo, bbar, 5, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("min value is bigger than max value"));
         }
     }
@@ -333,37 +336,37 @@ public class TairHashClusterTest extends TairHashTestBase {
     public void exhincrByWithExpire() throws InterruptedException {
         ExhincrByParams exhincrByParams = new ExhincrByParams();
         exhincrByParams.ex(1);
-        assertEquals(5,(long) tairHashCluster.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(5, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5, exhincrByParams));
         // active expire
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
         // no active expire
         exhincrByParams.noactive();
-        assertEquals(5,(long) tairHashCluster.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(5, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5, exhincrByParams));
         // active expire
         Thread.sleep(2000);
-        assertEquals(1,(long) tairHashCluster.exhlen(bfoo));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo,true));
-        assertEquals(false,  tairHashCluster.exhexists(bfoo,bbar));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(1, (long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo, true));
+        assertEquals(false, tairHashCluster.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
     }
 
     @Test
     public void exhincrByWithVersion() {
         ExhincrByParams exhincrByParams = new ExhincrByParams();
         exhincrByParams.ver(1);
-        assertEquals(5,(long) tairHashCluster.exhincrBy(bfoo, bbar, 5,exhincrByParams));
-        assertEquals(10,(long) tairHashCluster.exhincrBy(bfoo, bbar, 5,exhincrByParams));
-        assertEquals(15,(long) tairHashCluster.exhincrBy(bfoo, bbar, 5));
+        assertEquals(5, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5, exhincrByParams));
+        assertEquals(10, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5, exhincrByParams));
+        assertEquals(15, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5));
         try {
-            tairHashCluster.exhincrBy(bfoo, bbar,5 ,exhincrByParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrBy(bfoo, bbar, 5, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("update version is stale"));
         }
-        assertEquals(20,(long)  tairHashCluster.exhincrBy(bfoo, bbar,5 ,new ExhincrByParams().abs(5)));
-        assertEquals(5,(long)  tairHashCluster.exhver(bfoo, bbar));
-        assertEquals(25,(long)  tairHashCluster.exhincrBy(bfoo, bbar,5 ,new ExhincrByParams().ver(0)));
-        assertEquals(6,(long)  tairHashCluster.exhver(bfoo, bbar));
+        assertEquals(20, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5, new ExhincrByParams().abs(5)));
+        assertEquals(5, (long)tairHashCluster.exhver(bfoo, bbar));
+        assertEquals(25, (long)tairHashCluster.exhincrBy(bfoo, bbar, 5, new ExhincrByParams().ver(0)));
+        assertEquals(6, (long)tairHashCluster.exhver(bfoo, bbar));
     }
 
     @Test
@@ -386,25 +389,25 @@ public class TairHashClusterTest extends TairHashTestBase {
         exhincrByFloatParams.max(10.1);
 
         try {
-            tairHashCluster.exhincrByFloat(bfoo, bbar, 11.1,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrByFloat(bfoo, bbar, 11.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
         try {
-            tairHashCluster.exhincrByFloat(bfoo, bbar, -1.1,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrByFloat(bfoo, bbar, -1.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
-        assertEquals(Double.compare(5.1,tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(5.1, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
 
         exhincrByFloatParams.min(10.1);
         exhincrByFloatParams.max(0.1);
 
         try {
-            tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("min value is bigger than max value"));
         }
     }
@@ -413,37 +416,41 @@ public class TairHashClusterTest extends TairHashTestBase {
     public void exhincrByFloatWithExpire() throws InterruptedException {
         ExhincrByFloatParams exhincrByFloatParams = new ExhincrByFloatParams();
         exhincrByFloatParams.ex(1);
-        assertEquals(Double.compare(5.1,tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(5.1, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
         // active expire
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
         // no active expire
         exhincrByFloatParams.noactive();
-        assertEquals(Double.compare(5.1,tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(5.1, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
         // active expire
         Thread.sleep(2000);
-        assertEquals(1,(long) tairHashCluster.exhlen(bfoo));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo,true));
-        assertEquals(false, tairHashCluster.exhexists(bfoo,bbar));
-        assertEquals(0,(long) tairHashCluster.exhlen(bfoo));
+        assertEquals(1, (long)tairHashCluster.exhlen(bfoo));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo, true));
+        assertEquals(false, tairHashCluster.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHashCluster.exhlen(bfoo));
     }
 
     @Test
     public void exhincrByFloatWithVersion() {
         ExhincrByFloatParams exhincrByFloatParams = new ExhincrByFloatParams();
         exhincrByFloatParams.ver(1);
-        assertEquals(Double.compare(5.1,tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
-        assertEquals(Double.compare(10.2,tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
-        assertEquals(Double.compare(15.3,tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1)),0);
+        assertEquals(Double.compare(5.1, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
+        assertEquals(Double.compare(10.2, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
+        assertEquals(Double.compare(15.3, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1)), 0);
         try {
-            tairHashCluster.exhincrByFloat(bfoo, bbar,5.1 ,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("update version is stale"));
         }
-        assertEquals(Double.compare(20.4,tairHashCluster.exhincrByFloat(bfoo, bbar,5.1 ,new ExhincrByFloatParams().abs(5))),0);
-        assertEquals(5,(long)  tairHashCluster.exhver(bfoo, bbar));
-        assertEquals(Double.compare(25.5,tairHashCluster.exhincrByFloat(bfoo, bbar,5.1 ,new ExhincrByFloatParams().ver(0))),0);
-        assertEquals(6,(long)  tairHashCluster.exhver(bfoo, bbar));
+        assertEquals(
+            Double.compare(20.4, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, new ExhincrByFloatParams().abs(5))),
+            0);
+        assertEquals(5, (long)tairHashCluster.exhver(bfoo, bbar));
+        assertEquals(
+            Double.compare(25.5, tairHashCluster.exhincrByFloat(bfoo, bbar, 5.1, new ExhincrByFloatParams().ver(0))),
+            0);
+        assertEquals(6, (long)tairHashCluster.exhver(bfoo, bbar));
     }
 
     @Test

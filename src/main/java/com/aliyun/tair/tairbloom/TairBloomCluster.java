@@ -72,6 +72,18 @@ public class TairBloomCluster {
         return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    public Boolean[] bfinsert(String key, BfinsertParams params, String... items) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.BFINSERT,
+            params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encodeMany(items)));
+        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+    }
+
+    public Boolean[] bfinsert(byte[] key, BfinsertParams params, byte[]... items) {
+        Object obj = jc.sendCommand(key, ModuleCommand.BFINSERT, params.getByteParams(key, items));
+        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+    }
+
+    @Deprecated
     public Boolean[] bfinsert(String key, String initCapacityTag, long initCapacity, String errorRateTag, Double errorRate, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, String.valueOf(initCapacity), errorRateTag, String.valueOf(errorRate), itemTag);
@@ -79,6 +91,7 @@ public class TairBloomCluster {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(String key, String nocreateTag, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
@@ -86,6 +99,7 @@ public class TairBloomCluster {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(String key, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, itemTag);
@@ -93,6 +107,7 @@ public class TairBloomCluster {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] initCapacityTag, long initCapacity, byte[] errorRateTag, Double errorRate, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, toByteArray(initCapacity), errorRateTag, toByteArray(errorRate), itemTag);
@@ -100,6 +115,7 @@ public class TairBloomCluster {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] nocreateTag, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
@@ -107,6 +123,7 @@ public class TairBloomCluster {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, itemTag);

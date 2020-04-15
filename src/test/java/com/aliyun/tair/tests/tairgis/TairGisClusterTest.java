@@ -18,16 +18,20 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public class TairGisClusterTest extends TairGisTestBase{
+public class TairGisClusterTest extends TairGisTestBase {
 
     String area;
     byte[] barea;
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     private static final String EXGIS_BIGKEY = "EXGIS_BIGKEY";
 
     public TairGisClusterTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         area = "area" + Thread.currentThread().getName() + UUID.randomUUID().toString();
-        barea = ("barea" +Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        barea = ("barea" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
 
     @Before
@@ -49,7 +53,7 @@ public class TairGisClusterTest extends TairGisTestBase{
         Polygon retPolygon = null;
         WKTReader reader = new WKTReader(new GeometryFactory());
         String polygonName = "alibaba-xixi-campus",
-                polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
+            polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
 
         // String
         updated = tairGisCluster.gisadd(area, polygonName, polygonWktText);

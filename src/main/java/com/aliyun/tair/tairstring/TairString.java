@@ -249,11 +249,17 @@ public class TairString {
      */
     public ExcasResult<String> excas(String key, String newvalue, long version) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, String.valueOf(version));
+        if (obj instanceof Long && ((Long)obj == -1L)) {
+            return null;
+        }
         return StringBuilderFactory.EXCAS_RESULT_STRING.build(obj);
     }
 
     public ExcasResult<byte[]> excas(byte[] key, byte[] newvalue, long version) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, toByteArray(version));
+        if (obj instanceof Long && ((Long)obj == -1L)) {
+            return null;
+        }
         return StringBuilderFactory.EXCAS_RESULT_BYTE.build(obj);
     }
 

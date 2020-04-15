@@ -40,7 +40,12 @@ public class TairHashTest extends TairHashTestBase {
     final byte[] bbarstar = {0x05, 0x06, 0x07, 0x08, '*'};
     private static final String EXHASH_BIGKEY = "EXHASH_BIGKEY";
 
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
+
     public TairHashTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         foo = "foo" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bfoo = ("bfoo" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
@@ -50,17 +55,17 @@ public class TairHashTest extends TairHashTestBase {
         // Binary
         ExhsetParams exhsetParams = new ExhsetParams();
         exhsetParams.ex(1);
-        assertEquals(1,(long)tairHash.exhset(bfoo, bbar, bcar,exhsetParams));
+        assertEquals(1, (long)tairHash.exhset(bfoo, bbar, bcar, exhsetParams));
         Thread.sleep(2000);
-        assertEquals(0,(long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
 
         exhsetParams.noactive();
-        assertEquals(1,(long)tairHash.exhset(bfoo, bbar, bcar,exhsetParams));
+        assertEquals(1, (long)tairHash.exhset(bfoo, bbar, bcar, exhsetParams));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHash.exhlen(bfoo));
-        assertEquals(0,(long)tairHash.exhlen(bfoo,true));
-        assertEquals(false,tairHash.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo, true));
+        assertEquals(false, tairHash.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
     }
 
     @Test
@@ -124,15 +129,15 @@ public class TairHashTest extends TairHashTestBase {
         tairHash.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHash.exhexpire(bfoo, bbar, 1));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
 
         tairHash.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHash.exhexpire(bfoo, bbar, 1,true));
+        assertEquals(true, tairHash.exhexpire(bfoo, bbar, 1, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHash.exhlen(bfoo));
-        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
-        assertEquals(false, tairHash.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo, true));
+        assertEquals(false, tairHash.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
     }
 
     @Test
@@ -141,16 +146,16 @@ public class TairHashTest extends TairHashTestBase {
         tairHash.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHash.exhexpireAt(bfoo, bbar, unixTime));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
 
         unixTime = (System.currentTimeMillis() / 1000L) + 1;
         tairHash.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHash.exhexpireAt(bfoo, bbar, unixTime,true));
+        assertEquals(true, tairHash.exhexpireAt(bfoo, bbar, unixTime, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHash.exhlen(bfoo));
-        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
-        assertEquals(false, tairHash.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo, true));
+        assertEquals(false, tairHash.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
     }
 
     @Test
@@ -158,15 +163,15 @@ public class TairHashTest extends TairHashTestBase {
         tairHash.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHash.exhpexpire(bfoo, bbar, 1000));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
 
         tairHash.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHash.exhpexpire(bfoo, bbar, 1,true));
+        assertEquals(true, tairHash.exhpexpire(bfoo, bbar, 1, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHash.exhlen(bfoo));
-        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
-        assertEquals(false, tairHash.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo, true));
+        assertEquals(false, tairHash.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
     }
 
     @Test
@@ -175,16 +180,16 @@ public class TairHashTest extends TairHashTestBase {
         tairHash.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHash.exhpexpireAt(bfoo, bbar, unixTime));
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
 
         unixTime = (System.currentTimeMillis() / 1000L) + 1000;
         tairHash.exhset(bfoo, bbar, bbar);
-        assertEquals(true, tairHash.exhpexpireAt(bfoo, bbar, unixTime,true));
+        assertEquals(true, tairHash.exhpexpireAt(bfoo, bbar, unixTime, true));
         Thread.sleep(2000);
-        assertEquals(1,(long)tairHash.exhlen(bfoo));
-        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
-        assertEquals(false, tairHash.exhexists(bfoo,bbar));
-        assertEquals(0,(long)tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo, true));
+        assertEquals(false, tairHash.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
     }
 
     @Test
@@ -339,25 +344,25 @@ public class TairHashTest extends TairHashTestBase {
         exhincrByParams.max(10);
 
         try {
-            tairHash.exhincrBy(bfoo, bbar, 11,exhincrByParams);
-        }catch (Exception e){
+            tairHash.exhincrBy(bfoo, bbar, 11, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
         try {
-            tairHash.exhincrBy(bfoo, bbar, -1,exhincrByParams);
-        }catch (Exception e){
+            tairHash.exhincrBy(bfoo, bbar, -1, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
-        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(5, (long)tairHash.exhincrBy(bfoo, bbar, 5, exhincrByParams));
 
         exhincrByParams.min(10);
         exhincrByParams.max(0);
 
         try {
-            tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams);
-        }catch (Exception e){
+            tairHash.exhincrBy(bfoo, bbar, 5, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("min value is bigger than max value"));
         }
     }
@@ -366,37 +371,37 @@ public class TairHashTest extends TairHashTestBase {
     public void exhincrByWithExpire() throws InterruptedException {
         ExhincrByParams exhincrByParams = new ExhincrByParams();
         exhincrByParams.ex(1);
-        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(5, (long)tairHash.exhincrBy(bfoo, bbar, 5, exhincrByParams));
         // active expire
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
         // no active expire
         exhincrByParams.noactive();
-        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
+        assertEquals(5, (long)tairHash.exhincrBy(bfoo, bbar, 5, exhincrByParams));
         // active expire
         Thread.sleep(2000);
-        assertEquals(1,(long) tairHash.exhlen(bfoo));
-        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
-        assertEquals(false,  tairHash.exhexists(bfoo,bbar));
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo, true));
+        assertEquals(false, tairHash.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
     }
 
     @Test
     public void exhincrByWithVersion() {
         ExhincrByParams exhincrByParams = new ExhincrByParams();
         exhincrByParams.ver(1);
-        assertEquals(5,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
-        assertEquals(10,(long) tairHash.exhincrBy(bfoo, bbar, 5,exhincrByParams));
-        assertEquals(15,(long) tairHash.exhincrBy(bfoo, bbar, 5));
+        assertEquals(5, (long)tairHash.exhincrBy(bfoo, bbar, 5, exhincrByParams));
+        assertEquals(10, (long)tairHash.exhincrBy(bfoo, bbar, 5, exhincrByParams));
+        assertEquals(15, (long)tairHash.exhincrBy(bfoo, bbar, 5));
         try {
-            tairHash.exhincrBy(bfoo, bbar,5 ,exhincrByParams);
-        }catch (Exception e){
+            tairHash.exhincrBy(bfoo, bbar, 5, exhincrByParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("update version is stale"));
         }
-        assertEquals(20,(long)  tairHash.exhincrBy(bfoo, bbar,5 ,new ExhincrByParams().abs(5)));
-        assertEquals(5,(long)  tairHash.exhver(bfoo, bbar));
-        assertEquals(25,(long)  tairHash.exhincrBy(bfoo, bbar,5 ,new ExhincrByParams().ver(0)));
-        assertEquals(6,(long)  tairHash.exhver(bfoo, bbar));
+        assertEquals(20, (long)tairHash.exhincrBy(bfoo, bbar, 5, new ExhincrByParams().abs(5)));
+        assertEquals(5, (long)tairHash.exhver(bfoo, bbar));
+        assertEquals(25, (long)tairHash.exhincrBy(bfoo, bbar, 5, new ExhincrByParams().ver(0)));
+        assertEquals(6, (long)tairHash.exhver(bfoo, bbar));
     }
 
     @Test
@@ -418,25 +423,25 @@ public class TairHashTest extends TairHashTestBase {
         exhincrByFloatParams.max(10.1);
 
         try {
-            tairHash.exhincrByFloat(bfoo, bbar, 11.1,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHash.exhincrByFloat(bfoo, bbar, 11.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
         try {
-            tairHash.exhincrByFloat(bfoo, bbar, -1.1,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHash.exhincrByFloat(bfoo, bbar, -1.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("increment or decrement would overflow"));
         }
 
-        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(5.1, tairHash.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
 
         exhincrByFloatParams.min(10.1);
         exhincrByFloatParams.max(0.1);
 
         try {
-            tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHash.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("min value is bigger than max value"));
         }
     }
@@ -445,37 +450,39 @@ public class TairHashTest extends TairHashTestBase {
     public void exhincrByFloatWithExpire() throws InterruptedException {
         ExhincrByFloatParams exhincrByFloatParams = new ExhincrByFloatParams();
         exhincrByFloatParams.ex(1);
-        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(5.1, tairHash.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
         // active expire
         Thread.sleep(2000);
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
         // no active expire
         exhincrByFloatParams.noactive();
-        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
+        assertEquals(Double.compare(5.1, tairHash.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
         // active expire
         Thread.sleep(2000);
-        assertEquals(1,(long) tairHash.exhlen(bfoo));
-        assertEquals(0,(long) tairHash.exhlen(bfoo,true));
-        assertEquals(false, tairHash.exhexists(bfoo,bbar));
-        assertEquals(0,(long) tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo, true));
+        assertEquals(false, tairHash.exhexists(bfoo, bbar));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
     }
 
     @Test
     public void exhincrByFloatWithVersion() {
         ExhincrByFloatParams exhincrByFloatParams = new ExhincrByFloatParams();
         exhincrByFloatParams.ver(1);
-        assertEquals(Double.compare(5.1,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
-        assertEquals(Double.compare(10.2,tairHash.exhincrByFloat(bfoo, bbar, 5.1,exhincrByFloatParams)),0);
-        assertEquals(Double.compare(15.3,tairHash.exhincrByFloat(bfoo, bbar, 5.1)),0);
+        assertEquals(Double.compare(5.1, tairHash.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
+        assertEquals(Double.compare(10.2, tairHash.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams)), 0);
+        assertEquals(Double.compare(15.3, tairHash.exhincrByFloat(bfoo, bbar, 5.1)), 0);
         try {
-            tairHash.exhincrByFloat(bfoo, bbar,5.1 ,exhincrByFloatParams);
-        }catch (Exception e){
+            tairHash.exhincrByFloat(bfoo, bbar, 5.1, exhincrByFloatParams);
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("update version is stale"));
         }
-        assertEquals(Double.compare(20.4,tairHash.exhincrByFloat(bfoo, bbar,5.1 ,new ExhincrByFloatParams().abs(5))),0);
-        assertEquals(5,(long)  tairHash.exhver(bfoo, bbar));
-        assertEquals(Double.compare(25.5,tairHash.exhincrByFloat(bfoo, bbar,5.1 ,new ExhincrByFloatParams().ver(0))),0);
-        assertEquals(6,(long)  tairHash.exhver(bfoo, bbar));
+        assertEquals(Double.compare(20.4, tairHash.exhincrByFloat(bfoo, bbar, 5.1, new ExhincrByFloatParams().abs(5))),
+            0);
+        assertEquals(5, (long)tairHash.exhver(bfoo, bbar));
+        assertEquals(Double.compare(25.5, tairHash.exhincrByFloat(bfoo, bbar, 5.1, new ExhincrByFloatParams().ver(0))),
+            0);
+        assertEquals(6, (long)tairHash.exhver(bfoo, bbar));
     }
 
     @Test
@@ -630,13 +637,319 @@ public class TairHashTest extends TairHashTestBase {
 
     @Test
     public void exhgetAllException() {
-        Map<String, String> map = tairHash.exhgetAll(foo);
-        Assert.assertEquals(0, map.size());
+        tairHash.exhgetAll(randomkey_);
+        tairHash.exhgetAll(randomKeyBinary_);
 
         try {
-            jedis.set(foo, "bar");
-            tairHash.exhgetAll(foo);
-        }catch (Exception e){
+            jedis.set(randomkey_, "bar");
+            tairHash.exhgetAll(randomkey_);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+
+        try {
+            jedis.set(randomKeyBinary_, "bar".getBytes());
+            tairHash.exhgetAll(randomKeyBinary_);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhsetException() {
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhset(randomkey_, "", "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhsetnxException() {
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhsetnx(randomkey_, "", "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhmsetException() {
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhmset(randomkey_, new HashMap<>());
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhmsetwithoptsException() {
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhmsetwithopts(randomkey_, new LinkedList<>());
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhpexpireatException() {
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhpexpireAt(randomkey_, "", 10);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhpexpireException() {
+        tairHash.exhpexpire(randomkey_, "", 10);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhpexpire(randomkey_, "", 10);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhexpireatException() {
+        tairHash.exhpexpireAt(randomkey_, "", 10);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhpexpireAt(randomkey_, "", 10);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhexpireException() {
+        tairHash.exhexpire(randomkey_, "", 10);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhexpire(randomkey_, "", 10);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhpttlException() {
+        tairHash.exhpttl(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhpttl(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhttlException() {
+        tairHash.exhttl(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhttl(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhverException() {
+        tairHash.exhver(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhver(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhsetverException() {
+        tairHash.exhsetver(randomkey_, "", 10);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhsetver(randomkey_, "", 10);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhincrbyException() {
+        tairHash.exhincrBy(randomkey_,"", 10);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhincrBy(randomkey_, "", 10);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhincrbyfloatException() {
+        tairHash.exhincrByFloat(randomkey_, "", 10.0);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhincrByFloat(randomkey_, "", 10.0);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhgetException() {
+        tairHash.exhget(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhget(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhgetwithverException() {
+        tairHash.exhgetwithver(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhgetwithver(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhmgetException() {
+        tairHash.exhmget(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhmget(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhdelException() {
+        tairHash.exhdel(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhdel(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhlenException() {
+        tairHash.exhlen(randomkey_);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhlen(randomkey_);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhexistsException() {
+        tairHash.exhexists(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhexists(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhstrlenException() {
+        tairHash.exhstrlen(randomkey_, "");
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhstrlen(randomkey_, "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhkeysException() {
+        tairHash.exhkeys(randomkey_);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhkeys(randomkey_);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhvalsException() {
+        tairHash.exhvals(randomkey_);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhvals(randomkey_);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhgetallException() {
+        tairHash.exhgetAll(randomkey_);
+
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhgetAll(randomkey_);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhmgetwithverException() {
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhmgetwithver(randomkey_, "", "");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("WRONGTYPE"));
+        }
+    }
+
+    @Test
+    public void exhscanException() {
+        try {
+            jedis.set(randomkey_, "bar");
+            tairHash.exhscan(randomkey_, "", "");
+        } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
     }

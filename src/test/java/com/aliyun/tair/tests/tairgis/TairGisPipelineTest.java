@@ -9,14 +9,18 @@ import org.locationtech.jts.io.WKTReader;
 
 import java.util.*;
 
-public class TairGisPipelineTest extends TairGisTestBase{
+public class TairGisPipelineTest extends TairGisTestBase {
 
     String area;
     byte[] barea;
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     public TairGisPipelineTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         area = "area" + Thread.currentThread().getName() + UUID.randomUUID().toString();
-        barea = ("barea" +Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        barea = ("barea" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
 
     @Test
@@ -29,14 +33,13 @@ public class TairGisPipelineTest extends TairGisTestBase{
         Polygon retPolygon = null;
         WKTReader reader = new WKTReader(new GeometryFactory());
         String polygonName = "alibaba-xixi-campus",
-                polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
+            polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
 
         // String
         tairGisPipeline.gisadd(area, polygonName, polygonWktText);
         tairGisPipeline.gisget(area, polygonName);
         tairGisPipeline.gissearch(area, pointWktText);
         List<Object> objs = tairGisPipeline.syncAndReturnAll();
-
 
         i = 0;
         AssertUtil.assertEquals((long)1, objs.get(i++));
@@ -58,10 +61,9 @@ public class TairGisPipelineTest extends TairGisTestBase{
         i = 0;
         AssertUtil.assertEquals((long)1, objs.get(i++));
         polygon = (Polygon)reader.read(polygonWktText);
-        bretWktText = (byte[]) objs.get(i++);
+        bretWktText = (byte[])objs.get(i++);
         retPolygon = (Polygon)reader.read(new String(bretWktText));
         AssertUtil.assertTrue(polygon.equals(retPolygon));
-
 
         AssertUtil.assertEquals(1, Map.class.cast(objs.get(i)).size());
     }

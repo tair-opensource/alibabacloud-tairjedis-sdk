@@ -226,22 +226,34 @@ public class TairGis {
      */
     public Map<String, String> gisgetall(final String key) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL, key);
+        if (obj == null) {
+            return new HashMap<>();
+        }
         return BuilderFactory.STRING_MAP.build(obj);
     }
 
     public List<String> gisgetall(final String key, final GisParams gisParams) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL,
             gisParams.getByteParams(SafeEncoder.encode(key)));
+        if (obj == null) {
+            return new ArrayList<>();
+        }
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
     public Map<byte[], byte[]> gisgetall(final byte[] key) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL, key);
+        if (obj == null) {
+            return new HashMap<>();
+        }
         return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
     }
 
     public List<byte[]> gisgetall(final byte[] key, final GisParams gisParams) {
         Object obj = getJedis().sendCommand(ModuleCommand.GISGETALL, gisParams.getByteParams(key));
+        if (obj == null) {
+            return new ArrayList<>();
+        }
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 

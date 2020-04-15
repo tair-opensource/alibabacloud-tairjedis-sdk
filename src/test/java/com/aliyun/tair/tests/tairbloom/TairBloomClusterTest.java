@@ -9,8 +9,12 @@ import static org.junit.Assert.assertEquals;
 public class TairBloomClusterTest extends TairBloomTestBase {
     private String bbf;
     private byte[] bcf = "bcf".getBytes();
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     public TairBloomClusterTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bbf = "bbf" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bcf = ("bcf" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
@@ -83,7 +87,8 @@ public class TairBloomClusterTest extends TairBloomTestBase {
         assertEquals(true, ret_bool_list[1]);
 
         // binary
-        ret_bool_list = tairBloomCluster.bfinsert(bcf, "CAPACITY".getBytes(), 100, "ERROR".getBytes(), 0.001, "ITEMS".getBytes(), "val1".getBytes(), "val2".getBytes());
+        ret_bool_list = tairBloomCluster.bfinsert(bcf, "CAPACITY".getBytes(), 100, "ERROR".getBytes(), 0.001,
+            "ITEMS".getBytes(), "val1".getBytes(), "val2".getBytes());
         assertEquals(true, ret_bool_list[0]);
         assertEquals(true, ret_bool_list[1]);
         ret_bool_list = tairBloomCluster.bfmadd(bcf, "val1".getBytes(), "val2".getBytes());

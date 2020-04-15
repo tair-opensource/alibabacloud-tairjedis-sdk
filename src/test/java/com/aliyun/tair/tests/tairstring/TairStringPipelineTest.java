@@ -23,8 +23,12 @@ public class TairStringPipelineTest extends TairStringTestBase {
     private byte[] bvalue1;
     private byte[] bkey2;
     private byte[] bvalue2;
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     public TairStringPipelineTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         key1 = "key1" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         value1 = "value1" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         key2 = "key2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
@@ -64,10 +68,9 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals("OK", objs.get(i++));
         assertEquals("OK", objs.get(i++));
-        assertEquals(true, Arrays.equals(bvalue1, (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
-        assertEquals(true, Arrays.equals(bvalue2, (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
+        assertEquals(true, Arrays.equals(bvalue1, (byte[])ExgetResult.class.cast(objs.get(i++)).getValue()));
+        assertEquals(true, Arrays.equals(bvalue2, (byte[])ExgetResult.class.cast(objs.get(i++)).getValue()));
     }
-
 
     @Test
     public void exsetParamsPipelineTest() {
@@ -107,9 +110,10 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals(null, objs.get(i++));
         assertEquals("OK", objs.get(i++));
-        assertEquals(true, Arrays.equals(bvalue2, (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
+        assertEquals(true, Arrays.equals(bvalue2, (byte[])ExgetResult.class.cast(objs.get(i++)).getValue()));
         assertEquals("OK", objs.get(i++));
-        assertEquals(true, Arrays.equals(SafeEncoder.encode("new" + bvalue2), (byte[]) ExgetResult.class.cast(objs.get(i++)).getValue()));
+        assertEquals(true, Arrays
+            .equals(SafeEncoder.encode("new" + bvalue2), (byte[])ExgetResult.class.cast(objs.get(i++)).getValue()));
     }
 
     @Test
@@ -128,7 +132,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals("OK", objs.get(i++));
         assertEquals(value1, ExgetResult.class.cast(objs.get(i)).getValue());
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
-        assertEquals((long) 1, objs.get(i++));
+        assertEquals((long)1, objs.get(i++));
         assertEquals(value1, ExgetResult.class.cast(objs.get(i)).getValue());
         assertEquals(10, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
@@ -142,10 +146,10 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         i = 0;
         assertEquals("OK", objs.get(i++));
-        assertEquals(true, Arrays.equals(bvalue1, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(bvalue1, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
-        assertEquals((long) 1, objs.get(i++));
-        assertEquals(true, Arrays.equals(bvalue1, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals((long)1, objs.get(i++));
+        assertEquals(true, Arrays.equals(bvalue1, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(10, ExgetResult.class.cast(objs.get(i++)).getVersion());
     }
 
@@ -182,7 +186,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals("OK", objs.get(i++));
         assertEquals(new_long_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(new_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(new_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
     }
 
@@ -260,7 +264,6 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals(null, objs.get(i++));
 
-
         // binary
         // nx_px start
         tairStringPipeline.exincrBy(bkey1, incr_value, params_nx_px);
@@ -268,7 +271,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
         assertEquals(incr_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(num_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(num_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // nx_px sleep
@@ -286,7 +289,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals("OK", objs.get(i++));
         assertEquals(new_long_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(new_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(new_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_ex sleep
@@ -305,7 +308,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals("OK", objs.get(i++));
         assertEquals(new_long_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(new_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(new_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_pxat sleep
@@ -349,7 +352,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals("OK", objs.get(i++));
         assertEquals(new_float_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(new_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(new_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
     }
 
@@ -427,7 +430,6 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals(null, objs.get(i++));
 
-
         // binary
         // nx_px start
         tairStringPipeline.exincrByFloat(bkey1, incr_value, params_nx_px);
@@ -435,7 +437,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
         assertEquals(incr_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(num_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(num_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // nx_px sleep
@@ -453,7 +455,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals("OK", objs.get(i++));
         assertEquals(new_float_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(new_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(new_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_ex sleep
@@ -472,7 +474,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         i = 0;
         assertEquals("OK", objs.get(i++));
         assertEquals(new_float_value, objs.get(i++));
-        assertEquals(true, Arrays.equals(new_byte_value, (byte[]) ExgetResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(new_byte_value, (byte[])ExgetResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_pxat sleep
@@ -511,10 +513,12 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         i = 0;
         assertEquals("OK", objs.get(i++));
-        assertEquals(true, Arrays.equals(bvalue1, (byte[]) ExcasResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true, Arrays.equals(bvalue1, (byte[])ExcasResult.class.cast(objs.get(i)).getValue()));
         assertEquals(1, ExcasResult.class.cast(objs.get(i++)).getVersion());
-        assertEquals(true, Arrays.equals(SafeEncoder.encode("OK"), (byte[]) ExcasResult.class.cast(objs.get(i)).getMsg()));
-        assertEquals(true, Arrays.equals(SafeEncoder.encode(""), (byte[]) ExcasResult.class.cast(objs.get(i)).getValue()));
+        assertEquals(true,
+            Arrays.equals(SafeEncoder.encode("OK"), (byte[])ExcasResult.class.cast(objs.get(i)).getMsg()));
+        assertEquals(true,
+            Arrays.equals(SafeEncoder.encode(""), (byte[])ExcasResult.class.cast(objs.get(i)).getValue()));
         assertEquals(2, ExcasResult.class.cast(objs.get(i++)).getVersion());
     }
 
@@ -531,8 +535,8 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         i = 0;
         assertEquals("OK", objs.get(i++));
-        assertEquals((long) 0, objs.get(i++));
-        assertEquals((long) 1, objs.get(i++));
+        assertEquals((long)0, objs.get(i++));
+        assertEquals((long)1, objs.get(i++));
 
         //binary
         tairStringPipeline.exset(bkey1, bvalue1);
@@ -543,7 +547,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
 
         i = 0;
         assertEquals("OK", objs.get(i++));
-        assertEquals((long) 0, objs.get(i++));
-        assertEquals((long) 1, objs.get(i++));
+        assertEquals((long)0, objs.get(i++));
+        assertEquals((long)1, objs.get(i++));
     }
 }
