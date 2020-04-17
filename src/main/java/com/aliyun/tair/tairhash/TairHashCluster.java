@@ -10,6 +10,7 @@ import java.util.Set;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
 import com.aliyun.tair.tairhash.params.*;
+import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanParams;
@@ -293,23 +294,23 @@ public class TairHashCluster {
 
     public List<String> exhmget(final String key, final String... fields) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMGET,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
     public List<byte[]> exhmget(byte[] key, byte[]... fields) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGET, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGET, JoinParameters.joinParameters(key, fields));
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<String>> exhmgetwithver(final String key, final String... fields) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMGETWITHVER,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_STRING_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<byte[]>> exhmgetwithver(byte[] key, byte[]... fields) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGETWITHVER, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGETWITHVER, JoinParameters.joinParameters(key, fields));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_BYTE_LIST.build(obj);
     }
 
@@ -318,7 +319,7 @@ public class TairHashCluster {
     }
 
     public Long exhdel(byte[] key, byte[]... fields) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHDEL, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHDEL, JoinParameters.joinParameters(key, fields));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -424,14 +425,5 @@ public class TairHashCluster {
 
         Object obj = jc.sendCommand(key, ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
         return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
-    }
-
-    /* ================ Common function ================ */
-
-    private byte[][] joinParameters(byte[] first, byte[][] rest) {
-        byte[][] result = new byte[rest.length + 1][];
-        result[0] = first;
-        System.arraycopy(rest, 0, result, 1, rest.length);
-        return result;
     }
 }

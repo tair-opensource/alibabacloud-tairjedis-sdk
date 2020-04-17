@@ -10,6 +10,7 @@ import java.util.Set;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairhash.params.*;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
+import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
@@ -283,23 +284,23 @@ public class TairHashPipeline extends Pipeline {
 
     public Response<List<String>> exhmget(final String key, final String... fields) {
         getClient("").sendCommand(ModuleCommand.EXHMGET,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
     public Response<List<byte[]>> exhmget(byte[] key, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHMGET, joinParameters(key, fields));
+        getClient("").sendCommand(ModuleCommand.EXHMGET, JoinParameters.joinParameters(key, fields));
         return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
     }
 
     public Response<List<ExhgetwithverResult<String>>> exhmgetwithver(final String key, final String... fields) {
         getClient("").sendCommand(ModuleCommand.EXHMGETWITHVER,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return getResponse(HashBuilderFactory.EXHMGETWITHVER_RESULT_STRING_LIST);
     }
 
     public Response<List<ExhgetwithverResult<byte[]>>> exhmgetwithver(byte[] key, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHMGETWITHVER, joinParameters(key, fields));
+        getClient("").sendCommand(ModuleCommand.EXHMGETWITHVER, JoinParameters.joinParameters(key, fields));
         return getResponse(HashBuilderFactory.EXHMGETWITHVER_RESULT_BYTE_LIST);
     }
 
@@ -308,7 +309,7 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Long> exhdel(byte[] key, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHDEL, joinParameters(key, fields));
+        getClient("").sendCommand(ModuleCommand.EXHDEL, JoinParameters.joinParameters(key, fields));
         return getResponse(BuilderFactory.LONG);
     }
 
@@ -414,14 +415,4 @@ public class TairHashPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
         return getResponse(HashBuilderFactory.EXHSCAN_RESULT_BYTE);
     }
-
-    /* ================ Common function ================ */
-
-    private byte[][] joinParameters(byte[] first, byte[][] rest) {
-        byte[][] result = new byte[rest.length + 1][];
-        result[0] = first;
-        System.arraycopy(rest, 0, result, 1, rest.length);
-        return result;
-    }
-
 }
