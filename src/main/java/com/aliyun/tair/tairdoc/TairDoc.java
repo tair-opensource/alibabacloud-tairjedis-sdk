@@ -327,22 +327,22 @@ public class TairDoc {
      *
      * Reply: Integer, specifically the length of the array.
      */
-    public Long jsonArrlen(final String key) {
+    public Long jsonArrLen(final String key) {
         Object obj = getJedis().sendCommand(ModuleCommand.JSONARRLEN, key);
         return BuilderFactory.LONG.build(obj);
     }
 
-    public Long jsonArrlen(final String key, final String path) {
+    public Long jsonArrLen(final String key, final String path) {
         Object obj = getJedis().sendCommand(ModuleCommand.JSONARRLEN, key, path);
         return BuilderFactory.LONG.build(obj);
     }
 
-    public Long jsonarrLen(final byte[] key) {
+    public Long jsonArrLen(final byte[] key) {
         Object obj = getJedis().sendCommand(ModuleCommand.JSONARRLEN, key);
         return BuilderFactory.LONG.build(obj);
     }
 
-    public Long jsonarrLen(final byte[] key, final byte[] path) {
+    public Long jsonArrLen(final byte[] key, final byte[] path) {
         Object obj = getJedis().sendCommand(ModuleCommand.JSONARRLEN, key, path);
         return BuilderFactory.LONG.build(obj);
     }

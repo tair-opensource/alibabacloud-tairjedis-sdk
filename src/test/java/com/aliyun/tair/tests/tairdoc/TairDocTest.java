@@ -1,5 +1,6 @@
 package com.aliyun.tair.tests.tairdoc;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.aliyun.tair.tairdoc.params.JsongetParams;
@@ -8,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertNull;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,6 +42,21 @@ public class TairDocTest extends TairDocTestBase {
     }
 
     @Test
+    public void jsonSetTestBinary() {
+        String ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), JSON_STRING_EXAMPLE.getBytes());
+        assertEquals("OK", ret);
+
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".".getBytes());
+        assertArrayEquals(bret, JSON_STRING_EXAMPLE.getBytes());
+
+        bret = tairDoc.jsonget(jsonKey.getBytes(), ".foo".getBytes());
+        assertArrayEquals(bret, "\"bar\"".getBytes());
+
+        bret = tairDoc.jsonget(jsonKey.getBytes(), ".baz".getBytes());
+        assertArrayEquals(bret, "42".getBytes());
+    }
+
+    @Test
     public void jsonSetWithNXXX() {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().xx());
         assertNull(ret);
@@ -49,6 +66,50 @@ public class TairDocTest extends TairDocTestBase {
 
         ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE, JsonsetParams.JsonsetParams().xx());
         assertEquals("OK", ret);
+    }
+
+    @Test
+    public void jsonSetWithNXXXBinary() {
+        String ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), JSON_STRING_EXAMPLE.getBytes(), JsonsetParams.JsonsetParams().xx());
+        assertNull(ret);
+
+        ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), JSON_STRING_EXAMPLE.getBytes(), JsonsetParams.JsonsetParams().nx());
+        assertEquals("OK", ret);
+
+        ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), JSON_STRING_EXAMPLE.getBytes(), JsonsetParams.JsonsetParams().xx());
+        assertEquals("OK", ret);
+    }
+
+    @Test
+    public void jsonMgetTest() {
+        String jsonkey1 = jsonKey + "1";
+        String jsonkey2 = jsonKey + "2";
+        String jsonkey3 = jsonKey + "3";
+
+        assertEquals("OK", tairDoc.jsonset(jsonkey1, ".", JSON_STRING_EXAMPLE));
+        assertEquals("OK", tairDoc.jsonset(jsonkey2, ".", JSON_STRING_EXAMPLE));
+        assertEquals("OK", tairDoc.jsonset(jsonkey3, ".", JSON_STRING_EXAMPLE));
+
+        List<String> mgetRet = tairDoc.jsonmget(jsonkey1, jsonkey2, jsonkey3, ".baz");
+        for (int i = 0; i < mgetRet.size(); i++) {
+            Assert.assertEquals("42", mgetRet.get(i));
+        }
+    }
+
+    @Test
+    public void jsonMgetTestBinary() {
+        String jsonkey1 = jsonKey + "1";
+        String jsonkey2 = jsonKey + "2";
+        String jsonkey3 = jsonKey + "3";
+
+        assertEquals("OK", tairDoc.jsonset(jsonkey1.getBytes(), ".".getBytes(), JSON_STRING_EXAMPLE.getBytes()));
+        assertEquals("OK", tairDoc.jsonset(jsonkey2.getBytes(), ".".getBytes(), JSON_STRING_EXAMPLE.getBytes()));
+        assertEquals("OK", tairDoc.jsonset(jsonkey3.getBytes(), ".".getBytes(), JSON_STRING_EXAMPLE.getBytes()));
+
+        List<byte[]> mgetRet = tairDoc.jsonmget(jsonkey1.getBytes(), jsonkey2.getBytes(), jsonkey3.getBytes(), ".baz".getBytes());
+        for (int i = 0; i < mgetRet.size(); i++) {
+            Assert.assertEquals("42", new String(mgetRet.get(i)));
+        }
     }
 
     @Test
@@ -99,6 +160,9 @@ public class TairDocTest extends TairDocTestBase {
 
         ret = tairDoc.jsonget(jsonKey, ".", JsongetParams.JsongetParams().format("yaml"));
         assertEquals("\nfoo: bar\nbaz: 42\n", ret);
+
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".".getBytes(), JsongetParams.JsongetParams().format("yaml"));
+        assertEquals("\nfoo: bar\nbaz: 42\n", new String(bret));
     }
 
     @Test
@@ -106,7 +170,7 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE);
         assertEquals("OK", ret);
 
-        long lret = tairDoc.jsondel(jsonKey, ".foo");
+        long lret = tairDoc.jsondel(jsonKey.getBytes(), ".foo".getBytes());
         assertEquals(1, lret);
 
         try {
@@ -134,8 +198,8 @@ public class TairDocTest extends TairDocTestBase {
         ret = tairDoc.jsontype(jsonKey);
         assertEquals("object", ret);
 
-        ret = tairDoc.jsontype(jsonKey, ".foo");
-        assertEquals("string", ret);
+        byte[] bret = tairDoc.jsontype(jsonKey.getBytes(), ".foo".getBytes());
+        assertEquals("string", new String(bret));
 
         ret = tairDoc.jsontype(jsonKey, ".baz");
         assertEquals("number", ret);
@@ -152,7 +216,7 @@ public class TairDocTest extends TairDocTestBase {
         double dret = tairDoc.jsonnumincrBy(jsonKey, ".baz", 1D);
         assertEquals(43, dret, 0.1);
 
-        dret = tairDoc.jsonnumincrBy(jsonKey, ".baz", 1.5);
+        dret = tairDoc.jsonnumincrBy(jsonKey.getBytes(), ".baz".getBytes(), 1.5);
         assertEquals(44.5, dret, 0.1);
 
         try {
@@ -171,14 +235,17 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE);
         assertEquals("OK", ret);
 
-        long lret = tairDoc.jsonstrAppend(jsonKey, ".foo", "rrrrr");
+        long lret = tairDoc.jsonstrAppend(jsonKey, ".foo", "rrrr");
+        assertEquals(7, lret);
+
+        lret = tairDoc.jsonstrAppend(jsonKey.getBytes(), ".foo".getBytes(), "r".getBytes());
         assertEquals(8, lret);
 
         ret = tairDoc.jsonget(jsonKey, ".foo");
         assertEquals("\"barrrrrr\"", ret);
 
         try {
-            tairDoc.jsonstrAppend(jsonKey, ".not-exists");
+            tairDoc.jsonstrAppend(jsonKey.getBytes(), ".not-exists".getBytes());
         } catch (Exception e) {
             if (e.getMessage().contains("ERR node not exists")) {
                 assertTrue(true);
@@ -204,6 +271,9 @@ public class TairDocTest extends TairDocTestBase {
 
         lret = tairDoc.jsonstrlen(jsonKey, ".foo");
         assertEquals(8, lret);
+
+        lret = tairDoc.jsonstrlen(jsonKey.getBytes(), ".foo".getBytes());
+        assertEquals(8, lret);
     }
 
     @Test
@@ -211,7 +281,8 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_ARRAY_EXAMPLE);
         assertEquals("OK", ret);
 
-        long lret = tairDoc.jsonarrAppend(jsonKey, ".id", "null", "false", "true");
+        long lret = tairDoc.jsonarrAppend(jsonKey.getBytes(), ".id".getBytes(),
+            "null".getBytes(), "false".getBytes(), "true".getBytes());
         assertEquals(6, lret);
 
         ret = tairDoc.jsonget(jsonKey, ".id.2");
@@ -226,8 +297,8 @@ public class TairDocTest extends TairDocTestBase {
         ret = tairDoc.jsonarrPop(jsonKey, ".id", 1);
         assertEquals("2", ret);
 
-        ret = tairDoc.jsonarrPop(jsonKey, ".id", -1);
-        assertEquals("3", ret);
+        byte[] bret = tairDoc.jsonarrPop(jsonKey.getBytes(), ".id".getBytes(), -1);
+        assertEquals("3", new String(bret));
 
         try {
             tairDoc.jsonarrPop(jsonKey, ".id", 10);
@@ -243,7 +314,7 @@ public class TairDocTest extends TairDocTestBase {
         assertEquals("1", ret);
 
         try {
-            tairDoc.jsonarrPop(jsonKey, ".id");
+            tairDoc.jsonarrPop(jsonKey.getBytes(), ".id".getBytes());
         } catch (Exception e) {
             if (e.getMessage().contains("ERR array index outflow")) {
                 assertTrue(true);
@@ -264,7 +335,7 @@ public class TairDocTest extends TairDocTestBase {
         ret = tairDoc.jsonget(jsonKey, ".id");
         assertEquals("[1,2,3,5,6]", ret);
 
-        lret = tairDoc.jsonarrInsert(jsonKey, ".id", "3", "4");
+        lret = tairDoc.jsonarrInsert(jsonKey.getBytes(), ".id".getBytes(), "3".getBytes(), "4".getBytes());
         assertEquals(6, lret);
 
         ret = tairDoc.jsonget(jsonKey, ".id");
@@ -276,7 +347,22 @@ public class TairDocTest extends TairDocTestBase {
         String ret = tairDoc.jsonset(jsonKey, ".", JSON_ARRAY_EXAMPLE);
         assertEquals("OK", ret);
 
-        long lret = tairDoc.jsonArrlen(jsonKey, ".id");
+        long lret = tairDoc.jsonArrLen(jsonKey, ".id");
+        assertEquals(3, lret);
+
+        lret = tairDoc.jsonArrLen(jsonKey.getBytes(), ".id".getBytes());
+        assertEquals(3, lret);
+    }
+
+    @Test
+    public void jsonArrlenTest2() {
+        String ret = tairDoc.jsonset(jsonKey, ".", "[1, 2, 3]");
+        assertEquals("OK", ret);
+
+        long lret = tairDoc.jsonArrLen(jsonKey);
+        assertEquals(3, lret);
+
+        lret = tairDoc.jsonArrLen(jsonKey.getBytes());
         assertEquals(3, lret);
     }
 
@@ -288,8 +374,12 @@ public class TairDocTest extends TairDocTestBase {
         long lret = tairDoc.jsonarrTrim(jsonKey, ".id", 3, 4);
         assertEquals(2, lret);
 
-        ret = tairDoc.jsonget(jsonKey, ".id");
-        assertEquals("[4,5]", ret);
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".id".getBytes());
+        assertEquals("[4,5]", new String(bret));
+
+
+        lret = tairDoc.jsonarrTrim(jsonKey.getBytes(), ".id".getBytes(), 0, 0);
+        assertEquals(1, lret);
 
         try {
             tairDoc.jsonarrTrim(jsonKey, ".id", 3, 4);
@@ -478,11 +568,11 @@ public class TairDocTest extends TairDocTestBase {
 
     @Test
     public void jsonarrlenException() {
-        tairDoc.jsonArrlen(randomkey_);
+        tairDoc.jsonArrLen(randomkey_);
 
         try {
             jedis.set(randomkey_, "bar");
-            tairDoc.jsonArrlen(randomkey_);
+            tairDoc.jsonArrLen(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }

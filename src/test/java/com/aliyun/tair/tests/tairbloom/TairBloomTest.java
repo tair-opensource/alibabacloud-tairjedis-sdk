@@ -130,6 +130,21 @@ public class TairBloomTest extends TairBloomTestBase {
     }
 
     @Test
+    public void bfinsertBinary() {
+        Boolean[] bfRet = tairBloom.bfinsert(randomKeyBinary_, new BfinsertParams().capacity(10000).error(0.001), "item1".getBytes(),
+            "item2".getBytes(), "item3".getBytes(), "item4".getBytes(), "item5".getBytes());
+        for (Boolean b : bfRet) {
+            Assert.assertTrue(b);
+        }
+
+        bfRet = tairBloom.bfmexists(randomKeyBinary_, "item1".getBytes(), "item2".getBytes(), "item3".getBytes(),
+            "item4".getBytes(), "item5".getBytes());
+        for (Boolean b : bfRet) {
+            Assert.assertTrue(b);
+        }
+    }
+
+    @Test
     public void bfaddException() {
         tairBloom.bfadd(randomkey_, randomkey_);
         tairBloom.bfadd(randomKeyBinary_, randomKeyBinary_);

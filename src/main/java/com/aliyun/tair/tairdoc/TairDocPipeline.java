@@ -217,22 +217,22 @@ public class TairDocPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
     
-    public Response<Long> jsonArrlen(final String key) {
+    public Response<Long> jsonArrLen(final String key) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key);
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> jsonArrlen(final String key, final String path) {
+    public Response<Long> jsonArrLen(final String key, final String path) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key, path);
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> jsonarrLen(final byte[] key) {
+    public Response<Long> jsonArrLen(final byte[] key) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key);
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> jsonarrLen(final byte[] key, final byte[] path) {
+    public Response<Long> jsonArrLen(final byte[] key, final byte[] path) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key, path);
         return getResponse(BuilderFactory.LONG);
     }
