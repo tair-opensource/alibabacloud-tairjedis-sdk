@@ -334,7 +334,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         result = tairStringCluster.exget(key);
         assertEquals(null, result);
 

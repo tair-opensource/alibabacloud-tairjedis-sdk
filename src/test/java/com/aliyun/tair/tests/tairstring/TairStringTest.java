@@ -438,88 +438,88 @@ public class TairStringTest extends TairStringTestBase {
         assertEquals((long)1, ret2);
     }
 
-    @Test
-    public void exsetException() {
-        tairString.exset(randomkey_, "");
-
-        try {
-            jedis.set(randomkey_, "bar");
-            tairString.exset(randomkey_, "");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
-    public void exgetException() {
-        tairString.exget(randomkey_);
-
-        try {
-            jedis.set(randomkey_, "bar");
-            tairString.exget(randomkey_);
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
-    public void exsetverException() {
-        tairString.exsetver(randomkey_, 10);
-
-        try {
-            jedis.set(randomkey_, "bar");
-            tairString.exsetver(randomkey_, 10);
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
-    public void exincrbyException() {
-        tairString.exincrBy(randomkey_, 10);
-
-        try {
-            jedis.set(randomkey_, "bar");
-            tairString.exincrBy(randomkey_, 10);
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
-    public void exincrbyfloatException() {
-        tairString.exincrByFloat(randomkey_, 10.0);
-
-        try {
-            jedis.set(randomkey_, "bar");
-            tairString.exincrByFloat(randomkey_, 10.0);
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
-    public void excasException() {
-        tairString.excas(randomkey_, "",10);
-
-        try {
-            jedis.set(randomkey_, "bar");
-            tairString.excas(randomkey_, "", 10);
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
-    public void excadException() {
-        tairString.excad(randomkey_, 1);
-
-        try {
-            jedis.set(randomkey_, "bar");
-            tairString.excad(randomkey_,1);
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
+    //@Test
+    //public void exsetException() {
+    //    tairString.exset(randomkey_, "");
+    //
+    //    try {
+    //        jedis.set(randomkey_, "bar");
+    //        tairString.exset(randomkey_, "");
+    //    } catch (Exception e) {
+    //        assertTrue(e.getMessage().contains("WRONGTYPE"));
+    //    }
+    //}
+    //
+    //@Test
+    //public void exgetException() {
+    //    tairString.exget(randomkey_);
+    //
+    //    try {
+    //        jedis.set(randomkey_, "bar");
+    //        tairString.exget(randomkey_);
+    //    } catch (Exception e) {
+    //        assertTrue(e.getMessage().contains("WRONGTYPE"));
+    //    }
+    //}
+    //
+    //@Test
+    //public void exsetverException() {
+    //    tairString.exsetver(randomkey_, 10);
+    //
+    //    try {
+    //        jedis.set(randomkey_, "bar");
+    //        tairString.exsetver(randomkey_, 10);
+    //    } catch (Exception e) {
+    //        assertTrue(e.getMessage().contains("WRONGTYPE"));
+    //    }
+    //}
+    //
+    //@Test
+    //public void exincrbyException() {
+    //    tairString.exincrBy(randomkey_, 10);
+    //
+    //    try {
+    //        jedis.set(randomkey_, "bar");
+    //        tairString.exincrBy(randomkey_, 10);
+    //    } catch (Exception e) {
+    //        assertTrue(e.getMessage().contains("WRONGTYPE"));
+    //    }
+    //}
+    //
+    //@Test
+    //public void exincrbyfloatException() {
+    //    tairString.exincrByFloat(randomkey_, 10.0);
+    //
+    //    try {
+    //        jedis.set(randomkey_, "bar");
+    //        tairString.exincrByFloat(randomkey_, 10.0);
+    //    } catch (Exception e) {
+    //        assertTrue(e.getMessage().contains("WRONGTYPE"));
+    //    }
+    //}
+    //
+    //@Test
+    //public void excasException() {
+    //    tairString.excas(randomkey_, "",10);
+    //
+    //    try {
+    //        jedis.set(randomkey_, "bar");
+    //        tairString.excas(randomkey_, "", 10);
+    //    } catch (Exception e) {
+    //        assertTrue(e.getMessage().contains("WRONGTYPE"));
+    //    }
+    //}
+    //
+    //@Test
+    //public void excadException() {
+    //    tairString.excad(randomkey_, 1);
+    //
+    //    try {
+    //        jedis.set(randomkey_, "bar");
+    //        tairString.excad(randomkey_,1);
+    //    } catch (Exception e) {
+    //        assertTrue(e.getMessage().contains("WRONGTYPE"));
+    //    }
+    //}
 
 }

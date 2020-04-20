@@ -3,9 +3,11 @@ package com.aliyun.tair.tests.tairhash;
 import com.aliyun.tair.tairhash.params.ExhincrByFloatParams;
 import com.aliyun.tair.tairhash.params.ExhincrByParams;
 import com.aliyun.tair.tairhash.params.ExhsetParams;
+import org.junit.Assert;
 import org.junit.Test;
 import redis.clients.jedis.Response;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -354,6 +356,24 @@ public class TairHashPipelineTest extends TairHashTestBase {
         assertEquals((long)5, objs.get(1));
         assertEquals(0, Double.compare(25.5, (Double)objs.get(2)));
         assertEquals((long)6, objs.get(3));
+    }
+
+    @Test
+    public void tairHashPipelineTest() {
+        Response<Long> r1 = tairHashPipeline.exhsetnx(foo, "bar", "car");
+        Response<Long> r2 = tairHashPipeline.exhset(foo, "bar", "car");
+        Response<String> r3 = tairHashPipeline.exhmset(foo, new HashMap<String, String>() {{
+            put("car", "bar");
+        }});
+        Response<String> r4 = tairHashPipeline.exhmset(foo.getBytes(), new HashMap<byte[], byte[]>() {{
+            put("car".getBytes(), "bar".getBytes());
+        }});
+
+        tairHashPipeline.sync();
+        Assert.assertEquals(1, (long)r1.get());
+        Assert.assertEquals(0, (long)r2.get());
+        Assert.assertEquals("OK", r3.get());
+        Assert.assertEquals("OK", r4.get());
     }
 
 }

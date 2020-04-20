@@ -176,8 +176,7 @@ public class TairHash {
     }
 
     public Boolean exhpexpire(final byte[] key, final byte[] field, final int milliseconds) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
-        return BuilderFactory.BOOLEAN.build(obj);
+        return exhpexpire(key, field, milliseconds, false);
     }
 
     public Boolean exhpexpire(final byte[] key, final byte[] field, final int milliseconds,boolean noactive) {
@@ -207,8 +206,7 @@ public class TairHash {
     }
 
     public Boolean exhpexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
-        return BuilderFactory.BOOLEAN.build(obj);
+        return exhpexpireAt(key, field, unixTime, false);
     }
 
     public Boolean exhpexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
@@ -238,8 +236,7 @@ public class TairHash {
     }
 
     public Boolean exhexpire(final byte[] key, final byte[] field, final int seconds) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
-        return BuilderFactory.BOOLEAN.build(obj);
+        return exhexpire(key, field, seconds, false);
     }
 
     public Boolean exhexpire(final byte[] key, final byte[] field, final int seconds,boolean noactive) {
@@ -269,8 +266,7 @@ public class TairHash {
     }
 
     public Boolean exhexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
-        return BuilderFactory.BOOLEAN.build(obj);
+        return exhexpireAt(key, field, unixTime, false);
     }
 
     public Boolean exhexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
