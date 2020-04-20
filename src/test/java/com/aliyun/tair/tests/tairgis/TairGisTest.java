@@ -58,6 +58,16 @@ public class TairGisTest extends TairGisTestBase {
         assertTrue(searchResults.containsKey(polygonName));
         AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
 
+        searchResults = tairGis.giscontains(area, pointWktText);
+        AssertUtil.assertEquals(1, searchResults.size());
+        assertTrue(searchResults.containsKey(polygonName));
+        AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
+
+        searchResults = tairGis.gisintersects(area, pointWktText);
+        AssertUtil.assertEquals(1, searchResults.size());
+        assertTrue(searchResults.containsKey(polygonName));
+        AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
+
         // binary
         updated = tairGis.gisadd(barea, polygonName.getBytes(), polygonWktText.getBytes());
         AssertUtil.assertEquals(1, updated);
@@ -68,6 +78,16 @@ public class TairGisTest extends TairGisTestBase {
         assertTrue(polygon.equals(retPolygon));
 
         Map<byte[], byte[]> bsearchResults = tairGis.gissearch(barea, pointWktText.getBytes());
+        AssertUtil.assertEquals(1, bsearchResults.size());
+        assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
+        AssertUtil.assertEquals(true, Arrays.equals(bretWktText, bsearchResults.get(polygonName.getBytes())));
+
+        bsearchResults = tairGis.giscontains(barea, pointWktText.getBytes());
+        AssertUtil.assertEquals(1, bsearchResults.size());
+        assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
+        AssertUtil.assertEquals(true, Arrays.equals(bretWktText, bsearchResults.get(polygonName.getBytes())));
+
+        bsearchResults = tairGis.gisintersects(barea, pointWktText.getBytes());
         AssertUtil.assertEquals(1, bsearchResults.size());
         assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
         AssertUtil.assertEquals(true, Arrays.equals(bretWktText, bsearchResults.get(polygonName.getBytes())));
@@ -90,8 +110,8 @@ public class TairGisTest extends TairGisTestBase {
         String retWktText = tairGis.gisget(key, polygonName);
         AssertUtil.assertEquals(polygonWktText, retWktText);
 
-        String ret = tairGis.gisdel(key, polygonName);
-        AssertUtil.assertEquals("OK", ret);
+        byte[] ret = tairGis.gisdel(key.getBytes(), polygonName.getBytes());
+        AssertUtil.assertEquals("OK", new String(ret));
 
         String retWktText1 = tairGis.gisget(key, polygonName1);
         AssertUtil.assertEquals(polygonWktText1, retWktText1);
@@ -268,7 +288,7 @@ public class TairGisTest extends TairGisTestBase {
         equalsWithinEpsilon(0, responses.get(0).getDistance());
 
         // withvalue
-        responses = tairGis.gissearchByMember(key, "Palermo", 200,
+        responses = tairGis.gissearchByMember(key.getBytes(), "Palermo".getBytes(), 200,
             GeoUnit.KM, new GisParams());
         AssertUtil.assertEquals(3, responses.size());
         AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
@@ -326,7 +346,7 @@ public class TairGisTest extends TairGisTestBase {
         equalsWithinEpsilon(0, responses.get(0).getDistance());
 
         // withvalue
-        responses = tairGis.gissearch(key, 15, 37, 200,
+        responses = tairGis.gissearch(key.getBytes(), 15, 37, 200,
             GeoUnit.KM, new GisParams());
         AssertUtil.assertEquals(3, responses.size());
         AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());

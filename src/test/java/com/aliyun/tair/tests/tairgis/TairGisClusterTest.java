@@ -69,6 +69,16 @@ public class TairGisClusterTest extends TairGisTestBase {
         AssertUtil.assertTrue(searchResults.containsKey(polygonName));
         AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
 
+        searchResults = tairGisCluster.giscontains(area, pointWktText);
+        AssertUtil.assertEquals(1, searchResults.size());
+        AssertUtil.assertTrue(searchResults.containsKey(polygonName));
+        AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
+
+        searchResults = tairGisCluster.gisintersects(area, pointWktText);
+        AssertUtil.assertEquals(1, searchResults.size());
+        AssertUtil.assertTrue(searchResults.containsKey(polygonName));
+        AssertUtil.assertEquals(retWktText, searchResults.get(polygonName));
+
         // binary
         updated = tairGisCluster.gisadd(barea, polygonName.getBytes(), polygonWktText.getBytes());
         AssertUtil.assertEquals(1, updated);
@@ -79,6 +89,16 @@ public class TairGisClusterTest extends TairGisTestBase {
         AssertUtil.assertTrue(polygon.equals(retPolygon));
 
         Map<byte[], byte[]> bsearchResults = tairGisCluster.gissearch(barea, pointWktText.getBytes());
+        AssertUtil.assertEquals(1, bsearchResults.size());
+        AssertUtil.assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
+        AssertUtil.assertEquals(true, Arrays.equals(retWktText.getBytes(), bsearchResults.get(polygonName.getBytes())));
+
+        bsearchResults = tairGisCluster.giscontains(barea, pointWktText.getBytes());
+        AssertUtil.assertEquals(1, bsearchResults.size());
+        AssertUtil.assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
+        AssertUtil.assertEquals(true, Arrays.equals(retWktText.getBytes(), bsearchResults.get(polygonName.getBytes())));
+
+        bsearchResults = tairGisCluster.gisintersects(barea, pointWktText.getBytes());
         AssertUtil.assertEquals(1, bsearchResults.size());
         AssertUtil.assertTrue(bsearchResults.containsKey(polygonName.getBytes()));
         AssertUtil.assertEquals(true, Arrays.equals(retWktText.getBytes(), bsearchResults.get(polygonName.getBytes())));
@@ -101,8 +121,8 @@ public class TairGisClusterTest extends TairGisTestBase {
         String retWktText = tairGisCluster.gisget(key, polygonName);
         AssertUtil.assertEquals(polygonWktText, retWktText);
 
-        String ret = tairGisCluster.gisdel(key, polygonName);
-        AssertUtil.assertEquals("OK", ret);
+        byte[] ret = tairGisCluster.gisdel(key.getBytes(), polygonName.getBytes());
+        AssertUtil.assertEquals("OK", new String(ret));
 
         String retWktText1 = tairGisCluster.gisget(key, polygonName1);
         AssertUtil.assertEquals(polygonWktText1, retWktText1);
@@ -262,6 +282,63 @@ public class TairGisClusterTest extends TairGisTestBase {
     }
 
     @Test
+    public void gisSearchByMember() {
+        String uuid = UUID.randomUUID().toString();
+        String key = "hangzhou" + uuid;
+
+        tairGisCluster.gisadd(key, "Palermo", "POINT (13.361389 38.115556)");
+        tairGisCluster.gisadd(key, "Catania", "POINT (15.087269 37.502669)");
+        tairGisCluster.gisadd(key, "Agrigento", "POINT (13.583333 37.316667)");
+
+        // withoutvalue
+        List<GisSearchResponse> responses = tairGisCluster.gissearchByMember(key.getBytes(), "Palermo".getBytes(), 200,
+            GeoUnit.KM, new GisParams().withoutValue());
+        AssertUtil.assertEquals(3, responses.size());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertNull(responses.get(0).getValueByString());
+        equalsWithinEpsilon(0, responses.get(0).getDistance());
+
+        // withvalue
+        responses = tairGisCluster.gissearchByMember(key.getBytes(), "Palermo".getBytes(), 200,
+            GeoUnit.KM, new GisParams());
+        AssertUtil.assertEquals(3, responses.size());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(0, responses.get(0).getDistance());
+
+        // withdist
+        responses = tairGisCluster.gissearchByMember(key, "Palermo", 200,
+            GeoUnit.KM, new GisParams().withDist());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(190.4424, responses.get(0).getDistance());
+
+        // SORT ASC
+        responses = tairGisCluster.gissearchByMember(key, "Palermo", 200,
+            GeoUnit.KM, new GisParams().withDist().sortAscending());
+        AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(0.0, responses.get(0).getDistance());
+
+        // SORT DESC
+        responses = tairGisCluster.gissearchByMember(key, "Palermo", 200,
+            GeoUnit.KM, new GisParams().withDist().sortDescending());
+        AssertUtil.assertEquals("Catania", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(15.087269 37.502669)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(166.2743, responses.get(0).getDistance());
+
+        // COUNT 2
+        responses = tairGisCluster.gissearchByMember(key, "Palermo", 200,
+            GeoUnit.KM, new GisParams().withDist().sortDescending().count(2));
+        AssertUtil.assertEquals("Catania", responses.get(0).getFieldByString());
+        AssertUtil.assertEquals("POINT(15.087269 37.502669)", responses.get(0).getValueByString());
+        equalsWithinEpsilon(166.2743, responses.get(0).getDistance());
+        AssertUtil.assertEquals("Agrigento", responses.get(1).getFieldByString());
+        AssertUtil.assertEquals("POINT(13.583333 37.316667)", responses.get(1).getValueByString());
+        equalsWithinEpsilon(90.9779, responses.get(1).getDistance());
+    }
+
+    @Test
     public void gisSearchWithParams() {
         String uuid = UUID.randomUUID().toString();
         String key = "hangzhou" + uuid;
@@ -279,7 +356,7 @@ public class TairGisClusterTest extends TairGisTestBase {
         equalsWithinEpsilon(0, responses.get(0).getDistance());
 
         // withvalue
-        responses = tairGisCluster.gissearch(key, 15, 37, 200,
+        responses = tairGisCluster.gissearch(key.getBytes(), 15, 37, 200,
             GeoUnit.KM, new GisParams());
         AssertUtil.assertEquals(3, responses.size());
         AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
@@ -287,7 +364,7 @@ public class TairGisClusterTest extends TairGisTestBase {
         equalsWithinEpsilon(0, responses.get(0).getDistance());
 
         // withdist
-        responses = tairGisCluster.gissearch(key, 15, 37, 200,
+        responses = tairGisCluster.gissearch(key.getBytes(), 15, 37, 200,
             GeoUnit.KM, new GisParams().withDist());
         AssertUtil.assertEquals("Palermo", responses.get(0).getFieldByString());
         AssertUtil.assertEquals("POINT(13.361389 38.115556)", responses.get(0).getValueByString());
