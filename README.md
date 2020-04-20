@@ -5,7 +5,6 @@
 alibabacloud-tairjedis-sdk是基于[Jedis](https://github.com/xetorthio/jedis)封装的，操作[云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) 的客户端，主要包含下列功能：
 
 - 支持企业版多种[Module](https://help.aliyun.com/document_detail/146579.html)的操作命令
-- 支持Redis原生集群下mset/mget/del命令【未完成】
 
 # 安装方法
 

@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairstring;
+
 import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
 import com.aliyun.tair.tairstring.params.ExincrbyParams;
 import com.aliyun.tair.tairstring.params.ExsetParams;
@@ -11,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TairStringPipelineTest extends TairStringTestBase {
     private String key1;
@@ -22,8 +23,12 @@ public class TairStringPipelineTest extends TairStringTestBase {
     private byte[] bvalue1;
     private byte[] bkey2;
     private byte[] bvalue2;
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     public TairStringPipelineTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         key1 = "key1" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         value1 = "value1" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         key2 = "key2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
@@ -234,7 +239,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_ex sleep
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;

@@ -18,8 +18,7 @@ public class TairDocPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> jsonset(final String key, final String path, final String json,
-        final JsonsetParams params) {
+    public Response<String> jsonset(final String key, final String path, final String json, final JsonsetParams params) {
         getClient("").sendCommand(ModuleCommand.JSONSET,
             params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(path), SafeEncoder.encode(json)));
         return getResponse(BuilderFactory.STRING);
@@ -30,12 +29,11 @@ public class TairDocPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> jsonset(final byte[] key, final byte[] path, final byte[] json,
-        final JsonsetParams params) {
+    public Response<String> jsonset(final byte[] key, final byte[] path, final byte[] json, final JsonsetParams params) {
         getClient("").sendCommand(ModuleCommand.JSONSET, params.getByteParams(key, path, json));
         return getResponse(BuilderFactory.STRING);
     }
-
+    
     public Response<String> jsonget(final String key) {
         getClient("").sendCommand(ModuleCommand.JSONGET, key);
         return getResponse(BuilderFactory.STRING);
@@ -67,7 +65,7 @@ public class TairDocPipeline extends Pipeline {
             params.getByteParams(key, path));
         return getResponse(BuilderFactory.BYTE_ARRAY);
     }
-
+    
     public Response<List<String>> jsonmget(String... args) {
         getClient("").sendCommand(ModuleCommand.JSONMGET, args);
         return getResponse(BuilderFactory.STRING_LIST);
@@ -77,7 +75,7 @@ public class TairDocPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.JSONMGET, args);
         return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
     }
-
+    
     public Response<Long> jsondel(final String key) {
         getClient("").sendCommand(ModuleCommand.JSONDEL, key);
         return getResponse(BuilderFactory.LONG);
@@ -158,7 +156,7 @@ public class TairDocPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.JSONSTRAPPEND, key, path, json);
         return getResponse(BuilderFactory.LONG);
     }
-
+    
     public Response<Long> jsonstrlen(final String key) {
         getClient("").sendCommand(ModuleCommand.JSONSTRLEN, key);
         return getResponse(BuilderFactory.LONG);
@@ -208,7 +206,7 @@ public class TairDocPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.JSONARRPOP, key, path, toByteArray(index));
         return getResponse(BuilderFactory.BYTE_ARRAY);
     }
-
+    
     public Response<Long> jsonarrInsert(String... args) {
         getClient("").sendCommand(ModuleCommand.JSONARRINSERT, args);
         return getResponse(BuilderFactory.LONG);
@@ -218,23 +216,23 @@ public class TairDocPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.JSONARRINSERT, args);
         return getResponse(BuilderFactory.LONG);
     }
-
-    public Response<Long> jsonArrlen(final String key) {
+    
+    public Response<Long> jsonArrLen(final String key) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key);
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> jsonArrlen(final String key, final String path) {
+    public Response<Long> jsonArrLen(final String key, final String path) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key, path);
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> jsonarrLen(final byte[] key) {
+    public Response<Long> jsonArrLen(final byte[] key) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key);
         return getResponse(BuilderFactory.LONG);
     }
 
-    public Response<Long> jsonarrLen(final byte[] key, final byte[] path) {
+    public Response<Long> jsonArrLen(final byte[] key, final byte[] path) {
         getClient("").sendCommand(ModuleCommand.JSONARRLEN, key, path);
         return getResponse(BuilderFactory.LONG);
     }

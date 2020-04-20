@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests.tairbloom;
+
 import org.junit.Test;
 
 import java.util.List;
@@ -8,10 +10,14 @@ import static org.junit.Assert.assertEquals;
 public class TairBloomPipelineTest extends TairBloomTestBase {
     private String bbf;
     private byte[] bcf = "bcf".getBytes();
+    private String randomkey_;
+    private byte[] randomKeyBinary_;
 
     private static final String EXBLOOM_BIGKEY = "EXBLOOM_BIGKEY";
 
     public TairBloomPipelineTest() {
+        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bbf = "bbf" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bcf = ("bcf" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }

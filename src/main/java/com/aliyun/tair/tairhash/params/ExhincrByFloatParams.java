@@ -5,8 +5,7 @@ import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
 
-
-public class ExhincrByParams extends Params {
+public class ExhincrByFloatParams extends Params {
     private static final String EX = "ex";
     private static final String EXAT = "exat";
     private static final String PX = "px";
@@ -17,62 +16,62 @@ public class ExhincrByParams extends Params {
     private static final String MAX = "max";
     private static final String NOACTIVE = "noactive";
 
-    public ExhincrByParams() {
+    public ExhincrByFloatParams() {
     }
 
-    public static ExhincrByParams ExhincrByParams() {
-        return new ExhincrByParams();
+    public static ExhincrByFloatParams ExhincrByFloatParams() {
+        return new ExhincrByFloatParams();
     }
 
-    public ExhincrByParams ex(int secondsToExpire) {
+    public ExhincrByFloatParams ex(int secondsToExpire) {
         if (!contains(EXAT)) {
             addParam(EX, secondsToExpire);
         }
         return this;
     }
 
-    public ExhincrByParams exat(long unixTime) {
+    public ExhincrByFloatParams exat(long unixTime) {
         if (!contains(EX)) {
             addParam(EXAT, unixTime);
         }
         return this;
     }
 
-    public ExhincrByParams px(long millisecondsToExpire) {
+    public ExhincrByFloatParams px(long millisecondsToExpire) {
         if (!contains(PXAT)) {
             addParam(PX, millisecondsToExpire);
         }
         return this;
     }
 
-    public ExhincrByParams pxat(long millisecondsToExpire) {
+    public ExhincrByFloatParams pxat(long millisecondsToExpire) {
         if (!contains(PX)) {
             addParam(PXAT, millisecondsToExpire);
         }
         return this;
     }
 
-    public ExhincrByParams ver(long version) {
+    public ExhincrByFloatParams ver(long version) {
         addParam(VER, version);
         return this;
     }
 
-    public ExhincrByParams abs(long absoluteVersion) {
+    public ExhincrByFloatParams abs(long absoluteVersion) {
         addParam(ABS, absoluteVersion);
         return this;
     }
 
-    public ExhincrByParams max(long max) {
+    public ExhincrByFloatParams max(double max) {
         addParam(MAX, max);
         return this;
     }
 
-    public ExhincrByParams min(long min) {
+    public ExhincrByFloatParams min(double min) {
         addParam(MIN, min);
         return this;
     }
 
-    public ExhincrByParams noactive( ) {
+    public ExhincrByFloatParams noactive( ) {
         addParam(NOACTIVE, "");
         return this;
     }
@@ -104,3 +103,4 @@ public class ExhincrByParams extends Params {
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
 }
+

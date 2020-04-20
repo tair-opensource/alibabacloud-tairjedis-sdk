@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -6,7 +8,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.ComparisonFailure;
 
-public class AssertUtil extends Assert {
+public class AssertUtil extends Assert{
 
     public static void assertEquals(List<byte[]> expected, List<byte[]> actual) {
         assertEquals(expected.size(), actual.size());
@@ -28,7 +30,7 @@ public class AssertUtil extends Assert {
             }
             if (!contained) {
                 throw new ComparisonFailure("element is missing",
-                    Arrays.toString(next), actual.toString());
+                        Arrays.toString(next), actual.toString());
             }
         }
     }

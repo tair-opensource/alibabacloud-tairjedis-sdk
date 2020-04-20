@@ -21,6 +21,7 @@ public class ExincrbyParams extends Params {
     private static final String MAX = "MAX";
     private static final String MIN = "MIN";
 
+
     public ExincrbyParams() {
     }
 
@@ -38,9 +39,9 @@ public class ExincrbyParams extends Params {
         return this;
     }
 
+
     /**
      * Only set the key if it already exist.
-     *
      * @return SetParams
      */
     public ExincrbyParams xx() {
@@ -50,7 +51,6 @@ public class ExincrbyParams extends Params {
 
     /**
      * Only set the key if it does not already exist.
-     *
      * @return SetParams
      */
     public ExincrbyParams nx() {
@@ -60,7 +60,6 @@ public class ExincrbyParams extends Params {
 
     /**
      * Set the specified expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -71,7 +70,6 @@ public class ExincrbyParams extends Params {
 
     /**
      * Set the specified expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */
@@ -82,7 +80,6 @@ public class ExincrbyParams extends Params {
 
     /**
      * Set the specified absolute expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -93,7 +90,6 @@ public class ExincrbyParams extends Params {
 
     /**
      * Set the specified absolute expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */
@@ -104,7 +100,6 @@ public class ExincrbyParams extends Params {
 
     /**
      * Set if version equal or not exist
-     *
      * @param version
      * @return SetParams
      */
@@ -115,7 +110,6 @@ public class ExincrbyParams extends Params {
 
     /**
      * Set version to absoluteVersion
-     *
      * @param absoluteVersion
      * @return SetParams
      */

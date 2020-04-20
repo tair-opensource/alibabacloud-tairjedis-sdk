@@ -9,6 +9,7 @@ public class BfinsertParams extends Params {
     private static final String CAPACITY = "CAPACITY";
     private static final String ERROR = "ERROR";
     private static final String NOCREATE = "NOCREATE";
+    private static final String ITEMS = "ITEMS";
 
     public BfinsertParams() {
     }
@@ -22,7 +23,7 @@ public class BfinsertParams extends Params {
         return this;
     }
 
-    public BfinsertParams error(long errorRate) {
+    public BfinsertParams error(double errorRate) {
         addParam(ERROR, errorRate);
         return this;
     }
@@ -35,7 +36,7 @@ public class BfinsertParams extends Params {
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
-            byteParams.add(SafeEncoder.encode(String.valueOf(getParam(option))));
+            byteParams.add(SafeEncoder.encode(String.valueOf((Object)getParam(option))));
         }
     }
 
@@ -83,6 +84,25 @@ public class BfinsertParams extends Params {
         for (byte[] arg : args) {
             byteParams.add(arg);
         }
+        return byteParams.toArray(new byte[byteParams.size()][]);
+    }
+
+    public byte[][] getByteParams(byte[] key, byte[]... args) {
+        ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
+        byteParams.add(key);
+
+        if (contains(NOCREATE)) {
+            byteParams.add(SafeEncoder.encode(NOCREATE));
+        }
+
+        addParamWithValue(byteParams, CAPACITY);
+        addParamWithValue(byteParams, ERROR);
+
+        byteParams.add(SafeEncoder.encode(ITEMS));
+        for (byte[] arg : args) {
+            byteParams.add(arg);
+        }
+
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
 }

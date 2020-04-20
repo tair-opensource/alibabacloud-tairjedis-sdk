@@ -25,7 +25,7 @@ public class TairBloom {
     }
 
     /**
-     * Create a empty bloomfilter with the initCapacity and errorRate.
+     * Create a empty bloomfilter with the initCapacity & errorRate.
      *
      * @param key          the key
      * @param initCapacity the initCapacity
@@ -39,8 +39,7 @@ public class TairBloom {
     }
 
     public String bfreserve(byte[] key, long initCapacity, double errorRate) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFRESERVE, key, toByteArray(errorRate),
-            toByteArray(initCapacity));
+        Object obj = getJedis().sendCommand(ModuleCommand.BFRESERVE, key, toByteArray(errorRate), toByteArray(initCapacity));
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -62,8 +61,7 @@ public class TairBloom {
 
     /**
      * Add items to bloomfilter.
-     *
-     * @param key   the key
+     * @param key  the key
      * @param items the items: item [item...]
      * @return Boolean array; Success: true, fail: false
      */
@@ -99,7 +97,7 @@ public class TairBloom {
     /**
      * find if the items in bloomfilter.
      *
-     * @param key   the key
+     * @param key  the key
      * @param items the items: item [item...]
      * @return Boolean array; Success: true, fail: false
      */
@@ -117,8 +115,26 @@ public class TairBloom {
 
     /**
      * insert the multiple items in bloomfilter.
+     * @param key the key
+     * @param params can set "CAPACITY", ERROR", "NOCREATE"
+     * @param items the items
+     * @return Boolean array; Success: true, fail: false
+     */
+    public Boolean[] bfinsert(String key, BfinsertParams params, String... items) {
+        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT,
+            params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encodeMany(items)));
+        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+    }
+
+    public Boolean[] bfinsert(byte[] key, BfinsertParams params, byte[]... items) {
+        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT,
+            params.getByteParams(key, items));
+        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+    }
+
+    /**
+     * insert the multiple items in bloomfilter.
      * {key} [CAPACITY {cap}] [ERROR {error}] ITEMS {item...}.
-     *
      * @param key             the key
      * @param initCapacityTag the initCapacityTag: "CAPACITY"
      * @param initCapacity    the initCapacity
@@ -128,11 +144,10 @@ public class TairBloom {
      * @param items           the items: item [item...]
      * @return Boolean array; Success: true, fail: false
      */
-    public Boolean[] bfinsert(String key, String initCapacityTag, long initCapacity, String errorRateTag,
-        Double errorRate, String itemTag, String... items) {
+    @Deprecated
+    public Boolean[] bfinsert(String key, String initCapacityTag, long initCapacity, String errorRateTag, Double errorRate, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, String.valueOf(initCapacity), errorRateTag,
-            String.valueOf(errorRate), itemTag);
+        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, String.valueOf(initCapacity), errorRateTag, String.valueOf(errorRate), itemTag);
         Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
@@ -140,13 +155,13 @@ public class TairBloom {
     /**
      * insert the multiple items in bloomfilter. It doesn't create bloomfilter, if bloomfilter isn't exist.
      * {key} [NOCREATE] ITEMS {item...}.
-     *
-     * @param key         the key
-     * @param nocreateTag the nocreateTag: "NOCREATE"
-     * @param itemTag     the itemTag: "ITEMS"
-     * @param items       the items: item [item...]
+     * @param key             the key
+     * @param nocreateTag     the nocreateTag: "NOCREATE"
+     * @param itemTag         the itemTag: "ITEMS"
+     * @param items           the items: item [item...]
      * @return Boolean array; Success: true, fail: false
      */
+    @Deprecated
     public Boolean[] bfinsert(String key, String nocreateTag, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
@@ -154,6 +169,7 @@ public class TairBloom {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(String key, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, itemTag);
@@ -161,15 +177,15 @@ public class TairBloom {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
-    public Boolean[] bfinsert(byte[] key, byte[] initCapacityTag, long initCapacity, byte[] errorRateTag,
-        Double errorRate, byte[] itemTag, byte[]... items) {
+    @Deprecated
+    public Boolean[] bfinsert(byte[] key, byte[] initCapacityTag, long initCapacity, byte[] errorRateTag, Double errorRate, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, toByteArray(initCapacity), errorRateTag,
-            toByteArray(errorRate), itemTag);
+        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, toByteArray(initCapacity), errorRateTag, toByteArray(errorRate), itemTag);
         Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] nocreateTag, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
@@ -177,6 +193,7 @@ public class TairBloom {
         return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
     }
 
+    @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, itemTag);
@@ -187,7 +204,7 @@ public class TairBloom {
     /**
      * debug the bloomfilter.
      *
-     * @param key the key
+     * @param key  the key
      * @return List for debug messages
      */
     public List<String> bfdebug(String key) {

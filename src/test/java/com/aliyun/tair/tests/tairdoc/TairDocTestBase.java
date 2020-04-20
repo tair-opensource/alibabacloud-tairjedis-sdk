@@ -1,3 +1,6 @@
+package com.aliyun.tair.tests.tairdoc;
+
+import com.aliyun.tair.tests.TestBase;
 import org.junit.BeforeClass;
 
 import com.aliyun.tair.tairdoc.TairDoc;

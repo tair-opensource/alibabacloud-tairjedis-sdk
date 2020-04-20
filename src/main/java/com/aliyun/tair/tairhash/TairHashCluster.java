@@ -9,10 +9,8 @@ import java.util.Set;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
-import com.aliyun.tair.tairhash.params.ExhgetwithverResult;
-import com.aliyun.tair.tairhash.params.ExhincrByParams;
-import com.aliyun.tair.tairhash.params.ExhmsetwithoptsParams;
-import com.aliyun.tair.tairhash.params.ExhsetParams;
+import com.aliyun.tair.tairhash.params.*;
+import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanParams;
@@ -108,8 +106,23 @@ public class TairHashCluster {
         return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds);
     }
 
+    public Boolean exhpexpire(final String key, final String field, final int milliseconds,boolean noactive) {
+        return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds,noactive);
+    }
+
     public Boolean exhpexpire(final byte[] key, final byte[] field, final int milliseconds) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
+        return BuilderFactory.BOOLEAN.build(obj);
+    }
+
+    public Boolean exhpexpire(final byte[] key, final byte[] field, final int milliseconds,boolean noactive) {
+        Object obj;
+        if(noactive){
+            obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds),SafeEncoder.encode("noactive"));
+        } else {
+            obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
+        }
+
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -117,9 +130,27 @@ public class TairHashCluster {
         return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime);
     }
 
+    public Boolean exhpexpireAt(final String key, final String field, final long unixTime,boolean noactive) {
+        return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime,noactive);
+    }
+
     public Boolean exhpexpireAt(final byte[] key, final byte[] field, final long unixTime) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
         return BuilderFactory.BOOLEAN.build(obj);
+    }
+
+    public Boolean exhpexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
+        Object obj;
+        if(noactive) {
+            obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime),SafeEncoder.encode("noactive"));
+        } else {
+            obj = jc.sendCommand(key, ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
+        }
+        return BuilderFactory.BOOLEAN.build(obj);
+    }
+
+    public Boolean exhexpire(final String key, final String field, final int seconds,boolean noactive) {
+        return exhexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), seconds,noactive);
     }
 
     public Boolean exhexpire(final String key, final String field, final int seconds) {
@@ -131,12 +162,38 @@ public class TairHashCluster {
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
+    public Boolean exhexpire(final byte[] key, final byte[] field, final int seconds,boolean noactive) {
+        Object obj;
+        if(noactive){
+            obj  = jc.sendCommand(key, ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds),SafeEncoder.encode("noactive"));
+        }else {
+            obj  = jc.sendCommand(key, ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
+        }
+
+        return BuilderFactory.BOOLEAN.build(obj);
+    }
+
     public Boolean exhexpireAt(final String key, final String field, final long unixTime) {
         return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime);
     }
 
+    public Boolean exhexpireAt(final String key, final String field, final long unixTime,boolean noactive) {
+        return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime,noactive);
+    }
+
     public Boolean exhexpireAt(final byte[] key, final byte[] field, final long unixTime) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
+        return BuilderFactory.BOOLEAN.build(obj);
+    }
+
+    public Boolean exhexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
+        Object obj;
+        if(noactive){
+            obj = jc.sendCommand(key, ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime),SafeEncoder.encode("noactive"));
+        }else {
+            obj = jc.sendCommand(key, ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
+        }
+
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -205,12 +262,12 @@ public class TairHashCluster {
     }
 
     public Double exhincrByFloat(final String key, final String field, final double value,
-        final ExhincrByParams params) {
+        final ExhincrByFloatParams params) {
         return exhincrByFloat(SafeEncoder.encode(key), SafeEncoder.encode(field), value, params);
     }
 
-    public Double exhincrByFloat(byte[] key, byte[] field, double value, ExhincrByParams params) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXINCRBYFLOAT,
+    public Double exhincrByFloat(byte[] key, byte[] field, double value, ExhincrByFloatParams params) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHINCRBYFLOAT,
             params.getByteParams(key, field, toByteArray(value)));
         return BuilderFactory.DOUBLE.build(obj);
     }
@@ -237,23 +294,23 @@ public class TairHashCluster {
 
     public List<String> exhmget(final String key, final String... fields) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMGET,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
     public List<byte[]> exhmget(byte[] key, byte[]... fields) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGET, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGET, JoinParameters.joinParameters(key, fields));
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<String>> exhmgetwithver(final String key, final String... fields) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMGETWITHVER,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_STRING_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<byte[]>> exhmgetwithver(byte[] key, byte[]... fields) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGETWITHVER, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMGETWITHVER, JoinParameters.joinParameters(key, fields));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_BYTE_LIST.build(obj);
     }
 
@@ -262,7 +319,7 @@ public class TairHashCluster {
     }
 
     public Long exhdel(byte[] key, byte[]... fields) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHDEL, joinParameters(key, fields));
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHDEL, JoinParameters.joinParameters(key, fields));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -270,8 +327,23 @@ public class TairHashCluster {
         return exhlen(SafeEncoder.encode(key));
     }
 
+    public Long exhlen(final String key,boolean noexp) {
+        return exhlen(SafeEncoder.encode(key),noexp);
+    }
+
     public Long exhlen(byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHLEN, key);
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long exhlen(byte[] key,boolean noexp) {
+        Object obj;
+        if(noexp){
+            obj = jc.sendCommand(key, ModuleCommand.EXHLEN, key,SafeEncoder.encode("noexp"));
+        }else {
+            obj = jc.sendCommand(key, ModuleCommand.EXHLEN, key);
+        }
+
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -353,14 +425,5 @@ public class TairHashCluster {
 
         Object obj = jc.sendCommand(key, ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
         return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
-    }
-
-    /* ================ Common function ================ */
-
-    private byte[][] joinParameters(byte[] first, byte[][] rest) {
-        byte[][] result = new byte[rest.length + 1][];
-        result[0] = first;
-        System.arraycopy(rest, 0, result, 1, rest.length);
-        return result;
     }
 }

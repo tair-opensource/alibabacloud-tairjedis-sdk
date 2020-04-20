@@ -14,8 +14,8 @@ public class StringBuilderFactory {
             if (data == null) {
                 return null;
             }
-            List l = (List)data;
-            return new ExgetResult<String>(new String((byte[])l.get(0)), ((Number)l.get(1)).longValue());
+            List l = (List) data;
+            return new ExgetResult<String>(new String((byte[]) l.get(0)),((Number) l.get(1)).longValue());
 
         }
 
@@ -32,8 +32,8 @@ public class StringBuilderFactory {
             if (data == null) {
                 return null;
             }
-            List l = (List)data;
-            return new ExgetResult<byte[]>((byte[])l.get(0), ((Number)l.get(1)).longValue());
+            List l = (List) data;
+            return new ExgetResult<byte[]>((byte[])l.get(0),((Number) l.get(1)).longValue());
         }
 
         @Override
@@ -48,9 +48,8 @@ public class StringBuilderFactory {
             if (data == null) {
                 return null;
             }
-            List l = (List)data;
-            return new ExcasResult<String>(new String((byte[])l.get(0)), new String((byte[])l.get(1)), ((Number)l.get(
-                2)).longValue());
+            List l = (List) data;
+            return new ExcasResult<String>(new String((byte[])l.get(0)), new String((byte[]) l.get(1)),((Number) l.get(2)).longValue());
 
         }
 
@@ -67,8 +66,8 @@ public class StringBuilderFactory {
             if (data == null) {
                 return null;
             }
-            List l = (List)data;
-            return new ExcasResult<byte[]>((byte[])l.get(0), (byte[])l.get(1), ((Number)l.get(2)).longValue());
+            List l = (List) data;
+            return new ExcasResult<byte[]>((byte[])l.get(0), (byte[])l.get(1), ((Number) l.get(2)).longValue());
         }
 
         @Override

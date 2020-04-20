@@ -5,6 +5,7 @@ import java.util.List;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairdoc.params.JsonsetParams;
 import com.aliyun.tair.tairdoc.params.JsongetParams;
+import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.util.SafeEncoder;
@@ -184,12 +185,14 @@ public class TairDocCluster {
     }
 
     public Long jsonarrAppend(String sampleKey, String... args) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRAPPEND, args);
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRAPPEND,
+            JoinParameters.joinParameters(sampleKey, args));
         return BuilderFactory.LONG.build(obj);
     }
 
     public Long jsonarrAppend(byte[] sampleKey, byte[]... args) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRAPPEND, args);
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRAPPEND,
+            JoinParameters.joinParameters(sampleKey, args));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -214,16 +217,18 @@ public class TairDocCluster {
     }
 
     public Long jsonarrInsert(String sampleKey, String... args) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRAPPEND, args);
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRINSERT,
+            JoinParameters.joinParameters(sampleKey, args));
         return BuilderFactory.LONG.build(obj);
     }
 
     public Long jsonarrInsert(byte[] sampleKey, byte[]... args) {
-        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRAPPEND, args);
+        Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONARRINSERT,
+            JoinParameters.joinParameters(sampleKey, args));
         return BuilderFactory.LONG.build(obj);
     }
 
-    public Long jsonArrlen(final String key) {
+    public Long jsonArrLen(final String key) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONARRLEN, key);
         return BuilderFactory.LONG.build(obj);
     }
@@ -233,12 +238,12 @@ public class TairDocCluster {
         return BuilderFactory.LONG.build(obj);
     }
 
-    public Long jsonarrLen(final byte[] key) {
+    public Long jsonArrLen(final byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONARRLEN, key);
         return BuilderFactory.LONG.build(obj);
     }
 
-    public Long jsonarrLen(final byte[] key, final byte[] path) {
+    public Long jsonArrLen(final byte[] key, final byte[] path) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONARRLEN, key, path);
         return BuilderFactory.LONG.build(obj);
     }

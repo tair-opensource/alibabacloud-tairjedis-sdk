@@ -28,9 +28,9 @@ public class TairString {
     /**
      * Compare And Set.
      *
-     * @param key      the key
-     * @param oldvalue the oldvalue
-     * @param newvalue the newvalue
+     * @param key       the key
+     * @param oldvalue  the oldvalue
+     * @param newvalue  the newvalue
      * @return Success: 1; Not exist: -1; Fail: 0.
      */
     public Long cas(String key, String oldvalue, String newvalue) {
@@ -45,14 +45,14 @@ public class TairString {
     /**
      * Compare And Set.
      *
-     * @param key      the key
-     * @param oldvalue the oldvalue
-     * @param newvalue thenewvalue
-     * @param params   the params: [EX time] [EXAT time] [PX time] [PXAT time]
-     *                 `EX` - Set expire time (seconds)
-     *                 `EXAT` - Set expire time as a UNIX timestamp (seconds)
-     *                 `PX` - Set expire time (milliseconds)
-     *                 `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @param key       the key
+     * @param oldvalue  the oldvalue
+     * @param newvalue  thenewvalue
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: 1; Not exist: -1; Fail: 0.
      */
     public Long cas(String key, String oldvalue, String newvalue, CasParams params) {
@@ -67,8 +67,8 @@ public class TairString {
     /**
      * Compare And Delete.
      *
-     * @param key   the key
-     * @param value the value
+     * @param key       the key
+     * @param value     the value
      * @return Success: 1; Not exist: -1; Fail: 0.
      */
     public Long cad(String key, String value) {
@@ -100,17 +100,17 @@ public class TairString {
     /**
      * Set the string value of the key.
      *
-     * @param key    the key
-     * @param value  the value
+     * @param key   the key
+     * @param value the value
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time] [NX|XX] [VER version | ABS version]
-     *               `EX` - Set expire time (seconds)
-     *               `EXAT` - Set expire time as a UNIX timestamp (seconds)
-     *               `PX` - Set expire time (milliseconds)
-     *               `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
-     *               `NX` - only set the key if it does not already exists
-     *               `XX` - only set the key if it already exists
-     *               `VER` - Set if version matched or not exist
-     *               `ABS` - Set with abs version
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * `NX` - only set the key if it does not already exists
+     * `XX` - only set the key if it already exists
+     * `VER` - Set if version matched or not exist
+     * `ABS` - Set with abs version
      * @return Success: OK; Fail: error.
      */
     public String exset(String key, String value, ExsetParams params) {
@@ -126,7 +126,7 @@ public class TairString {
     /**
      * Get the value of the key.
      *
-     * @param key the key
+     * @param key   the key
      * @return List, Success: [value, version]; Fail: error.
      */
     public ExgetResult<String> exget(String key) {
@@ -158,8 +158,8 @@ public class TairString {
     /**
      * Increment the integer value of the key by the given number.
      *
-     * @param key  the key
-     * @param incr the incr
+     * @param key   the key
+     * @param incr  the incr
      * @return Success: value of key; Fail: error.
      */
     public Long exincrBy(String key, long incr) {
@@ -174,18 +174,18 @@ public class TairString {
     /**
      * Increment the integer value of the key by the given number.
      *
-     * @param key    the key
-     * @param incr   the incr
+     * @param key   the key
+     * @param incr  the incr
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time] [VER version | ABS version]
      *               [MIN minval] [MAX maxval]
-     *               `EX` - Set expire time (seconds)
-     *               `EXAT` - Set expire time as a UNIX timestamp (seconds)
-     *               `PX` - Set expire time (milliseconds)
-     *               `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
-     *               `VER` - Set if version matched or not exist
-     *               `ABS` - Set with abs version
-     *               `MIN` - Set the min value for the value.
-     *               `MAX` - Set the max value for the value.
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * `VER` - Set if version matched or not exist
+     * `ABS` - Set with abs version
+     * `MIN` - Set the min value for the value.
+     * `MAX` - Set the max value for the value.
      * @return Success: value of key; Fail: error.
      */
     public Long exincrBy(String key, long incr, ExincrbyParams params) {
@@ -200,8 +200,8 @@ public class TairString {
     /**
      * Increment the float value of the key by the given number.
      *
-     * @param key  the key
-     * @param incr the incr
+     * @param key   the key
+     * @param incr  the incr
      * @return Success: value of key; Fail: error.
      */
     public Double exincrByFloat(String key, Double incr) {
@@ -216,18 +216,18 @@ public class TairString {
     /**
      * Increment the float value of the key by the given number.
      *
-     * @param key    the key
-     * @param incr   the incr
+     * @param key   the key
+     * @param incr  the incr
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time] [VER version | ABS version]
      *               [MIN minval] [MAX maxval]
-     *               `EX` - Set expire time (seconds)
-     *               `EXAT` - Set expire time as a UNIX timestamp (seconds)
-     *               `PX` - Set expire time (milliseconds)
-     *               `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
-     *               `VER` - Set if version matched or not exist
-     *               `ABS` - Set with abs version
-     *               `MIN` - Set the min value for the value.
-     *               `MAX` - Set the max value for the value.
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * `VER` - Set if version matched or not exist
+     * `ABS` - Set with abs version
+     * `MIN` - Set the min value for the value.
+     * `MAX` - Set the max value for the value.
      * @return Success: value of key; Fail: error.
      */
     public Double exincrByFloat(String key, Double incr, ExincrbyFloatParams params) {
@@ -242,26 +242,32 @@ public class TairString {
     /**
      * Compare And Set.
      *
-     * @param key      the key
-     * @param newvalue the newvalue
-     * @param version  the version
+     * @param key       the key
+     * @param newvalue  the newvalue
+     * @param version   the version
      * @return List, Success: ["OK", "", version]; Fail: ["Err", value, version].
      */
     public ExcasResult<String> excas(String key, String newvalue, long version) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, String.valueOf(version));
+        if (obj instanceof Long && ((Long)obj == -1L)) {
+            return null;
+        }
         return StringBuilderFactory.EXCAS_RESULT_STRING.build(obj);
     }
 
     public ExcasResult<byte[]> excas(byte[] key, byte[] newvalue, long version) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, toByteArray(version));
+        if (obj instanceof Long && ((Long)obj == -1L)) {
+            return null;
+        }
         return StringBuilderFactory.EXCAS_RESULT_BYTE.build(obj);
     }
 
     /**
      * Compare And Delete.
      *
-     * @param key     the key
-     * @param version the version
+     * @param key       the key
+     * @param version     the version
      * @return Success: 1; Not exist: -1; Fail: 0.
      */
     public Long excad(String key, long version) {

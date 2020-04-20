@@ -14,7 +14,6 @@ public class CasParams extends Params {
 
     /**
      * Set the specified expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -25,7 +24,6 @@ public class CasParams extends Params {
 
     /**
      * Set the specified expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */
@@ -36,7 +34,6 @@ public class CasParams extends Params {
 
     /**
      * Set the specified absolute expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -47,7 +44,6 @@ public class CasParams extends Params {
 
     /**
      * Set the specified absolute expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */

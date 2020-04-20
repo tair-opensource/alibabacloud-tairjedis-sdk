@@ -1,3 +1,5 @@
+package com.aliyun.tair.tests;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,13 +16,17 @@ public class TestBase {
     protected static JedisCluster jedisCluster;
 
     static {
-        jedis = new Jedis(HOST, PORT);
-        if (!"PONG".equals(jedis.ping())) {
-            System.exit(-1);
-        }
+        try {
+            jedis = new Jedis(HOST, PORT);
+            if (!"PONG".equals(jedis.ping())) {
+                System.exit(-1);
+            }
 
-        Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-        jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
-        jedisCluster = new JedisCluster(jedisClusterNodes);
+            Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
+            jedisCluster = new JedisCluster(jedisClusterNodes);
+        } catch (Exception e) {
+
+        }
     }
 }

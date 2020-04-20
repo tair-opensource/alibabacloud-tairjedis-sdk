@@ -19,7 +19,6 @@ public class ExincrbyFloatParams extends Params {
 
     private static final String MAX = "MAX";
     private static final String MIN = "MIN";
-
     public ExincrbyFloatParams() {
     }
 
@@ -39,7 +38,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Only set the key if it already exist.
-     *
      * @return SetParams
      */
     public ExincrbyFloatParams xx() {
@@ -49,7 +47,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Only set the key if it does not already exist.
-     *
      * @return SetParams
      */
     public ExincrbyFloatParams nx() {
@@ -59,7 +56,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Set the specified expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -70,7 +66,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Set the specified expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */
@@ -81,7 +76,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Set the specified absolute expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -92,7 +86,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Set the specified absolute expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */
@@ -103,7 +96,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Set if version equal or not exist
-     *
      * @param version
      * @return SetParams
      */
@@ -114,7 +106,6 @@ public class ExincrbyFloatParams extends Params {
 
     /**
      * Set version to absoluteVersion
-     *
      * @param absoluteVersion
      * @return SetParams
      */
@@ -129,6 +120,7 @@ public class ExincrbyFloatParams extends Params {
             byteParams.add(SafeEncoder.encode(String.valueOf((Object)getParam(option))));
         }
     }
+
 
     public byte[][] getByteParams(byte[]... args) {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();

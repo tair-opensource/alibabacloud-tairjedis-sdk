@@ -9,10 +9,8 @@ import java.util.Set;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
-import com.aliyun.tair.tairhash.params.ExhgetwithverResult;
-import com.aliyun.tair.tairhash.params.ExhincrByParams;
-import com.aliyun.tair.tairhash.params.ExhmsetwithoptsParams;
-import com.aliyun.tair.tairhash.params.ExhsetParams;
+import com.aliyun.tair.tairhash.params.*;
+import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ScanParams;
@@ -55,18 +53,18 @@ public class TairHash {
     /**
      * Set the string value of a exhash field.
      *
-     * @param key    the key
-     * @param field  the field type: key
-     * @param value  the value
+     * @param key   the key
+     * @param field the field type: key
+     * @param value the value
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time] [NX|XX] [VER version | ABS version]
-     *               `EX` - Set expire time (seconds)
-     *               `EXAT` - Set expire time as a UNIX timestamp (seconds)
-     *               `PX` - Set expire time (milliseconds)
-     *               `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
-     *               `NX` - only set the key if it does not already exists
-     *               `XX` - only set the key if it already exists
-     *               `VER` - Set if version matched or not exist
-     *               `ABS` - Set with abs version
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * `NX` - only set the key if it does not already exists
+     * `XX` - only set the key if it already exists
+     * `VER` - Set if version matched or not exist
+     * `ABS` - Set with abs version
      * @return integer-reply specifically:
      * {@literal 1} if {@code field} is a new field in the hash and {@code value} was set. {@literal 0} if
      * {@code field} already exists in the hash and the value was updated.
@@ -164,8 +162,8 @@ public class TairHash {
     /**
      * Set expire time (milliseconds).
      *
-     * @param key          the key
-     * @param field        the field
+     * @param key     the key
+     * @param field   the field
      * @param milliseconds time is milliseconds
      * @return Success: true, fail: false.
      */
@@ -173,8 +171,21 @@ public class TairHash {
         return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds);
     }
 
+    public Boolean exhpexpire(final String key, final String field, final int milliseconds,boolean noactive) {
+        return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds,noactive);
+    }
+
     public Boolean exhpexpire(final byte[] key, final byte[] field, final int milliseconds) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
+        return exhpexpire(key, field, milliseconds, false);
+    }
+
+    public Boolean exhpexpire(final byte[] key, final byte[] field, final int milliseconds,boolean noactive) {
+        Object obj;
+        if(noactive){
+            obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds),SafeEncoder.encode("noactive"));
+        } else {
+            obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
+        }
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -190,8 +201,21 @@ public class TairHash {
         return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime);
     }
 
+    public Boolean exhpexpireAt(final String key, final String field, final long unixTime,boolean noactive) {
+        return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime,noactive);
+    }
+
     public Boolean exhpexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
+        return exhpexpireAt(key, field, unixTime, false);
+    }
+
+    public Boolean exhpexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
+        Object obj;
+        if(noactive){
+            obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime),SafeEncoder.encode("noactive"));
+        }else {
+            obj = getJedis().sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
+        }
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -207,8 +231,21 @@ public class TairHash {
         return exhexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), seconds);
     }
 
+    public Boolean exhexpire(final String key, final String field, final int seconds,boolean noactive) {
+        return exhexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), seconds,noactive);
+    }
+
     public Boolean exhexpire(final byte[] key, final byte[] field, final int seconds) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
+        return exhexpire(key, field, seconds, false);
+    }
+
+    public Boolean exhexpire(final byte[] key, final byte[] field, final int seconds,boolean noactive) {
+        Object obj;
+        if(noactive){
+            obj = getJedis().sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds),SafeEncoder.encode("noactive"));
+        } else {
+            obj = getJedis().sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
+        }
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -224,8 +261,21 @@ public class TairHash {
         return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime);
     }
 
+    public Boolean exhexpireAt(final String key, final String field, final long unixTime,boolean noactive) {
+        return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime,noactive);
+    }
+
     public Boolean exhexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
+        return exhexpireAt(key, field, unixTime, false);
+    }
+
+    public Boolean exhexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
+        Object obj;
+        if(noactive) {
+            obj = getJedis().sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime),SafeEncoder.encode("noactive"));
+        }else {
+            obj = getJedis().sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
+        }
         return BuilderFactory.BOOLEAN.build(obj);
     }
 
@@ -312,13 +362,13 @@ public class TairHash {
     /**
      * Increment the integer value of a hash field by the given number.
      *
-     * @param key    the key
-     * @param field  the field type: key
+     * @param key   the key
+     * @param field the field type: key
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
-     *               `EX` - Set expire time (seconds)
-     *               `EXAT` - Set expire time as a UNIX timestamp (seconds)
-     *               `PX` - Set expire time (milliseconds)
-     *               `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Long integer-reply the value at {@code field} after the increment operation.
      */
     public Long exhincrBy(final String key, final String field, final long value, final ExhincrByParams params) {
@@ -351,23 +401,23 @@ public class TairHash {
     /**
      * Increment the float value of a hash field by the given amount.
      *
-     * @param key    the key
-     * @param field  the field type: key
-     * @param value  the increment type: double
+     * @param key   the key
+     * @param field the field type: key
+     * @param value the increment type: double
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
-     *               `EX` - Set expire time (seconds)
-     *               `EXAT` - Set expire time as a UNIX timestamp (seconds)
-     *               `PX` - Set expire time (milliseconds)
-     *               `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Double bulk-string-reply the value of {@code field} after the increment.
      */
     public Double exhincrByFloat(final String key, final String field, final double value,
-        final ExhincrByParams params) {
+                                 final ExhincrByFloatParams params) {
         return exhincrByFloat(SafeEncoder.encode(key), SafeEncoder.encode(field), value, params);
     }
 
-    public Double exhincrByFloat(byte[] key, byte[] field, double value, ExhincrByParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT,
+    public Double exhincrByFloat(byte[] key, byte[] field, double value, ExhincrByFloatParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHINCRBYFLOAT,
             params.getByteParams(key, field, toByteArray(value)));
         return BuilderFactory.DOUBLE.build(obj);
     }
@@ -419,12 +469,12 @@ public class TairHash {
      */
     public List<String> exhmget(final String key, final String... fields) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXHMGET,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
     public List<byte[]> exhmget(byte[] key, byte[]... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGET, joinParameters(key, fields));
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGET, JoinParameters.joinParameters(key, fields));
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
@@ -437,12 +487,12 @@ public class TairHash {
      */
     public List<ExhgetwithverResult<String>> exhmgetwithver(final String key, final String... fields) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXHMGETWITHVER,
-            joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_STRING_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<byte[]>> exhmgetwithver(byte[] key, byte[]... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGETWITHVER, joinParameters(key, fields));
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHMGETWITHVER, JoinParameters.joinParameters(key, fields));
         return HashBuilderFactory.EXHMGETWITHVER_RESULT_BYTE_LIST.build(obj);
     }
 
@@ -459,7 +509,7 @@ public class TairHash {
     }
 
     public Long exhdel(byte[] key, byte[]... fields) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHDEL, joinParameters(key, fields));
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHDEL, JoinParameters.joinParameters(key, fields));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -473,8 +523,23 @@ public class TairHash {
         return exhlen(SafeEncoder.encode(key));
     }
 
+    public Long exhlen(final String key,boolean noexp) {
+        return exhlen(SafeEncoder.encode(key),noexp);
+    }
+
     public Long exhlen(byte[] key) {
         Object obj = getJedis().sendCommand(ModuleCommand.EXHLEN, key);
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long exhlen(byte[] key,boolean noexp) {
+        Object obj;
+        if(noexp){
+            obj = getJedis().sendCommand(ModuleCommand.EXHLEN, key,SafeEncoder.encode("noexp"));
+        }else {
+            obj = getJedis().sendCommand(ModuleCommand.EXHLEN, key);
+        }
+
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -584,12 +649,12 @@ public class TairHash {
      * @param op     the op
      * @param subkey the subkey
      * @param params the params: [MATCH pattern] [COUNT count]
-     *               `MATCH` - Set the pattern which is used to filter the results
-     *               `COUNT` - Set the number of fields in a single scan (default is 10)
+     * `MATCH` - Set the pattern which is used to filter the results
+     * `COUNT` - Set the number of fields in a single scan (default is 10)
      * @return A ScanResult
      */
     public ScanResult<Entry<String, String>> exhscan(final String key, final String op, final String subkey,
-        final ScanParams params) {
+                                                     final ScanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(SafeEncoder.encode(key));
         args.add(SafeEncoder.encode(op));
@@ -610,14 +675,5 @@ public class TairHash {
 
         Object obj = getJedis().sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
         return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
-    }
-
-    /* ================ Common function ================ */
-
-    private byte[][] joinParameters(byte[] first, byte[][] rest) {
-        byte[][] result = new byte[rest.length + 1][];
-        result[0] = first;
-        System.arraycopy(rest, 0, result, 1, rest.length);
-        return result;
     }
 }

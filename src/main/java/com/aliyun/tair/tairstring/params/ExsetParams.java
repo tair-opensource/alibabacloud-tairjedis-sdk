@@ -23,7 +23,6 @@ public class ExsetParams extends Params {
 
     /**
      * Only set the key if it already exist.
-     *
      * @return SetParams
      */
     public ExsetParams xx() {
@@ -33,7 +32,6 @@ public class ExsetParams extends Params {
 
     /**
      * Only set the key if it does not already exist.
-     *
      * @return SetParams
      */
     public ExsetParams nx() {
@@ -43,7 +41,6 @@ public class ExsetParams extends Params {
 
     /**
      * Set the specified expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -54,7 +51,6 @@ public class ExsetParams extends Params {
 
     /**
      * Set the specified expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */
@@ -65,7 +61,6 @@ public class ExsetParams extends Params {
 
     /**
      * Set the specified absolute expire time, in seconds.
-     *
      * @param secondsToExpire
      * @return SetParams
      */
@@ -76,7 +71,6 @@ public class ExsetParams extends Params {
 
     /**
      * Set the specified absolute expire time, in milliseconds.
-     *
      * @param millisecondsToExpire
      * @return SetParams
      */
@@ -87,7 +81,6 @@ public class ExsetParams extends Params {
 
     /**
      * Set if version equal or not exist
-     *
      * @param version
      * @return SetParams
      */
@@ -98,7 +91,6 @@ public class ExsetParams extends Params {
 
     /**
      * Set version to absoluteVersion
-     *
      * @param absoluteVersion
      * @return SetParams
      */

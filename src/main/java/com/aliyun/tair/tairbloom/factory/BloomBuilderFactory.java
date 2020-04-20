@@ -12,10 +12,10 @@ public class BloomBuilderFactory {
             if (data == null) {
                 return null;
             }
-            List l = (List)data;
+            List l = (List) data;
             Boolean ret[] = new Boolean[l.size()];
             for (int i = 0; i < l.size(); i++) {
-                ret[i] = ((Number)l.get(i)).longValue() != 0;
+                ret[i] = ((Number) l.get(i)).longValue() != 0;
             }
             return ret;
         }
@@ -32,10 +32,10 @@ public class BloomBuilderFactory {
             if (data == null) {
                 return null;
             }
-            List l = (List)data;
+            List l = (List) data;
             Boolean ret[] = new Boolean[l.size()];
             for (int i = 0; i < l.size(); i++) {
-                ret[i] = ((Number)l.get(i)).longValue() != 0;
+                ret[i] = ((Number) l.get(i)).longValue() != 0;
             }
             return ret;
         }

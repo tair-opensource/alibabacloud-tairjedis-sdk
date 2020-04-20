@@ -15,7 +15,6 @@ public class JsonsetParams extends Params {
 
     /**
      * Only set the key if it already exist.
-     *
      * @return SetParams
      */
     public JsonsetParams xx() {
@@ -25,7 +24,6 @@ public class JsonsetParams extends Params {
 
     /**
      * Only set the key if it does not already exist.
-     *
      * @return SetParams
      */
     public JsonsetParams nx() {
@@ -36,7 +34,7 @@ public class JsonsetParams extends Params {
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
-            byteParams.add(SafeEncoder.encode(String.valueOf(getParam(option))));
+            byteParams.add(SafeEncoder.encode(String.valueOf((Object)getParam(option))));
         }
     }
 

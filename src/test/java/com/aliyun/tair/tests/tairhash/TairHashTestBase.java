@@ -1,6 +1,9 @@
+package com.aliyun.tair.tests.tairhash;
+
 import com.aliyun.tair.tairhash.TairHash;
 import com.aliyun.tair.tairhash.TairHashCluster;
 import com.aliyun.tair.tairhash.TairHashPipeline;
+import com.aliyun.tair.tests.TestBase;
 import org.junit.BeforeClass;
 
 public class TairHashTestBase extends TestBase {

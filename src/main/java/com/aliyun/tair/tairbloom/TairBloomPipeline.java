@@ -67,15 +67,26 @@ public class TairBloomPipeline extends Pipeline {
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 
-    public Response<Boolean[]> bfinsert(String key, String initCapacityTag, long initCapacity, String errorRateTag,
-        Double errorRate, String itemTag, String... items) {
+    public Response<Boolean[]> bfinsert(String key, BfinsertParams params, String... items) {
+        getClient("").sendCommand(ModuleCommand.BFINSERT,
+            params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encodeMany(items)));
+        return getResponse(BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST);
+    }
+
+    public Response<Boolean[]> bfinsert(byte[] key, BfinsertParams params, byte[]... items) {
+        getClient("").sendCommand(ModuleCommand.BFINSERT, params.getByteParams(key, items));
+        return getResponse(BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST);
+    }
+
+    @Deprecated
+    public Response<Boolean[]> bfinsert(String key, String initCapacityTag, long initCapacity, String errorRateTag, Double errorRate, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, String.valueOf(initCapacity), errorRateTag,
-            String.valueOf(errorRate), itemTag);
+        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, String.valueOf(initCapacity), errorRateTag, String.valueOf(errorRate), itemTag);
         getClient("").sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 
+    @Deprecated
     public Response<Boolean[]> bfinsert(String key, String nocreateTag, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
@@ -83,6 +94,7 @@ public class TairBloomPipeline extends Pipeline {
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 
+    @Deprecated
     public Response<Boolean[]> bfinsert(String key, String itemTag, String... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, itemTag);
@@ -90,15 +102,15 @@ public class TairBloomPipeline extends Pipeline {
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 
-    public Response<Boolean[]> bfinsert(byte[] key, byte[] initCapacityTag, long initCapacity, byte[] errorRateTag,
-        Double errorRate, byte[] itemTag, byte[]... items) {
+    @Deprecated
+    public Response<Boolean[]> bfinsert(byte[] key, byte[] initCapacityTag, long initCapacity, byte[] errorRateTag, Double errorRate, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, toByteArray(initCapacity), errorRateTag,
-            toByteArray(errorRate), itemTag);
+        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, toByteArray(initCapacity), errorRateTag, toByteArray(errorRate), itemTag);
         getClient("").sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 
+    @Deprecated
     public Response<Boolean[]> bfinsert(byte[] key, byte[] nocreateTag, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
@@ -106,6 +118,7 @@ public class TairBloomPipeline extends Pipeline {
         return getResponse(BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST);
     }
 
+    @Deprecated
     public Response<Boolean[]> bfinsert(byte[] key, byte[] itemTag, byte[]... items) {
         BfinsertParams params = new BfinsertParams();
         byte[][] metadata = params.getByteParamsMeta(key, itemTag);
