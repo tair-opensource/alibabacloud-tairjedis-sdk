@@ -76,7 +76,23 @@ public enum ModuleCommand implements ProtocolCommand {
     BFMEXISTS("BF.MEXISTS"),
     BFINSERT("BF.INSERT"),
     BFRESERVE("BF.RESERVE"),
-    BFDEBUG("BF.DEBUG");
+    BFDEBUG("BF.DEBUG"),
+
+    // TairTs command
+    TSPCREATE("exts.p.create"),
+    TSSCREATE("exts.s.create"),
+    TSSALTER("exts.s.alter"),
+    TSSADD("exts.s.add"),
+    TSSMADD("exts.s.madd"),
+    TSSINCRBY("exts.s.incrby"),
+    TSSMINCRBY("exts.s.mincrby"),
+    TSSDEL("exts.s.del"),
+    TSSGET("exts.s.get"),
+    TSSINFO("exts.s.info"),
+    TSSQUERYINDEX("exts.s.queryindex"),
+    TSSRANGE("exts.s.range"),
+    TSSMRANGE("exts.s.mrange"),
+    TSPRANGE("exts.p.range");
 
     private final byte[] raw;
 
