@@ -25,6 +25,8 @@ public class TairTsTest extends TairTsTestBase {
     private byte[] bSkey2;
     private String randomPkey;
     private byte[] randomPKeyBinary;
+    private long startTs;
+    private long endTs;
 
     public TairTsTest() {
         randomPkey = "randomPkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
@@ -33,12 +35,12 @@ public class TairTsTest extends TairTsTestBase {
         randomSkey2 = "key2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bSkey = ("bkey" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bSkey2 = ("bkey2" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        startTs = (System.currentTimeMillis() - 100000) / 1000 * 1000;
+        endTs = System.currentTimeMillis() / 1000 * 1000;
     }
 
     @Test
     public void extsaddTest() throws Exception {
-        long startTs = 1588812501110L;
-        long endTs = 1589812501110L;
 
         for (int i = 0; i < 1; i++) {
             double val = i;
@@ -89,15 +91,10 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsmaddTest() throws Exception {
-        String ret = "";
-        Object obj;
-
-        long startTs = 1588812501110L;
-        long endTs = 1589812501110L;
 
         for (int i = 0; i < 1; i++) {
             long val = i;
-            long ts = 1588812501110L + i*1;
+            long ts = startTs + i*1;
             String tsStr = String.valueOf(ts);
             ExtsAttributesParams params = new ExtsAttributesParams();
             params.dataEt(1000000000);
@@ -136,7 +133,7 @@ public class TairTsTest extends TairTsTestBase {
 
         for (int i = 0; i < 1; i++) {
             long val = i;
-            long ts = 1588812501110L + i*1;
+            long ts = startTs + i*1;
             byte[] tsStr = toByteArray(ts);
             ExtsAttributesParams params = new ExtsAttributesParams();
             params.dataEt(1000000000);
@@ -176,8 +173,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsgetTest() throws Exception {
-        long startTs = 1588812501110L;
-        long endTs = 1589812501110L;
 
         for (int i = 0; i < 1; i++) {
             long val = i;
@@ -228,8 +223,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsqueryTest() throws Exception {
-        long startTs = 1588812501110L;
-        long endTs = 1589812501110L;
 
         for (int i = 0; i < 1; i++) {
             long val = i;
@@ -364,8 +357,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsrangeTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         String startTsStr = String.valueOf(startTs);
         String endTsStr = String.valueOf(endTs);
@@ -437,8 +428,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsmrangeTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
@@ -493,8 +482,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsmrangeByteTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
@@ -549,8 +536,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsmrangeLabelsTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
@@ -610,8 +595,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsmrangeLabelsByteTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
@@ -671,8 +654,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsprangeTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
@@ -722,8 +703,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsprangeByteTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
@@ -774,8 +753,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsprangeAggregationSkeyTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
@@ -825,8 +802,6 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsprangeAggregationSkeyByteTest() throws Exception {
-        long startTs = 1588812501000L;
-        long endTs = 1589812501110L;
         long num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
