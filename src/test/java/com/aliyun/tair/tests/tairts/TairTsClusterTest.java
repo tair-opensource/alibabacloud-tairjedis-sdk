@@ -16,6 +16,8 @@ public class TairTsClusterTest extends TairTsTestBase {
     private byte[] bSkey2;
     private String randomPkey;
     private byte[] randomPKeyBinary;
+    private long startTs;
+    private long endTs;
 
     public TairTsClusterTest() {
         randomPkey = "randomPkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
@@ -24,12 +26,12 @@ public class TairTsClusterTest extends TairTsTestBase {
         randomSkey2 = "key2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bSkey = ("bkey" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bSkey2 = ("bkey2" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        startTs = (System.currentTimeMillis() - 100000) / 1000 * 1000;
+        endTs = System.currentTimeMillis() / 1000 * 1000;
     }
 
     @Test
     public void extsaddTest() throws Exception {
-        long startTs = 1588812501110L;
-        long endTs = 1589812501110L;
 
         for (int i = 0; i < 1; i++) {
             double val = i;
