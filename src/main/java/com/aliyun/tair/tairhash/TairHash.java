@@ -617,13 +617,22 @@ public class TairHash {
      * or an empty list when {@code key} does not exist.
      */
     public Map<String, String> exhgetAll(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHGETALL, key);
-        return BuilderFactory.STRING_MAP.build(obj);
+        try {
+            Object obj = getJedis().sendCommand(ModuleCommand.EXHGETALL, key);
+            return BuilderFactory.STRING_MAP.build(obj);
+        } catch (ClassCastException e) {
+            // Compatible with the error protocol returned by exhgetall, when the key does not exist
+            return new HashMap<>();
+        }
     }
 
     public Map<byte[], byte[]> exhgetAll(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXHGETALL, key);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        try {
+            Object obj = getJedis().sendCommand(ModuleCommand.EXHGETALL, key);
+            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        } catch (ClassCastException e) {
+            return new HashMap<>();
+        }
     }
 
     /**

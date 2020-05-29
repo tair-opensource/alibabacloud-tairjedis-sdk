@@ -375,13 +375,21 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Map<String, String>> exhgetAll(final String key) {
-        getClient("").sendCommand(ModuleCommand.EXHGETALL, key);
-        return getResponse(BuilderFactory.STRING_MAP);
+        try {
+            getClient("").sendCommand(ModuleCommand.EXHGETALL, key);
+            return getResponse(BuilderFactory.STRING_MAP);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public Response<Map<byte[], byte[]>> exhgetAll(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXHGETALL, key);
-        return getResponse(BuilderFactory.BYTE_ARRAY_MAP);
+        try {
+            getClient("").sendCommand(ModuleCommand.EXHGETALL, key);
+            return getResponse(BuilderFactory.BYTE_ARRAY_MAP);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public Response<ScanResult<Entry<String, String>>> exhscan(final String key, final String op, final String subkey) {

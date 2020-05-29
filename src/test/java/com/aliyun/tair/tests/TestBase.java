@@ -19,7 +19,7 @@ public class TestBase {
 
     static {
         try {
-            jedis = new Jedis(HOST, PORT);
+            jedis = new Jedis(HOST, PORT, 2000 * 100);
             if (!"PONG".equals(jedis.ping())) {
                 System.exit(-1);
             }

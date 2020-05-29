@@ -386,13 +386,21 @@ public class TairHashCluster {
     }
 
     public Map<String, String> exhgetAll(final String key) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHGETALL, key);
-        return BuilderFactory.STRING_MAP.build(obj);
+        try {
+            Object obj = jc.sendCommand(key, ModuleCommand.EXHGETALL, key);
+            return BuilderFactory.STRING_MAP.build(obj);
+        } catch (ClassCastException e) {
+            return new HashMap<>();
+        }
     }
 
     public Map<byte[], byte[]> exhgetAll(byte[] key) {
-        Object obj = jc.sendCommand(key, ModuleCommand.EXHGETALL, key);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        try {
+            Object obj = jc.sendCommand(key, ModuleCommand.EXHGETALL, key);
+            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        } catch (ClassCastException e) {
+            return new HashMap<>();
+        }
     }
 
     public ScanResult<Entry<String, String>> exhscan(final String key, final String op, final String subkey) {
