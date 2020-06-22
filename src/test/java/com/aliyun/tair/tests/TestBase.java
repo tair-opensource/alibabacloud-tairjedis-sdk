@@ -9,9 +9,11 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
 public class TestBase {
-    protected static final String HOST = "127.0.0.1";
-    protected static final int PORT = 6379;
+    protected static final String HOST = "11.160.225.89";
+    protected static final int PORT = 6380;
     protected static final int CLUSTER_PORT = 30001;
+    protected static final int CLUSTER_PORT2 = 30002;
+    protected static final int CLUSTER_PORT3 = 30003;
 
     protected static Jedis jedis;
     protected static JedisCluster jedisCluster;
@@ -26,6 +28,8 @@ public class TestBase {
 
             Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
             jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
+            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT2));
+            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT3));
             jedisCluster = new JedisCluster(jedisClusterNodes);
             tairCluster = new TairCluster(jedisClusterNodes);
         } catch (Exception e) {
