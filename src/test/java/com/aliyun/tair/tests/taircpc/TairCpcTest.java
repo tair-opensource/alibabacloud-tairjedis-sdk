@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -183,52 +182,6 @@ public class TairCpcTest extends TairCpcTestBase {
         Thread.sleep(5 * 1000);
         estimateRet = tairCpc.cpcEstimate(key);
         assertNull(estimateRet);
-    }
-
-    @Test
-    public void cpcUpdateExTest(){
-        ArrayList<CpcData> datas = new ArrayList<>();
-        String unique = UUID.randomUUID().toString();
-        int repeat = 20;
-        HashMap<String, Set<String>> statistic = new HashMap<>();
-        IntStream.range(0, repeat).forEach(i -> {
-            String key = "key_" + unique +i%5;
-            String value = "value_" + unique +i%4;
-
-            CpcData cpcData = new CpcData(key, value);
-            cpcData.ex(4);
-            datas.add(cpcData);
-
-            //统计
-            statistic.putIfAbsent(key, new HashSet<>() );
-            Set<String> set = statistic.get(key);
-            set.add(value);
-            statistic.put(key, set);
-        });
-
-        String addRet = tairCpc.cpcMUpdate(datas);
-        Assert.assertEquals("OK", addRet);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        statistic.forEach((key, valueSet) ->{
-            Double estimate = tairCpc.cpcEstimate(key);
-//            System.out.println("estimate: {}, distinct key: {}", estimate, valueSet.size());
-            Assert.assertEquals(Math.round(estimate), (long) valueSet.size());
-        });
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        statistic.forEach((key, valueSet) ->{
-            Double estimate = tairCpc.cpcEstimate(key);
-            assertNull(estimate);
-        });
     }
 
     @Test
