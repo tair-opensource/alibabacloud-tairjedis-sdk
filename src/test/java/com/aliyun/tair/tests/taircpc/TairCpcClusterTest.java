@@ -6,9 +6,12 @@ import com.aliyun.tair.taircpc.params.CpcUpdateParams;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
 import org.junit.Test;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -174,7 +177,14 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         addList.add(add1);
         addList.add(add2);
 
-        String addRet = tairCpcCluster.cpcMUpdate(addList);
+        String addRet = null;
+        try {
+            tairCpcCluster.cpcMUpdate(addList);
+        } catch (JedisDataException e) {
+            assertTrue(e.getMessage().contains("CROSSSLOT"));
+            return;
+        }
+
         Assert.assertEquals("OK", addRet);
         Double estimateRet = tairCpcCluster.cpcEstimate(key);
         assertEquals(1.00, estimateRet, 0.1);
@@ -240,7 +250,14 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         addList.add(add2);
         addList.add(add3);
 
-        List<Double> addRet = tairCpcCluster.cpcMUpdate2Est(addList);
+        List<Double> addRet = null;
+        try {
+            addRet = tairCpcCluster.cpcMUpdate2Est(addList);
+        } catch (JedisDataException e) {
+            assertTrue(e.getMessage().contains("CROSSSLOT"));
+            return;
+        }
+
         for (int j = 0; j < 2; j++) {
             Assert.assertEquals(1.0, addRet.get(j), 0.1);
         }
@@ -258,7 +275,14 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         addList.add(add2);
         addList.add(add3);
 
-        List<Update2JudResult> addRet = tairCpcCluster.cpcMUpdate2Jud(addList);
+        List<Update2JudResult> addRet = null;
+        try {
+            tairCpcCluster.cpcMUpdate2Jud(addList);
+        } catch (JedisDataException e) {
+            assertTrue(e.getMessage().contains("CROSSSLOT"));
+            return;
+        }
+
         for (int j = 0; j < addRet.size() -1; j++) {
             Assert.assertEquals(1.0, addRet.get(j).getValue(), 0.1);
             Assert.assertEquals(1.0, addRet.get(j).getDiffValue(), 0.1);
