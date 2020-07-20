@@ -40,25 +40,25 @@ public class TairTsCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
-    public List<String> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
+    public List<String> extsmadd(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
+        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
+    public List<String> extsmadd(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
+        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
+    public List<String> extsmadd(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMADD, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
+    public List<String> extsmadd(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMADD, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
@@ -92,25 +92,25 @@ public class TairTsCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
-    public List<String> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
+    public List<String> extsmincr(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
+        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
+    public List<String> extsmincr(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
+        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
+    public List<String> extsmincr(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
+    public List<String> extsmincr(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 

@@ -35,27 +35,27 @@ public class TairTsPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<List<String>> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
+    public Response<List<String>> extsmadd(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
+    public Response<List<String>> extsmadd(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
+    public Response<List<String>> extsmadd(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
+    public Response<List<String>> extsmadd(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
@@ -86,27 +86,27 @@ public class TairTsPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<List<String>> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
+    public Response<List<String>> extsmincr(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
+    public Response<List<String>> extsmincr(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
+    public Response<List<String>> extsmincr(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
+    public Response<List<String>> extsmincr(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
+        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeyNum, skeys));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 

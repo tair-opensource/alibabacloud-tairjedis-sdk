@@ -76,15 +76,15 @@ public class TairTs {
      * @param skeys   the {skey ts value}
      * @return Success: OK; Fail: error.
      */
-    public List<String> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
+    public List<String> extsmadd(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
+    public List<String> extsmadd(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
@@ -100,13 +100,13 @@ public class TairTs {
      * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
      * @return Success: List of OK; Fail: error.
      */
-    public List<String> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
+    public List<String> extsmadd(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
+    public List<String> extsmadd(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
@@ -181,15 +181,15 @@ public class TairTs {
      * @param skeys   the {skey ts value}
      * @return Success: OK; Fail: error.
      */
-    public List<String> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
+    public List<String> extsmincr(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
+    public List<String> extsmincr(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
@@ -205,13 +205,13 @@ public class TairTs {
      * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
      * @return Success: List of OK; Fail: error.
      */
-    public List<String> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
+    public List<String> extsmincr(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public List<String> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
+    public List<String> extsmincr(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeyNum, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
