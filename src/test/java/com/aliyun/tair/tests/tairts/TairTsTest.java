@@ -89,6 +89,48 @@ public class TairTsTest extends TairTsTestBase {
         }
     }
 
+//    @Test
+//    public void extsEvictTest() throws Exception {
+//
+//        long num = 100;
+//        String startTsStr = String.valueOf(0);
+//        String endTsStr = String.valueOf(endTs);
+//
+//        for (int i = 0; i < num; i++) {
+//            double val = i;
+//            long ts = startTs + i*1000;
+//            String tsStr = String.valueOf(ts);
+//            ExtsAttributesParams params = new ExtsAttributesParams();
+//            params.dataEt(10000);
+//            params.chunkSize(10);
+//            params.uncompressed();
+//            ArrayList<String> labels = new ArrayList<String>();
+//            labels.add("label1");
+//            labels.add("1");
+//            labels.add("label2");
+//            labels.add("2");
+//            params.labels(labels);
+//
+//            String addRet = tairTs.extsadd(randomPkey, randomSkey, tsStr, val, params);
+//            Assert.assertEquals("OK", addRet);
+//        }
+//
+//        ExtsAggregationParams paramsAgg = new ExtsAggregationParams();
+//        paramsAgg.maxCountSize(1000);
+//        paramsAgg.aggAvg(1000);
+//
+//        List<ExtsDataPointResult> rangeByteRet = tairTs.extsrange(randomPkey, randomSkey, startTsStr, endTsStr, paramsAgg);
+////        System.out.print(rangeByteRet.get(0).getTs());
+//        System.out.print(rangeByteRet.get(0).getdoubleValue());
+//        assertEquals(num, rangeByteRet.size());
+//        for (int i = 0; i < num; i++) {
+//            double val = i;
+//            long ts = startTs + i*1000;
+//            assertEquals(ts, rangeByteRet.get(i).getTs());
+//            assertEquals(val, rangeByteRet.get(i).getdoubleValue(), 0.0);
+//        }
+//    }
+
     @Test
     public void extsmaddTest() throws Exception {
 
@@ -110,7 +152,7 @@ public class TairTsTest extends TairTsTestBase {
             ExtsDataPoint<String> add2 = new ExtsDataPoint<String>(randomSkey2, tsStr, val);
             addList.add(add1);
             addList.add(add2);
-            List<String> maddRet = tairTs.extsmadd(randomPkey, addList);
+            List<String> maddRet = tairTs.extsmadd(randomPkey, 2, addList);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
@@ -120,7 +162,7 @@ public class TairTsTest extends TairTsTestBase {
             delRet = tairTs.extsdel(randomPkey, randomSkey2);
             Assert.assertEquals("OK", delRet);
 
-            maddRet = tairTs.extsmadd(randomPkey, addList,params);
+            maddRet = tairTs.extsmadd(randomPkey, 2, addList,params);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
@@ -149,7 +191,7 @@ public class TairTsTest extends TairTsTestBase {
             ExtsDataPoint<byte[]> add2 = new ExtsDataPoint<byte[]>(bSkey2, tsStr, val);
             addList.add(add1);
             addList.add(add2);
-            List<String> maddRet = tairTs.extsmadd(randomPKeyBinary, addList);
+            List<String> maddRet = tairTs.extsmadd(randomPKeyBinary, 2, addList);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
@@ -159,7 +201,7 @@ public class TairTsTest extends TairTsTestBase {
             delRet = tairTs.extsdel(randomPKeyBinary, bSkey2);
             Assert.assertEquals("OK", delRet);
 
-            maddRet = tairTs.extsmadd(randomPKeyBinary, addList,params);
+            maddRet = tairTs.extsmadd(randomPKeyBinary, 2, addList,params);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
