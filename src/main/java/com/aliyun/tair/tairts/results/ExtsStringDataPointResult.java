@@ -1,10 +1,10 @@
 package com.aliyun.tair.tairts.results;
 
-public class ExtsDataPointResult {
+public class ExtsStringDataPointResult {
     private long ts;
     private String value;
 
-    public ExtsDataPointResult(long ts, String value) {
+    public ExtsStringDataPointResult(long ts, String value) {
         this.ts = ts;
         this.value = value;
     }
@@ -17,8 +17,8 @@ public class ExtsDataPointResult {
         this.ts = ts;
     }
 
-    public double getDoubleValue() {
-        return Double.parseDouble(value);
+    public String getValue() {
+        return value;
     }
 
     public void setValue(String value) {
