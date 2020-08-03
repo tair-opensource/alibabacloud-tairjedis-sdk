@@ -145,4 +145,46 @@ public class ExtsAttributesParams extends Params {
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
+
+    public byte[][] getByteParamsStr(String pkey, long skeyNum, ArrayList<ExtsStringDataPoint<String>> args) {
+        ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
+        byteParams.add(SafeEncoder.encode(pkey));
+        byteParams.add(SafeEncoder.encode(String.valueOf(skeyNum)));
+        for (ExtsStringDataPoint<String> arg : args) {
+            byteParams.add(SafeEncoder.encode(arg.getSkey()));
+            byteParams.add(SafeEncoder.encode(arg.getTs()));
+            byteParams.add(SafeEncoder.encode(arg.getValue()));
+        }
+
+        if (contains(UNCOMPRESSED)) {
+            byteParams.add(SafeEncoder.encode(UNCOMPRESSED));
+        }
+
+        addParamWithValue(byteParams, DATA_ET);
+        addParamWithValue(byteParams, CHUNK_SIZE);
+        addParamWithLabel(byteParams, LABELS);
+
+        return byteParams.toArray(new byte[byteParams.size()][]);
+    }
+
+    public byte[][] getByteParamsStr(byte[] pkey, long skeyNum, ArrayList<ExtsStringDataPoint<byte[]>> args) {
+        ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
+        byteParams.add(pkey);
+        byteParams.add(toByteArray(skeyNum));
+        for (ExtsStringDataPoint<byte[]> arg : args) {
+            byteParams.add(arg.getSkey());
+            byteParams.add(arg.getTs());
+            byteParams.add(arg.getValue());
+        }
+
+        if (contains(UNCOMPRESSED)) {
+            byteParams.add(SafeEncoder.encode(UNCOMPRESSED));
+        }
+
+        addParamWithValue(byteParams, DATA_ET);
+        addParamWithValue(byteParams, CHUNK_SIZE);
+        addParamWithLabel(byteParams, LABELS);
+
+        return byteParams.toArray(new byte[byteParams.size()][]);
+    }
 }
