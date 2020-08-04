@@ -1,12 +1,16 @@
 package com.aliyun.tair.tests.tairts;
 
 import com.aliyun.tair.tairts.params.ExtsAttributesParams;
+import com.aliyun.tair.tairts.params.ExtsStringAggregationParams;
+import com.aliyun.tair.tairts.results.ExtsStringDataPointResult;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairTsClusterTest extends TairTsTestBase {
@@ -18,6 +22,7 @@ public class TairTsClusterTest extends TairTsTestBase {
     private byte[] randomPKeyBinary;
     private long startTs;
     private long endTs;
+    private String value;
 
     public TairTsClusterTest() {
         randomPkey = "randomPkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
@@ -28,6 +33,7 @@ public class TairTsClusterTest extends TairTsTestBase {
         bSkey2 = ("bkey2" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         startTs = (System.currentTimeMillis() - 100000) / 1000 * 1000;
         endTs = System.currentTimeMillis() / 1000 * 1000;
+        value = "This is a #TsString * value*";
     }
 
     @Test
