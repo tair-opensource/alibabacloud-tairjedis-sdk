@@ -1227,7 +1227,7 @@ public class TairHashClusterTest extends TairHashTestBase {
     public void exhmsetException() {
         try {
             jedisCluster.set(randomkey_, "bar");
-            tairHashCluster.exhmset(randomkey_, new HashMap<>());
+            tairHashCluster.exhmset(randomkey_, new HashMap<String, String>());
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
@@ -1237,7 +1237,7 @@ public class TairHashClusterTest extends TairHashTestBase {
     public void exhmsetwithoptsException() {
         try {
             jedisCluster.set(randomkey_, "bar");
-            tairHashCluster.exhmsetwithopts(randomkey_, new LinkedList<>());
+            tairHashCluster.exhmsetwithopts(randomkey_, new LinkedList<ExhmsetwithoptsParams<String>>());
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }

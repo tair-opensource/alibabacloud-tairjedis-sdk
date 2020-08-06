@@ -419,12 +419,36 @@ public class TairHashCluster {
         return HashBuilderFactory.EXHSCAN_RESULT_STRING.build(obj);
     }
 
+    public ScanResult<Entry<String, String>> exhscan(final String key, final String op, final String subkey,
+                                                     final ExhscanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(SafeEncoder.encode(key));
+        args.add(SafeEncoder.encode(op));
+        args.add(SafeEncoder.encode(subkey));
+        args.addAll(params.getParams());
+
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
+        return HashBuilderFactory.EXHSCAN_RESULT_STRING.build(obj);
+    }
+
     public ScanResult<Entry<byte[], byte[]>> exhscan(final byte[] key, final byte[] op, final byte[] subkey) {
         return exhscan(key, op, subkey, new ScanParams());
     }
 
     public ScanResult<Entry<byte[], byte[]>> exhscan(final byte[] key, final byte[] op, final byte[] subkey,
         final ScanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(key);
+        args.add(op);
+        args.add(subkey);
+        args.addAll(params.getParams());
+
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
+        return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
+    }
+
+    public ScanResult<Entry<byte[], byte[]>> exhscan(final byte[] key, final byte[] op, final byte[] subkey,
+                                                     final ExhscanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(key);
         args.add(op);

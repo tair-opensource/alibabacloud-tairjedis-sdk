@@ -408,12 +408,36 @@ public class TairHashPipeline extends Pipeline {
         return getResponse(HashBuilderFactory.EXHSCAN_RESULT_STRING);
     }
 
+    public Response<ScanResult<Entry<String, String>>> exhscan(final String key, final String op, final String subkey,
+                                                               final ExhscanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(SafeEncoder.encode(key));
+        args.add(SafeEncoder.encode(op));
+        args.add(SafeEncoder.encode(subkey));
+        args.addAll(params.getParams());
+
+        getClient("").sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
+        return getResponse(HashBuilderFactory.EXHSCAN_RESULT_STRING);
+    }
+
     public Response<ScanResult<Entry<byte[], byte[]>>> exhscan(final byte[] key, final byte[] op, final byte[] subkey) {
         return exhscan(key, op, subkey, new ScanParams());
     }
 
     public Response<ScanResult<Entry<byte[], byte[]>>> exhscan(final byte[] key, final byte[] op, final byte[] subkey,
         final ScanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(key);
+        args.add(op);
+        args.add(subkey);
+        args.addAll(params.getParams());
+
+        getClient("").sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
+        return getResponse(HashBuilderFactory.EXHSCAN_RESULT_BYTE);
+    }
+
+    public Response<ScanResult<Entry<byte[], byte[]>>> exhscan(final byte[] key, final byte[] op, final byte[] subkey,
+                                                               final ExhscanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(key);
         args.add(op);
