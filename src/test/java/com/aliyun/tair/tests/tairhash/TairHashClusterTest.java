@@ -557,7 +557,7 @@ public class TairHashClusterTest extends TairHashTestBase {
     //}
     //
     //@Test
-    //public void exhscanTest() {
+//    public void exhscanTest() {
     //    HashMap<String, String> map = new HashMap<String, String>();
     //    for (int i = 1; i < 10; i++) {
     //        map.put("field" + i, "val" + i);
@@ -587,7 +587,7 @@ public class TairHashClusterTest extends TairHashTestBase {
     //        Assert.assertEquals("val" + j, entry.getValue());
     //        j++;
     //    }
-    //}
+//    }
 
     @Test
     public void exhsetwitnoactive() throws InterruptedException {
@@ -1180,6 +1180,18 @@ public class TairHashClusterTest extends TairHashTestBase {
             Assert.assertEquals("val" + j, entry.getValue());
             j++;
         }
+
+        // TEST NOVAL
+        ExhscanParams exhscanParams = new ExhscanParams().count(3).noval();
+        scanResult = tairHashCluster.exhscan(foo, "^", "", exhscanParams);
+        Assert.assertTrue(scanResult.getResult().isEmpty());
+        Assert.assertTrue(!scanResult.getCursor().isEmpty());
+        scanResult = tairHashCluster.exhscan(foo, ">=", scanResult.getCursor(), exhscanParams);
+        Assert.assertTrue(scanResult.getResult().isEmpty());
+        Assert.assertTrue(!scanResult.getCursor().isEmpty());
+        scanResult = tairHashCluster.exhscan(foo, ">=", scanResult.getCursor(), exhscanParams);
+        Assert.assertTrue(scanResult.getResult().isEmpty());
+        Assert.assertTrue(scanResult.getCursor().isEmpty());
     }
 
     @Test
