@@ -681,6 +681,18 @@ public class TairHashTest extends TairHashTestBase {
             Assert.assertEquals("val" + j, entry.getValue());
             j++;
         }
+
+        // TEST NOVAL
+        ExhscanParams exhscanParams = new ExhscanParams().count(3).noval();
+        scanResult = tairHash.exhscan(foo, "^", "", exhscanParams);
+        Assert.assertTrue(scanResult.getResult().isEmpty());
+        Assert.assertTrue(!scanResult.getCursor().isEmpty());
+        scanResult = tairHash.exhscan(foo, ">=", scanResult.getCursor(), exhscanParams);
+        Assert.assertTrue(scanResult.getResult().isEmpty());
+        Assert.assertTrue(!scanResult.getCursor().isEmpty());
+        scanResult = tairHash.exhscan(foo, ">=", scanResult.getCursor(), exhscanParams);
+        Assert.assertTrue(scanResult.getResult().isEmpty());
+        Assert.assertTrue(scanResult.getCursor().isEmpty());
     }
 
     @Test
@@ -728,7 +740,7 @@ public class TairHashTest extends TairHashTestBase {
     public void exhmsetException() {
         try {
             jedis.set(randomkey_, "bar");
-            tairHash.exhmset(randomkey_, new HashMap<>());
+            tairHash.exhmset(randomkey_, new HashMap<String, String>());
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
@@ -738,7 +750,7 @@ public class TairHashTest extends TairHashTestBase {
     public void exhmsetwithoptsException() {
         try {
             jedis.set(randomkey_, "bar");
-            tairHash.exhmsetwithopts(randomkey_, new LinkedList<>());
+            tairHash.exhmsetwithopts(randomkey_, new LinkedList<ExhmsetwithoptsParams<String>>());
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
