@@ -142,25 +142,25 @@ public class TairTsPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<ExtsDataPointResult>> extsrange(String pkey, String skey, String startTs, String endTs) {
+    public Response<ExtsSkeyResult> extsrange(String pkey, String skey, String startTs, String endTs) {
         ExtsQueryParams addList = new ExtsQueryParams();
         getClient("").sendCommand(ModuleCommand.TSSRANGE, pkey, skey, startTs, endTs);
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsDataPointResult>> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
+    public Response<ExtsSkeyResult> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
         ExtsQueryParams addList = new ExtsQueryParams();
         getClient("").sendCommand(ModuleCommand.TSSRANGE, pkey, skey, startTs, endTs);
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsDataPointResult>> extsrange(String pkey, String skey, String startTs, String endTs, ExtsAggregationParams params) {
+    public Response<ExtsSkeyResult> extsrange(String pkey, String skey, String startTs, String endTs, ExtsAggregationParams params) {
         ExtsQueryParams addList = new ExtsQueryParams();
         getClient("").sendCommand(ModuleCommand.TSSRANGE, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsDataPointResult>> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsAggregationParams params) {
+    public Response<ExtsSkeyResult> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsAggregationParams params) {
         ExtsQueryParams addList = new ExtsQueryParams();
         getClient("").sendCommand(ModuleCommand.TSSRANGE, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
@@ -188,24 +188,24 @@ public class TairTsPipeline extends Pipeline {
         return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsDataPointResult>> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<String>> filters) {
+    public Response<ExtsSkeyResult> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<String>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
         getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsDataPointResult>> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<byte[]>> filters) {
+    public Response<ExtsSkeyResult> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
         getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsDataPointResult>> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
+    public Response<ExtsSkeyResult> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
         getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsDataPointResult>> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<byte[]>> filters) {
+    public Response<ExtsSkeyResult> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<byte[]>> filters) {
         getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
     }
@@ -561,12 +561,12 @@ public class TairTsPipeline extends Pipeline {
      * @param endTs   the end ts
      * @return Success: OK; Fail: error.
      */
-    public Response<List<ExtsStringDataPointResult>> extsrangestr(String pkey, String skey, String startTs, String endTs) {
+    public Response<ExtsStringSkeyResult> extsrangestr(String pkey, String skey, String startTs, String endTs) {
         getClient("").sendCommand(ModuleCommand.TSSRANGESTR, pkey, skey, startTs, endTs);
         return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsStringDataPointResult>> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
+    public Response<ExtsStringSkeyResult> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
         getClient("").sendCommand(ModuleCommand.TSSRANGESTR, pkey, skey, startTs, endTs);
         return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
     }
@@ -584,12 +584,12 @@ public class TairTsPipeline extends Pipeline {
      * `timeBucket` - set the timeBucket of the aggregation.
      * @return Success: OK; Fail: error.
      */
-    public Response<List<ExtsStringDataPointResult>> extsrangestr(String pkey, String skey, String startTs, String endTs, ExtsStringAggregationParams params) {
+    public Response<ExtsStringSkeyResult> extsrangestr(String pkey, String skey, String startTs, String endTs, ExtsStringAggregationParams params) {
         getClient("").sendCommand(ModuleCommand.TSSRANGESTR, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
     }
 
-    public Response<List<ExtsStringDataPointResult>> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsStringAggregationParams params) {
+    public Response<ExtsStringSkeyResult> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsStringAggregationParams params) {
         getClient("").sendCommand(ModuleCommand.TSSRANGESTR, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
     }

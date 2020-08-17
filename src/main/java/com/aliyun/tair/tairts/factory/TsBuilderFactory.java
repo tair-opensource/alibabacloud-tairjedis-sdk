@@ -1,9 +1,6 @@
 package com.aliyun.tair.tairts.factory;
 
-import com.aliyun.tair.tairts.results.ExtsDataPointResult;
-import com.aliyun.tair.tairts.results.ExtsSkeyResult;
-import com.aliyun.tair.tairts.results.ExtsStringDataPointResult;
-import com.aliyun.tair.tairts.results.ExtsStringSkeyResult;
+import com.aliyun.tair.tairts.results.*;
 import redis.clients.jedis.Builder;
 
 import java.util.ArrayList;
@@ -27,20 +24,15 @@ public class TsBuilderFactory {
         }
     };
 
-    public static final Builder<List<ExtsDataPointResult>> EXTSRANGE_RESULT_STRING = new Builder<List<ExtsDataPointResult>>() {
+    public static final Builder<ExtsSkeyResult> EXTSRANGE_RESULT_STRING = new Builder<ExtsSkeyResult>() {
         @Override
-        public List<ExtsDataPointResult> build(Object data) {
+        public ExtsSkeyResult build(Object data) {
             if (data == null) {
                 return null;
             }
             List l = (List) data;
-            final ArrayList<ExtsDataPointResult> results = new ArrayList<ExtsDataPointResult>();
-            int num = l.size();
-            for (int i = 0; i < num; i++) {
-                List subl = (List) l.get(i);
-                results.add(new ExtsDataPointResult(((Number) subl.get(0)).longValue(), new String((byte[]) subl.get(1))));
-            }
-            return results;
+            List dataPointsList = (List) l.get(0);
+            return new ExtsSkeyResult(null, new ArrayList<ExtsLabelResult>(), dataPointsList, ((long) l.get(1)));
         }
 
         @Override
@@ -62,7 +54,7 @@ public class TsBuilderFactory {
                 List subl = (List) l.get(i);
                 List labelsList = (List) subl.get(1);
                 List dataPointsList = (List) subl.get(2);
-                results.add(new ExtsSkeyResult(new String((byte[]) subl.get(0)), labelsList, dataPointsList));
+                results.add(new ExtsSkeyResult(new String((byte[]) subl.get(0)), labelsList, dataPointsList, ((long) subl.get(3))));
             }
             return results;
         }
@@ -89,20 +81,16 @@ public class TsBuilderFactory {
         }
     };
 
-    public static final Builder<List<ExtsStringDataPointResult>> EXTSSTRING_RANGE_RESULT_STRING = new Builder<List<ExtsStringDataPointResult>>() {
+    public static final Builder<ExtsStringSkeyResult> EXTSSTRING_RANGE_RESULT_STRING = new Builder<ExtsStringSkeyResult>() {
         @Override
-        public List<ExtsStringDataPointResult> build(Object data) {
+        public ExtsStringSkeyResult build(Object data) {
             if (data == null) {
                 return null;
             }
             List l = (List) data;
-            final ArrayList<ExtsStringDataPointResult> results = new ArrayList<ExtsStringDataPointResult>();
-            int num = l.size();
-            for (int i = 0; i < num; i++) {
-                List subl = (List) l.get(i);
-                results.add(new ExtsStringDataPointResult(((Number) subl.get(0)).longValue(), new String((byte[]) subl.get(1))));
-            }
-            return results;
+
+            List dataPointsList = (List) l.get(0);
+            return new ExtsStringSkeyResult(null, new ArrayList<ExtsLabelResult>(), dataPointsList, ((long) l.get(1)));
         }
 
         @Override
@@ -124,7 +112,7 @@ public class TsBuilderFactory {
                 List subl = (List) l.get(i);
                 List labelsList = (List) subl.get(1);
                 List dataPointsList = (List) subl.get(2);
-                results.add(new ExtsStringSkeyResult(new String((byte[]) subl.get(0)), labelsList, dataPointsList));
+                results.add(new ExtsStringSkeyResult(new String((byte[]) subl.get(0)), labelsList, dataPointsList, ((long) subl.get(3))));
             }
             return results;
         }

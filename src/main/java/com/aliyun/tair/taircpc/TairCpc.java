@@ -791,5 +791,821 @@ public class TairCpc {
     }
 
 
+    // sum operation
+
+    /**
+     * Add the value of a sum key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return Success: sum value; Fail: error.
+     */
+    public Double sumAdd(final String key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMADD, key, String.valueOf(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumAdd(final byte[] key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMADD, key, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a sum key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: sum value; Fail: error.
+     */
+    public Double sumAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMADD,
+                params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMADD, params.getByteParams(key, toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Set the value of a sum key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return Success: sum value; Fail: error.
+     */
+    public Double sumSet(final String key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMSET, key, String.valueOf(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumSet(final byte[] key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMSET, key, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Set the value of a sum key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: sum value; Fail: error.
+     */
+    public Double sumSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMSET,
+                params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMSET, params.getByteParams(key, toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the value of a sum key.
+     *
+     * @param key   the key
+     * @return Success: sum value; Fail: error.
+     */
+    public Double sumGet(final String key) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMGET, key);
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumGet(final byte[] key) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMGET, key);
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a sumArray key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param value the value
+     * @param size the size
+     * @return Success: sum value of offset; Fail: error.
+     */
+    public Double sumArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a sumArray key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param value the value
+     * @param size the size
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: sum value of offset; Fail: error.
+     */
+    public Double sumArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
+            throws JedisConnectionException,IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
+            throws JedisConnectionException,IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the value of a sum key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @return Success: sum value; Fail: error.
+     */
+    public Double sumArrayGet(final String key, final long offset) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYGET, key, toByteArray(offset));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the values of an array sum key range.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param range the range
+     * @return Success: sum value list; Fail: error.
+     */
+    public List<Double> sumArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+    }
+
+    public List<Double> sumArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+    }
+
+    /**
+     * Get the merge value of an array sum key range.
+     *
+     * @param key   the key
+     * @return Success: merge of sum value; Fail: error.
+     */
+    public Double sumArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double sumArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+
+    // max operation
+
+    /**
+     * Add the value of a max key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return Success: max value; Fail: error.
+     */
+    public Double maxAdd(final String key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXADD, key, String.valueOf(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxAdd(final byte[] key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXADD, key, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a max key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: max value; Fail: error.
+     */
+    public Double maxAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXADD,
+                params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXADD, params.getByteParams(key, toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Set the value of a max key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return Success: max value; Fail: error.
+     */
+    public Double maxSet(final String key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXSET, key, String.valueOf(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxSet(final byte[] key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXSET, key, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Set the value of a max key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: max value; Fail: error.
+     */
+    public Double maxSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXSET,
+                params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXSET, params.getByteParams(key, toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the value of a max key.
+     *
+     * @param key   the key
+     * @return Success: max value; Fail: error.
+     */
+    public Double maxGet(final String key) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXGET, key);
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxGet(final byte[] key) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXGET, key);
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a maxArray key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param value the value
+     * @param size the size
+     * @return Success: max value of offset; Fail: error.
+     */
+    public Double maxArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a maxArray key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param value the value
+     * @param size the size
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: max value of offset; Fail: error.
+     */
+    public Double maxArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
+            throws JedisConnectionException,IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
+            throws JedisConnectionException,IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the value of a max key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @return Success: max value; Fail: error.
+     */
+    public Double maxArrayGet(final String key, final long offset) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYGET, key, toByteArray(offset));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the values of an array max key range.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param range the range
+     * @return Success: max value list; Fail: error.
+     */
+    public List<Double> maxArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+    }
+
+    public List<Double> maxArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+    }
+
+    /**
+     * Get the merge value of an array max key range.
+     *
+     * @param key   the key
+     * @return Success: merge of max value; Fail: error.
+     */
+    public Double maxArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double maxArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    // min operation
+
+    /**
+     * Add the value of a min key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return Success: min value; Fail: error.
+     */
+    public Double minAdd(final String key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINADD, key, String.valueOf(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minAdd(final byte[] key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINADD, key, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a min key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: min value; Fail: error.
+     */
+    public Double minAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINADD,
+                params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINADD, params.getByteParams(key, toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Set the value of a min key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return Success: min value; Fail: error.
+     */
+    public Double minSet(final String key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINSET, key, String.valueOf(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minSet(final byte[] key, final double value) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINSET, key, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Set the value of a min key.
+     *
+     * @param key   the key
+     * @param value the value
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: min value; Fail: error.
+     */
+    public Double minSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINSET,
+                params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINSET, params.getByteParams(key, toByteArray(value)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the value of a min key.
+     *
+     * @param key   the key
+     * @return Success: min value; Fail: error.
+     */
+    public Double minGet(final String key) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINGET, key);
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minGet(final byte[] key) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINGET, key);
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a minArray key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param value the value
+     * @param size the size
+     * @return Success: min value of offset; Fail: error.
+     */
+    public Double minArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Add the value of a minArray key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param value the value
+     * @param size the size
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * @return Success: min value of offset; Fail: error.
+     */
+    public Double minArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
+            throws JedisConnectionException,IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
+            throws JedisConnectionException,IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the value of a min key.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @return Success: min value; Fail: error.
+     */
+    public Double minArrayGet(final String key, final long offset) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYGET, key, toByteArray(offset));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Get the values of an array min key range.
+     *
+     * @param key   the key
+     * @param offset the offset
+     * @param range the range
+     * @return Success: min value list; Fail: error.
+     */
+    public List<Double> minArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+    }
+
+    public List<Double> minArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+    }
+
+    /**
+     * Get the merge value of an array min key range.
+     *
+     * @param key   the key
+     * @return Success: merge of min value; Fail: error.
+     */
+    public Double minArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double minArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
 
 }

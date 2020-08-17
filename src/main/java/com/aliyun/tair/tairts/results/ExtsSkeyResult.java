@@ -7,9 +7,11 @@ public class ExtsSkeyResult {
     private String skey;
     private ArrayList<ExtsLabelResult> labels = new ArrayList<ExtsLabelResult>();
     private ArrayList<ExtsDataPointResult> dataPoints = new ArrayList<ExtsDataPointResult>();
+    private long token;
 
-    public ExtsSkeyResult(String skey, List labels, List dataPoints) {
+    public ExtsSkeyResult(String skey, List labels, List dataPoints, long token) {
         this.skey = skey;
+        this.token = token;
 
         int labelsNum = labels.size();
         for (int i = 0; i < labelsNum; i++) {
@@ -41,4 +43,11 @@ public class ExtsSkeyResult {
     }
 
 
+    public long getToken() {
+        return token;
+    }
+
+    public void setToken(long token) {
+        this.token = token;
+    }
 }

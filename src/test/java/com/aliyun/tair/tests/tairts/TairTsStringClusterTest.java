@@ -3,6 +3,7 @@ package com.aliyun.tair.tests.tairts;
 import com.aliyun.tair.tairts.params.ExtsAttributesParams;
 import com.aliyun.tair.tairts.params.ExtsStringAggregationParams;
 import com.aliyun.tair.tairts.results.ExtsStringDataPointResult;
+import com.aliyun.tair.tairts.results.ExtsStringSkeyResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -116,13 +117,14 @@ public class TairTsStringClusterTest extends TairTsTestBase {
         ExtsStringAggregationParams paramsAgg = new ExtsStringAggregationParams();
         paramsAgg.maxCountSize(10);
 
-        List<ExtsStringDataPointResult> rangeByteRet = tairTsCluster.extsrangestr(randomPkey, randomSkey, startTsStr, endTsStr, paramsAgg);
-        assertEquals(num, rangeByteRet.size());
+        ExtsStringSkeyResult rangeByteRet = tairTsCluster.extsrangestr(randomPkey, randomSkey, startTsStr, endTsStr, paramsAgg);
+        List<ExtsStringDataPointResult> dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
             String val = value + String.valueOf(i);
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(true, val.equals(rangeByteRet.get(i).getValue()));
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(true, val.equals(dataPointRet.get(i).getValue()));
         }
 
         for (int i = 0; i < num; i++) {
@@ -149,12 +151,13 @@ public class TairTsStringClusterTest extends TairTsTestBase {
         paramsAgg.maxCountSize(10);
 
         rangeByteRet = tairTsCluster.extsrangestr(randomPKeyBinary, bSkey, startTsStr.getBytes(), endTsStr.getBytes(), paramsAgg);
-        assertEquals(num, rangeByteRet.size());
+        dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
-            String valstr = value + String.valueOf(i);
+            String val = value + String.valueOf(i);
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(true, valstr.equals(rangeByteRet.get(i).getValue()));
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(true, val.equals(dataPointRet.get(i).getValue()));
         }
     }
 }

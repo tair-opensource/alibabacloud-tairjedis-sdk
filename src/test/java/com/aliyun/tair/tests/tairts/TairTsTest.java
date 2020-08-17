@@ -232,7 +232,7 @@ public class TairTsTest extends TairTsTestBase {
             delRet = tairTs.extsdel(randomPkey, randomSkey2);
             Assert.assertEquals("OK", delRet);
 
-            maddRet = tairTs.extsmadd(randomPkey, 2, addList,params);
+            maddRet = tairTs.extsmadd(randomPkey, 2, addList, params);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
@@ -737,13 +737,14 @@ public class TairTsTest extends TairTsTestBase {
         paramsAgg.maxCountSize(10);
         paramsAgg.aggAvg(1000);
 
-        List<ExtsDataPointResult> rangeByteRet = tairTs.extsrange(randomPkey, randomSkey, startTsStr, endTsStr, paramsAgg);
-        assertEquals(num, rangeByteRet.size());
+        ExtsSkeyResult rangeByteRet = tairTs.extsrange(randomPkey, randomSkey, startTsStr, endTsStr, paramsAgg);
+        List<ExtsDataPointResult> dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
             double val = i;
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(val, rangeByteRet.get(i).getDoubleValue(), 0.0);
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
 
         for (int i = 0; i < num; i++) {
@@ -770,12 +771,13 @@ public class TairTsTest extends TairTsTestBase {
         paramsAgg.aggAvg(1000);
 
         rangeByteRet = tairTs.extsrange(randomPKeyBinary, bSkey, startTsStr.getBytes(), endTsStr.getBytes(), paramsAgg);
-        assertEquals(num, rangeByteRet.size());
+        dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
             double val = i;
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(val, rangeByteRet.get(i).getDoubleValue(), 0.0);
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
     }
 
@@ -1044,13 +1046,14 @@ public class TairTsTest extends TairTsTestBase {
         filterList.add(filter1);
         filterList.add(filter2);
 
-        List<ExtsDataPointResult> rangeByteRet = tairTs.extsprange(randomPkey, startTsStr, endTsStr, "sum", 1000, filterList);
-        assertEquals(num, rangeByteRet.size());
+        ExtsSkeyResult rangeByteRet = tairTs.extsprange(randomPkey, startTsStr, endTsStr, "sum", 1000, filterList);
+        List<ExtsDataPointResult> dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
             double val = i;
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(val, rangeByteRet.get(i).getDoubleValue(), 0.0);
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
     }
 
@@ -1093,13 +1096,14 @@ public class TairTsTest extends TairTsTestBase {
         filterList.add(filter1);
         filterList.add(filter2);
 
-        List<ExtsDataPointResult> rangeByteRet = tairTs.extsprange(randomPKeyBinary, startTsStr.getBytes(), endTsStr.getBytes(), "sum".getBytes(), 1000, filterList);
-        assertEquals(num, rangeByteRet.size());
+        ExtsSkeyResult rangeByteRet = tairTs.extsprange(randomPKeyBinary, startTsStr.getBytes(), endTsStr.getBytes(), "sum".getBytes(), 1000, filterList);
+        List<ExtsDataPointResult> dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
             double val = i;
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(val, rangeByteRet.get(i).getDoubleValue(), 0.0);
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
     }
 
@@ -1143,13 +1147,14 @@ public class TairTsTest extends TairTsTestBase {
         filterList.add(filter1);
         filterList.add(filter2);
 
-        List<ExtsDataPointResult> rangeByteRet = tairTs.extsprange(randomPkey, startTsStr, endTsStr, "sum", 1000, filterList);
-        assertEquals(num, rangeByteRet.size());
+        ExtsSkeyResult rangeByteRet = tairTs.extsprange(randomPkey, startTsStr, endTsStr, "sum", 1000, filterList);
+        List<ExtsDataPointResult> dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
             double val = i;
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(val, rangeByteRet.get(i).getDoubleValue(), 0.0);
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
     }
 
@@ -1192,13 +1197,14 @@ public class TairTsTest extends TairTsTestBase {
         filterList.add(filter1);
         filterList.add(filter2);
 
-        List<ExtsDataPointResult> rangeByteRet = tairTs.extsprange(randomPKeyBinary, startTsStr.getBytes(), endTsStr.getBytes(), "sum".getBytes(), 1000, filterList);
-        assertEquals(num, rangeByteRet.size());
+        ExtsSkeyResult rangeByteRet = tairTs.extsprange(randomPKeyBinary, startTsStr.getBytes(), endTsStr.getBytes(), "sum".getBytes(), 1000, filterList);
+        List<ExtsDataPointResult> dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
         for (int i = 0; i < num; i++) {
             double val = i;
             long ts = startTs + i*1000;
-            assertEquals(ts, rangeByteRet.get(i).getTs());
-            assertEquals(val, rangeByteRet.get(i).getDoubleValue(), 0.0);
+            assertEquals(ts, dataPointRet.get(i).getTs());
+            assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
     }
 }
