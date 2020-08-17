@@ -16,6 +16,7 @@ import static redis.clients.jedis.Protocol.toByteArray;
 public class TairCpcTest extends TairCpcTestBase {
     private String key;
     private String key2;
+    private String key3;
     private String item;
     private String item2;
     private String item3;
@@ -23,15 +24,11 @@ public class TairCpcTest extends TairCpcTestBase {
     private byte[] bkey;
     private byte[] bitem;
     private byte[] bitem2;
-    private byte[] bitem3;
-    private String randomkey_;
-    private byte[] randomKeyBinary_;
 
     public TairCpcTest() {
-        randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
-        randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         key = "key" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         key2 = "key2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        key3 = "key3" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         item = "item" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         item2 = "item2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         item3 = "item3" + Thread.currentThread().getName() + UUID.randomUUID().toString();
@@ -39,7 +36,6 @@ public class TairCpcTest extends TairCpcTestBase {
         bkey = ("bkey" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bitem = ("bitem" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bitem2 = ("bitem2" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
-        bitem3 = ("bitem3" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
 
     @Test
@@ -381,4 +377,285 @@ public class TairCpcTest extends TairCpcTestBase {
         assertEquals(1.00, estimateRet.get(4), 0.001);
     }
 
+    @Test
+    public void sumTest() throws Exception {
+
+        Double addRet = tairCpc.sumAdd(key, 100);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.sumAdd(key, 150);
+        assertEquals(250.00, addRet, 0.001);
+
+        Double getRet = tairCpc.sumGet(key);
+        assertEquals(250.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+        cpcUpdateParams2.ex(2);
+
+        addRet = tairCpc.sumAdd(key2, 100, cpcUpdateParams2);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.sumAdd(key2, 150, cpcUpdateParams2);
+        assertEquals(250.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.sumGet(key2);
+        assertEquals(0.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+        cpcUpdateParams3.px(2000);
+
+        addRet = tairCpc.sumAdd(key3, 100, cpcUpdateParams3);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.sumAdd(key3, 150, cpcUpdateParams3);
+        assertEquals(250.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.sumGet(key3);
+        assertEquals(0.00, getRet, 0.001);
+
+        Double setRet = tairCpc.sumSet(key, 100);
+        assertEquals(100.00, setRet, 0.001);
+    }
+
+    @Test
+    public void sumArrayTest() throws Exception {
+
+        Double addRet = tairCpc.sumArrayAdd(key, 1, 100, 7);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.sumArrayAdd(key, 1, 150, 7);
+        assertEquals(250.00, addRet, 0.001);
+
+        Double getRet = tairCpc.sumArrayGet(key, 1);
+        assertEquals(250.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+        cpcUpdateParams2.ex(2);
+
+        addRet = tairCpc.sumArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.sumArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
+        assertEquals(250.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.sumArrayGet(key2, 1);
+        assertNull(getRet);
+//        assertEquals(0.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+        cpcUpdateParams3.px(2000);
+
+        addRet = tairCpc.sumArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.sumArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
+        assertEquals(250.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.sumArrayGet(key3, 2);
+        assertNull(getRet);
+//        assertEquals(0.00, getRet, 0.001);
+
+        List<Double> rangeRet = tairCpc.sumArrayGetRange(key, 7, 7);
+        assertEquals(7, rangeRet.size());
+        assertEquals(250.00, rangeRet.get(0), 0.001);
+
+        Double mergeRet = tairCpc.sumArrayGetRangeMerge(key, 7, 7);
+        assertEquals(250.00, mergeRet, 0.001);
+    }
+
+    @Test
+    public void maxTest() throws Exception {
+
+        Double addRet = tairCpc.maxAdd(key, 150);
+        assertEquals(150.00, addRet, 0.001);
+
+        addRet = tairCpc.maxAdd(key, 100);
+        assertEquals(150.00, addRet, 0.001);
+
+        Double getRet = tairCpc.maxGet(key);
+        assertEquals(150.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+        cpcUpdateParams2.ex(2);
+
+        addRet = tairCpc.maxAdd(key2, 100, cpcUpdateParams2);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.maxAdd(key2, 150, cpcUpdateParams2);
+        assertEquals(150.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.maxGet(key2);
+        assertEquals(0.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+        cpcUpdateParams3.px(2000);
+
+        addRet = tairCpc.maxAdd(key3, 100, cpcUpdateParams3);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.maxAdd(key3, 150, cpcUpdateParams3);
+        assertEquals(150.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.maxGet(key3);
+        assertEquals(0.00, getRet, 0.001);
+
+        Double setRet = tairCpc.maxSet(key, 100);
+        assertEquals(100.00, setRet, 0.001);
+    }
+
+    @Test
+    public void maxArrayTest() throws Exception {
+
+        Double addRet = tairCpc.maxArrayAdd(key, 1, 100, 7);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.maxArrayAdd(key, 1, 150, 7);
+        assertEquals(150.00, addRet, 0.001);
+
+        Double getRet = tairCpc.maxArrayGet(key, 1);
+        assertEquals(150.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+        cpcUpdateParams2.ex(2);
+
+        addRet = tairCpc.maxArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.maxArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
+        assertEquals(150.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.maxArrayGet(key2, 1);
+        assertNull(getRet);
+//        assertEquals(0.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+        cpcUpdateParams3.px(2000);
+
+        addRet = tairCpc.maxArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.maxArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
+        assertEquals(150.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.maxArrayGet(key3, 2);
+        assertNull(getRet);
+//        assertEquals(0.00, getRet, 0.001);
+
+        List<Double> rangeRet = tairCpc.maxArrayGetRange(key, 7, 7);
+        assertEquals(7, rangeRet.size());
+        assertEquals(150.00, rangeRet.get(0), 0.001);
+
+        Double mergeRet = tairCpc.maxArrayGetRangeMerge(key, 7, 7);
+        assertEquals(150.00, mergeRet, 0.001);
+    }
+
+    @Test
+    public void minTest() throws Exception {
+
+        Double addRet = tairCpc.minAdd(key, 150);
+        assertEquals(150.00, addRet, 0.001);
+
+        addRet = tairCpc.minAdd(key, 100);
+        assertEquals(100.00, addRet, 0.001);
+
+        Double getRet = tairCpc.minGet(key);
+        assertEquals(100.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+        cpcUpdateParams2.ex(2);
+
+        addRet = tairCpc.minAdd(key2, 100, cpcUpdateParams2);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.minAdd(key2, 150, cpcUpdateParams2);
+        assertEquals(100.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.minGet(key2);
+        assertEquals(0.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+        cpcUpdateParams3.px(2000);
+
+        addRet = tairCpc.minAdd(key3, 100, cpcUpdateParams3);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.minAdd(key3, 150, cpcUpdateParams3);
+        assertEquals(100.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.minGet(key3);
+        assertEquals(0.00, getRet, 0.001);
+
+        Double setRet = tairCpc.minSet(key, 100);
+        assertEquals(100.00, setRet, 0.001);
+    }
+
+    @Test
+    public void minArrayTest() throws Exception {
+
+        Double addRet = tairCpc.minArrayAdd(key, 1, 100, 7);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.minArrayAdd(key, 1, 150, 7);
+        assertEquals(150.00, addRet, 0.001);
+
+        Double getRet = tairCpc.minArrayGet(key, 1);
+        assertEquals(150.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+        cpcUpdateParams2.ex(2);
+
+        addRet = tairCpc.minArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.minArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
+        assertEquals(150.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.minArrayGet(key2, 1);
+        assertNull(getRet);
+//        assertEquals(0.00, getRet, 0.001);
+
+        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+        cpcUpdateParams3.px(2000);
+
+        addRet = tairCpc.minArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpc.minArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
+        assertEquals(150.00, addRet, 0.001);
+
+        Thread.sleep(3000);
+
+        getRet = tairCpc.minArrayGet(key3, 2);
+        assertNull(getRet);
+//        assertEquals(0.00, getRet, 0.001);
+
+        List<Double> rangeRet = tairCpc.minArrayGetRange(key, 7, 7);
+        assertEquals(7, rangeRet.size());
+        assertEquals(150.00, rangeRet.get(0), 0.001);
+
+        Double mergeRet = tairCpc.minArrayGetRangeMerge(key, 7, 7);
+        assertEquals(150.00, mergeRet, 0.001);
+    }
 }

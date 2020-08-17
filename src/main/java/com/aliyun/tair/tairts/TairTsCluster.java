@@ -148,22 +148,22 @@ public class TairTsCluster {
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsrange(String pkey, String skey, String startTs, String endTs) {
+    public ExtsSkeyResult extsrange(String pkey, String skey, String startTs, String endTs) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSRANGE, pkey, skey, startTs, endTs);
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
+    public ExtsSkeyResult extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSRANGE, pkey, skey, startTs, endTs);
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsrange(String pkey, String skey, String startTs, String endTs, ExtsAggregationParams params) {
+    public ExtsSkeyResult extsrange(String pkey, String skey, String startTs, String endTs, ExtsAggregationParams params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSRANGE, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsAggregationParams params) {
+    public ExtsSkeyResult extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsAggregationParams params) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSRANGE, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
@@ -190,24 +190,24 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSMRANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<String>> filters) {
+    public ExtsSkeyResult extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<String>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<byte[]>> filters) {
+    public ExtsSkeyResult extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
+    public ExtsSkeyResult extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsDataPointResult> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<byte[]>> filters) {
+    public ExtsSkeyResult extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<byte[]>> filters) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
@@ -563,12 +563,12 @@ public class TairTsCluster {
      * @param endTs   the end ts
      * @return Success: OK; Fail: error.
      */
-    public List<ExtsStringDataPointResult> extsrangestr(String pkey, String skey, String startTs, String endTs) {
+    public ExtsStringSkeyResult extsrangestr(String pkey, String skey, String startTs, String endTs) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSRANGESTR, pkey, skey, startTs, endTs);
         return TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsStringDataPointResult> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
+    public ExtsStringSkeyResult extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSRANGESTR, pkey, skey, startTs, endTs);
         return TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING.build(obj);
     }
@@ -586,12 +586,12 @@ public class TairTsCluster {
      * `timeBucket` - set the timeBucket of the aggregation.
      * @return Success: OK; Fail: error.
      */
-    public List<ExtsStringDataPointResult> extsrangestr(String pkey, String skey, String startTs, String endTs, ExtsStringAggregationParams params) {
+    public ExtsStringSkeyResult extsrangestr(String pkey, String skey, String startTs, String endTs, ExtsStringAggregationParams params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSRANGESTR, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING.build(obj);
     }
 
-    public List<ExtsStringDataPointResult> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsStringAggregationParams params) {
+    public ExtsStringSkeyResult extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsStringAggregationParams params) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSRANGESTR, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING.build(obj);
     }

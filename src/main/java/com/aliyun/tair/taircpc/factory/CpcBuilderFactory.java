@@ -205,4 +205,27 @@ public class CpcBuilderFactory {
         }
     };
 
+    public static final Builder<List<Double>> CPCARRAY_RANGE_RESULT = new Builder<List<Double>>() {
+        @Override
+        public List<Double> build(Object data) {
+            if (data == null) {
+                return null;
+            }
+            List l = (List) data;
+            final ArrayList<Double> results = new ArrayList<Double>();
+            int num = l.size();
+            for (int i = 0; i < num; i++) {
+                String valueStr = new String((byte[]) l.get(i));
+                Double value= Double.parseDouble(valueStr);
+                results.add(value);
+            }
+            return results;
+        }
+
+        @Override
+        public String toString() {
+            return "CpcArrayRangeResult";
+        }
+    };
+
 }
