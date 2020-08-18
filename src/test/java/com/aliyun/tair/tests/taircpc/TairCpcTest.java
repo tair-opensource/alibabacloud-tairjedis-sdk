@@ -394,6 +394,29 @@ public class TairCpcTest extends TairCpcTestBase {
     }
 
     @Test
+    public void cpcArrayEstimateRangeSumTest() throws Exception {
+
+        Update2JudResult addRet = tairCpc.cpcArrayUpdate2Jud(key, 1, item, 5);
+        assertEquals(1.00, addRet.getValue(), 0.001);
+        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+        Update2JudResult addRet2 = tairCpc.cpcArrayUpdate2Jud(key, 1, item, 5);
+        assertEquals(1.00, addRet2.getValue(), 0.001);
+        assertEquals(0.00, addRet2.getDiffValue(), 0.001);
+        addRet = tairCpc.cpcArrayUpdate2Jud(key, 1, item2, 5);
+        assertEquals(2.00, addRet.getValue(), 0.001);
+        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+        addRet = tairCpc.cpcArrayUpdate2Jud(key, 3, item, 5);
+        assertEquals(1.00, addRet.getValue(), 0.001);
+        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+        addRet = tairCpc.cpcArrayUpdate2Jud(key, 5, item, 5);
+        assertEquals(1.00, addRet.getValue(), 0.001);
+        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+
+        Double estimateRet = tairCpc.cpcArrayEstimateRangeSum(key, 5, 5);
+        assertEquals(4.00, estimateRet, 0.001);
+    }
+
+    @Test
     public void sumTest() throws Exception {
 
         Double addRet = tairCpc.sumAdd(key, 100);
