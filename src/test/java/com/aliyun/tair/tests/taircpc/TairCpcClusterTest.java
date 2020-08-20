@@ -1085,10 +1085,10 @@ public class TairCpcClusterTest extends TairCpcTestBase {
     @Test
     public void stddevArrayTest() throws Exception {
 
-        Double addRet = tairCpcCluster.stddevArrayAdd(key, 1, 1,100, 7);
+        Double addRet = tairCpcCluster.stddevArrayAdd(key, 1,100, 7);
         assertEquals(0.00, addRet, 0.001);
 
-        addRet = tairCpcCluster.stddevArrayAdd(key, 1, 1,150, 7);
+        addRet = tairCpcCluster.stddevArrayAdd(key, 1,150, 7);
         assertEquals(25.00, addRet, 0.001);
 
         Double getRet = tairCpcCluster.stddevArrayGet(key, 1);
@@ -1097,10 +1097,10 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
         cpcUpdateParams2.ex(2);
 
-        addRet = tairCpcCluster.stddevArrayAdd(key2, 1, 1, 100, 7, cpcUpdateParams2);
+        addRet = tairCpcCluster.stddevArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
         assertEquals(0.00, addRet, 0.001);
 
-        addRet = tairCpcCluster.stddevArrayAdd(key2, 1, 1, 150, 7, cpcUpdateParams2);
+        addRet = tairCpcCluster.stddevArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
         assertEquals(25.00, addRet, 0.001);
 
         Thread.sleep(3000);
@@ -1112,10 +1112,10 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
         cpcUpdateParams3.px(2000);
 
-        addRet = tairCpcCluster.stddevArrayAdd(key3, 2, 1, 100, 7, cpcUpdateParams3);
+        addRet = tairCpcCluster.stddevArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
         assertEquals(0.00, addRet, 0.001);
 
-        addRet = tairCpcCluster.stddevArrayAdd(key3, 2, 1, 150, 7, cpcUpdateParams3);
+        addRet = tairCpcCluster.stddevArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
         assertEquals(25.00, addRet, 0.001);
 
         Thread.sleep(3000);

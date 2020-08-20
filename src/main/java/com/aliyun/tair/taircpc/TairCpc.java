@@ -2611,26 +2611,25 @@ public class TairCpc {
      *
      * @param key   the key
      * @param offset the offset
-     * @param count the count
      * @param value the value
      * @param size the size
      * @return Success: stddev value of offset; Fail: error.
      */
-    public Double stddevArrayAdd(final String key, final long offset, final long count, final double value, final long size) throws JedisConnectionException,
+    public Double stddevArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, key, String.valueOf(offset), String.valueOf(count), String.valueOf(value), String.valueOf(size));
+        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
-    public Double stddevArrayAdd(final byte[] key, final long offset, final long count, final double value, final long size) throws JedisConnectionException,
+    public Double stddevArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, key, toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size));
+        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
@@ -2639,7 +2638,6 @@ public class TairCpc {
      *
      * @param key   the key
      * @param offset the offset
-     * @param count the count
      * @param value the value
      * @param size the size
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
@@ -2649,21 +2647,21 @@ public class TairCpc {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: stddev value of offset; Fail: error.
      */
-    public Double stddevArrayAdd(final String key, final long offset, final long count, final double value, final long size, final CpcUpdateParams params)
+    public Double stddevArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size)));
+        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
-    public Double stddevArrayAdd(final byte[] key, final long offset, final long count, final double value, final long size, final CpcUpdateParams params)
+    public Double stddevArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size)));
+        Object obj = getJedis().sendCommand(ModuleCommand.STDDEVARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
