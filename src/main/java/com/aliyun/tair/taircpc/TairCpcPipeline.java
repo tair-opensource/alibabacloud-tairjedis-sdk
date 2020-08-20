@@ -2517,26 +2517,24 @@ public class TairCpcPipeline extends Pipeline {
      * Set the value of a stddev key.
      *
      * @param key   the key
-     * @param count the count
      * @param value the value
-     * @param square the square
      * @return Success: stddev value; Fail: error.
      */
-    public Response<Double> stddevSet(final String key, final long count, final double value, final double square) throws JedisConnectionException,
+    public Response<Double> stddevSet(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.STDDEVSET, key, String.valueOf(count), String.valueOf(value), String.valueOf(square));
+        getClient("").sendCommand(ModuleCommand.STDDEVSET, key, String.valueOf(value));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> stddevSet(final byte[] key, final long count, final double value, final double square) throws JedisConnectionException,
+    public Response<Double> stddevSet(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.STDDEVSET, key, toByteArray(count), toByteArray(value), toByteArray(square));
+        getClient("").sendCommand(ModuleCommand.STDDEVSET, key, toByteArray(value));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -2544,9 +2542,7 @@ public class TairCpcPipeline extends Pipeline {
      * Set the value of a stddev key.
      *
      * @param key   the key
-     * @param count the count
      * @param value the value
-     * @param square the square
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
      * `EX` - Set expire time (seconds)
      * `EXAT` - Set expire time as a UNIX timestamp (seconds)
@@ -2554,22 +2550,22 @@ public class TairCpcPipeline extends Pipeline {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: stddev value; Fail: error.
      */
-    public Response<Double> stddevSet(final String key, final long count, final double value, final double square, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> stddevSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         getClient("").sendCommand(ModuleCommand.STDDEVSET,
-                params.getByteParams(SafeEncoder.encode(key), toByteArray(count), toByteArray(value), toByteArray(square)));
+                params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> stddevSet(final byte[] key, final long count, final double value, final double square, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> stddevSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.STDDEVSET, params.getByteParams(key, toByteArray(count), toByteArray(value), toByteArray(square)));
+        getClient("").sendCommand(ModuleCommand.STDDEVSET, params.getByteParams(key, toByteArray(value)));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
