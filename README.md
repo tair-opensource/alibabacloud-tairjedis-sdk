@@ -1,4 +1,4 @@
-![](https://aliyunsdk-pages.alicdn.com/icons/AlibabaCloud.svg)
+![](https://img.alicdn.com/tfs/TB1Ly5oS3HqK1RjSZFPXXcwapXa-238-54.png)
 
 # 概述
 
