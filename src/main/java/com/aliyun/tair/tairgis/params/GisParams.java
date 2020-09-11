@@ -19,6 +19,7 @@ public class GisParams extends Params {
     private static final String ASC = "asc";
     private static final String DESC = "desc";
     private static final String COUNT = "count";
+    private static final String LIMIT = "limit";
 
     public GisParams() {}
 
@@ -63,6 +64,13 @@ public class GisParams extends Params {
         return this;
     }
 
+    public GisParams limit(int limit) {
+        if (limit > 0) {
+            addParam(LIMIT, limit);
+        }
+        return this;
+    }
+
     public byte[][] getByteParams(byte[]... args) {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
         for (byte[] arg : args) {
@@ -85,6 +93,11 @@ public class GisParams extends Params {
         if (contains(COUNT)) {
             byteParams.add(SafeEncoder.encode(COUNT));
             byteParams.add(Protocol.toByteArray((int) getParam(COUNT)));
+        }
+
+        if (contains(LIMIT)) {
+            byteParams.add(SafeEncoder.encode(LIMIT));
+            byteParams.add(Protocol.toByteArray((int) getParam(LIMIT)));
         }
 
         if (contains(ASC)) {
