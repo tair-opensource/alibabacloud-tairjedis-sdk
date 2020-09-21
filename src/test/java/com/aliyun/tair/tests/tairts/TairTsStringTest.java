@@ -108,7 +108,7 @@ public class TairTsStringTest extends TairTsTestBase {
             ExtsStringDataPoint<String> add2 = new ExtsStringDataPoint<String>(randomSkey2, tsStr, val);
             addList.add(add1);
             addList.add(add2);
-            List<String> maddRet = tairTs.extsmaddstr(randomPkey, 2, addList);
+            List<String> maddRet = tairTs.extsmaddstr(randomPkey, addList);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
@@ -118,7 +118,7 @@ public class TairTsStringTest extends TairTsTestBase {
             delRet = tairTs.extsdelstr(randomPkey, randomSkey2);
             Assert.assertEquals("OK", delRet);
 
-            maddRet = tairTs.extsmaddstr(randomPkey, 2, addList,params);
+            maddRet = tairTs.extsmaddstr(randomPkey, addList,params);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
@@ -148,7 +148,7 @@ public class TairTsStringTest extends TairTsTestBase {
             ExtsStringDataPoint<byte[]> add2 = new ExtsStringDataPoint<byte[]>(bSkey2, tsStr, val);
             addList.add(add1);
             addList.add(add2);
-            List<String> maddRet = tairTs.extsmaddstr(randomPKeyBinary, 2, addList);
+            List<String> maddRet = tairTs.extsmaddstr(randomPKeyBinary, addList);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
@@ -158,7 +158,7 @@ public class TairTsStringTest extends TairTsTestBase {
             delRet = tairTs.extsdelstr(randomPKeyBinary, bSkey2);
             Assert.assertEquals("OK", delRet);
 
-            maddRet = tairTs.extsmaddstr(randomPKeyBinary, 2, addList,params);
+            maddRet = tairTs.extsmaddstr(randomPKeyBinary, addList,params);
             for (int j = 0; j < maddRet.size(); j++) {
                 Assert.assertEquals("OK", maddRet.get(j));
             }
