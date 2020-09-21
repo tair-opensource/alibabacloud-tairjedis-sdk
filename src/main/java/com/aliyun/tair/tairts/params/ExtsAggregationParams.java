@@ -6,6 +6,8 @@ import redis.clients.jedis.util.SafeEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static redis.clients.jedis.Protocol.toByteArray;
+
 public class ExtsAggregationParams extends Params {
 
     private static final String MAXCOUNT = "MAXCOUNT";
@@ -184,6 +186,63 @@ public class ExtsAggregationParams extends Params {
             addParamWithValue(byteParams, MAXCOUNT);
         }
 
+
+        for (String menu: MENUS) {
+            if (contains(menu)) {
+                byteParams.add(SafeEncoder.encode(AGGREGATION));
+                addParamWithValue(byteParams, menu);
+                break;
+            }
+        }
+        return byteParams.toArray(new byte[byteParams.size()][]);
+    }
+
+    public byte[][] getByteRangeParams(String pkey, ArrayList<String> skeys, String startTs, String endTs) {
+        ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
+        byteParams.add(SafeEncoder.encode(pkey));
+        byteParams.add(toByteArray(skeys.size()));
+        for (String arg : skeys) {
+            byteParams.add(SafeEncoder.encode(arg));
+        }
+        byteParams.add(SafeEncoder.encode(startTs));
+        byteParams.add(SafeEncoder.encode(endTs));
+
+        if (contains(MAXCOUNT)) {
+            addParamWithValue(byteParams, MAXCOUNT);
+        }
+
+        if (contains(WITHLABELS)) {
+            byteParams.add(SafeEncoder.encode(WITHLABELS));
+        }
+
+        for (String menu: MENUS) {
+            if (contains(menu)) {
+                byteParams.add(SafeEncoder.encode(AGGREGATION));
+                addParamWithValue(byteParams, menu);
+                break;
+            }
+        }
+
+        return byteParams.toArray(new byte[byteParams.size()][]);
+    }
+
+    public byte[][] getByteRangeParams(byte[] pkey, ArrayList<byte[]> skeys, byte[] startTs, byte[] endTs) {
+        ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
+        byteParams.add(pkey);
+        byteParams.add(toByteArray(skeys.size()));
+        for (byte[] arg : skeys) {
+            byteParams.add(arg);
+        }
+        byteParams.add(startTs);
+        byteParams.add(endTs);
+
+        if (contains(MAXCOUNT)) {
+            addParamWithValue(byteParams, MAXCOUNT);
+        }
+
+        if (contains(WITHLABELS)) {
+            byteParams.add(SafeEncoder.encode(WITHLABELS));
+        }
 
         for (String menu: MENUS) {
             if (contains(menu)) {

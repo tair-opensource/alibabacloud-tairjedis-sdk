@@ -9,10 +9,10 @@ import static redis.clients.jedis.Protocol.toByteArray;
 
 public class ExtsMaddParams extends Params {
 
-    public byte[][] getByteParams(String pkey, long skeyNum, ArrayList<ExtsDataPoint<String>> args) {
+    public byte[][] getByteParams(String pkey, ArrayList<ExtsDataPoint<String>> args) {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
         byteParams.add(SafeEncoder.encode(pkey));
-        byteParams.add(SafeEncoder.encode(String.valueOf(skeyNum)));
+        byteParams.add(SafeEncoder.encode(String.valueOf(args.size())));
         for (ExtsDataPoint<String> arg : args) {
             byteParams.add(SafeEncoder.encode(arg.getSkey()));
             byteParams.add(SafeEncoder.encode(arg.getTs()));
@@ -21,10 +21,10 @@ public class ExtsMaddParams extends Params {
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
 
-    public byte[][] getByteParams(byte[] pkey, long skeyNum, ArrayList<ExtsDataPoint<byte[]>> args) {
+    public byte[][] getByteParams(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> args) {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
         byteParams.add(pkey);
-        byteParams.add(toByteArray(skeyNum));
+        byteParams.add(toByteArray(args.size()));
         for (ExtsDataPoint<byte[]> arg : args) {
             byteParams.add(arg.getSkey());
             byteParams.add(arg.getTs());
