@@ -720,25 +720,25 @@ public class TairCpcPipeline extends Pipeline {
      * Estimate the cpcArray for a range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: String List; Fail: error.
      */
-    public Response<List<Double>> cpcArrayEstimateRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> cpcArrayEstimateRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGE, key, String.valueOf(timestamp), String.valueOf(range));
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGE, key, String.valueOf(starttime), String.valueOf(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_ESTIMATE_RANGE_RESULT);
     }
 
-    public Response<List<Double>> cpcArrayEstimateRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> cpcArrayEstimateRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_ESTIMATE_RANGE_RESULT);
     }
 
@@ -746,25 +746,25 @@ public class TairCpcPipeline extends Pipeline {
      * Estimate & sum the cpcArray for a range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Response<Double> cpcArrayEstimateRangeSum(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeSum(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGESUM, key, String.valueOf(timestamp), String.valueOf(range));
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGESUM, key, String.valueOf(starttime), String.valueOf(endtime));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> cpcArrayEstimateRangeSum(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeSum(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGESUM, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGESUM, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -772,25 +772,25 @@ public class TairCpcPipeline extends Pipeline {
      * Estimate & merge the cpcArray for a range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
+     * @param endtime the endtime
      * @param range the range
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Response<Double> cpcArrayEstimateRangeMerge(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeMerge(final String key, final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, String.valueOf(timestamp), String.valueOf(range));
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, String.valueOf(endtime), String.valueOf(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> cpcArrayEstimateRangeMerge(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeMerge(final byte[] key, final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -1022,26 +1022,44 @@ public class TairCpcPipeline extends Pipeline {
      * Get the values of an array sum key range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: sum value list; Fail: error.
      */
-    public Response<List<Double>> sumArrayGetRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> sumArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public Response<List<Double>> sumArrayGetRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> sumArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
+    }
+
+    public Response<Double> sumArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<Double> sumArrayGetRangeTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETTIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1050,21 +1068,21 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return Success: merge of sum value; Fail: error.
      */
-    public Response<Double> sumArrayGetRangeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> sumArrayGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> sumArrayGetRangeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> sumArrayGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -1293,26 +1311,44 @@ public class TairCpcPipeline extends Pipeline {
      * Get the values of an array max key range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: max value list; Fail: error.
      */
-    public Response<List<Double>> maxArrayGetRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> maxArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public Response<List<Double>> maxArrayGetRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> maxArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
+    }
+
+    public Response<Double> maxArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<Double> maxArrayGetRangeTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETTIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1321,21 +1357,21 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return Success: merge of max value; Fail: error.
      */
-    public Response<Double> maxArrayGetRangeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> maxArrayGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> maxArrayGetRangeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> maxArrayGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -1563,26 +1599,44 @@ public class TairCpcPipeline extends Pipeline {
      * Get the values of an array min key range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: min value list; Fail: error.
      */
-    public Response<List<Double>> minArrayGetRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> minArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public Response<List<Double>> minArrayGetRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> minArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
+    }
+
+    public Response<Double> minArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<Double> minArrayGetRangeTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETTIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1591,21 +1645,21 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return Success: merge of min value; Fail: error.
      */
-    public Response<Double> minArrayGetRangeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> minArrayGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> minArrayGetRangeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> minArrayGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -1839,26 +1893,44 @@ public class TairCpcPipeline extends Pipeline {
      * Get the values of an array first key range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: first value list; Fail: error.
      */
-    public Response<List<String>> firstArrayGetRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<String>> firstArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> firstArrayGetRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<String>> firstArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<String> firstArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> firstArrayGetRangeTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETTIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1867,21 +1939,21 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return Success: merge of first value; Fail: error.
      */
-    public Response<String> firstArrayGetRangeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<String> firstArrayGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> firstArrayGetRangeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<String> firstArrayGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -2115,26 +2187,44 @@ public class TairCpcPipeline extends Pipeline {
      * Get the values of an array last key range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: last value list; Fail: error.
      */
-    public Response<List<String>> lastArrayGetRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<String>> lastArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<List<String>> lastArrayGetRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<String>> lastArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<String> lastArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETTIMEEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> lastArrayGetRangeTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETTIMEEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -2143,21 +2233,21 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return Success: merge of last value; Fail: error.
      */
-    public Response<String> lastArrayGetRangeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<String> lastArrayGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> lastArrayGetRangeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<String> lastArrayGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -2391,44 +2481,44 @@ public class TairCpcPipeline extends Pipeline {
      * Get the values of an array avg key range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: avg value list; Fail: error.
      */
-    public Response<List<Double>> avgArrayGetRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> avgArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public Response<List<Double>> avgArrayGetRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> avgArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
 
-    public Response<Double> avgArrayGetRangeTimeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> avgArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> avgArrayGetRangeTimeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> avgArrayGetRangeTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYGETTIMEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETTIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -2438,21 +2528,21 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return Success: merge of avg value; Fail: error.
      */
-    public Response<Double> avgArrayGetRangeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> avgArrayGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> avgArrayGetRangeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> avgArrayGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -2680,26 +2770,44 @@ public class TairCpcPipeline extends Pipeline {
      * Get the values of an array stddev key range.
      *
      * @param key   the key
-     * @param timestamp the timestamp
-     * @param range the range
+     * @param starttime the starttime
+     * @param endtime the endtime
      * @return Success: stddev value list; Fail: error.
      */
-    public Response<List<Double>> stddevArrayGetRange(final String key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> stddevArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public Response<List<Double>> stddevArrayGetRange(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
+    public Response<List<Double>> stddevArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
+    }
+
+    public Response<Double> stddevArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<Double> stddevArrayGetRangeTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETTIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2708,21 +2816,21 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return Success: merge of stddev value; Fail: error.
      */
-    public Response<Double> stddevArrayGetRangeMerge(final String key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> stddevArrayGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> stddevArrayGetRangeMerge(final byte[] key,  final long timestamp, final long range) throws JedisConnectionException,
+    public Response<Double> stddevArrayGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
         return getResponse(BuilderFactory.DOUBLE);
     }
 }
