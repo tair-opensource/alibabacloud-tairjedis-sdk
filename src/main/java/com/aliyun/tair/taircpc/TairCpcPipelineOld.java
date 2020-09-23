@@ -5,7 +5,8 @@ import com.aliyun.tair.taircpc.factory.CpcBuilderFactory;
 import com.aliyun.tair.taircpc.params.*;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.util.JedisClusterCRC16;
@@ -17,12 +18,7 @@ import java.util.List;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
-public class TairCpcCluster {
-    private JedisCluster jc;
-
-    public TairCpcCluster(JedisCluster jc) {
-        this.jc = jc;
-    }
+public class TairCpcPipelineOld extends Pipeline {
 
     /**
      * Estimate the cpc.
@@ -30,20 +26,20 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Double cpcEstimate(final String key) throws JedisConnectionException {
+    public Response<Double> cpcEstimate(final String key) throws JedisConnectionException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCESTIMATE, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCESTIMATE, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcEstimate(final byte[] key) throws JedisConnectionException {
+    public Response<Double> cpcEstimate(final byte[] key) throws JedisConnectionException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCESTIMATE, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCESTIMATE, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -52,7 +48,7 @@ public class TairCpcCluster {
      * @param keys    {key item expStr exp} [key item expStr exp] ...
      * @return Success: OK; Fail: error.
      */
-    public String cpcMUpdate(final ArrayList<CpcData> keys) throws JedisConnectionException,IllegalArgumentException,
+    public Response<String> cpcMUpdate(final ArrayList<CpcData> keys) throws JedisConnectionException,IllegalArgumentException,
             JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -68,8 +64,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiUpdateParams keyList = new CpcMultiUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMUPDATE, keyList.getByteParams(keys));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMUPDATE, keyList.getByteParams(keys));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -78,7 +74,7 @@ public class TairCpcCluster {
      * @param keys    {key item expStr exp} [key item expStr exp] ...
      * @return Success: List<Double>; Fail: error.
      */
-    public List<Double> cpcMUpdate2Est(final ArrayList<CpcData> keys) throws JedisConnectionException,
+    public Response<List<Double>> cpcMUpdate2Est(final ArrayList<CpcData> keys) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -94,8 +90,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiUpdateParams keyList = new CpcMultiUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMUPDATE2EST, keyList.getByteParams(keys));
-        return CpcBuilderFactory.CPCUPDATE2EST_MULTI_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMUPDATE2EST, keyList.getByteParams(keys));
+        return getResponse(CpcBuilderFactory.CPCUPDATE2EST_MULTI_RESULT);
     }
 
     /**
@@ -104,7 +100,7 @@ public class TairCpcCluster {
      * @param keys    {key item expStr exp} [key item expStr exp] ...
      * @return Success: HashMap<String, Double>; Fail: error.
      */
-    public HashMap<String, Double> cpcMUpdate2EstWithKey(final ArrayList<CpcData> keys) throws JedisConnectionException,
+    public Response<HashMap<String, Double>> cpcMUpdate2EstWithKey(final ArrayList<CpcData> keys) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -120,8 +116,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiUpdateParams keyList = new CpcMultiUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMUPDATE2ESTWITHKEY, keyList.getByteParams(keys));
-        return CpcBuilderFactory.CPCUPDATE2ESTWITHKEY_MULTI_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMUPDATE2ESTWITHKEY, keyList.getByteParams(keys));
+        return getResponse(CpcBuilderFactory.CPCUPDATE2ESTWITHKEY_MULTI_RESULT);
     }
 
     /**
@@ -130,7 +126,7 @@ public class TairCpcCluster {
      * @param keys    {key item expStr exp} [key item expStr exp] ...
      * @return Success: List<Update2judResult>; Fail: error.
      */
-    public List<Update2JudResult> cpcMUpdate2Jud(final ArrayList<CpcData> keys) throws JedisConnectionException,
+    public Response<List<Update2JudResult>> cpcMUpdate2Jud(final ArrayList<CpcData> keys) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -146,8 +142,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiUpdateParams keyList = new CpcMultiUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMUPDATE2JUD, keyList.getByteParams(keys));
-        return CpcBuilderFactory.CPCUPDATE2JUD_MULTI_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMUPDATE2JUD, keyList.getByteParams(keys));
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_MULTI_RESULT);
     }
 
     /**
@@ -157,7 +153,7 @@ public class TairCpcCluster {
      * @param item the item
      * @return Success: OK; Fail: error.
      */
-    public String cpcUpdate(final String key, final String item) throws JedisConnectionException,
+    public Response<String> cpcUpdate(final String key, final String item) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -165,11 +161,11 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE, key, item);
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE, key, item);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String cpcUpdate(final byte[] key, final byte[] item) throws JedisConnectionException,
+    public Response<String> cpcUpdate(final byte[] key, final byte[] item) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -177,8 +173,8 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE, key, item);
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE, key, item);
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -193,7 +189,7 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: OK; Fail: error.
      */
-    public String cpcUpdate(final String key, final String item, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> cpcUpdate(final String key, final String item, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -201,12 +197,12 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.CPCUPDATE,
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE,
                 params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(item)));
-        return BuilderFactory.STRING.build(obj);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String cpcUpdate(final byte[] key, final byte[] item, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> cpcUpdate(final byte[] key, final byte[] item, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -214,8 +210,8 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE, params.getByteParams(key, item));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE, params.getByteParams(key, item));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -225,7 +221,7 @@ public class TairCpcCluster {
      * @param item the item
      * @return Success: String List; Fail: error.
      */
-    public Update2JudResult cpcUpdate2Jud(final String key, final String item) throws JedisConnectionException,
+    public Response<Update2JudResult> cpcUpdate2Jud(final String key, final String item) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -233,11 +229,11 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE2JUD, key, item);
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2JUD, key, item);
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
-    public Update2JudResult cpcUpdate2Jud(final byte[] key, final byte[] item) throws JedisConnectionException,
+    public Response<Update2JudResult> cpcUpdate2Jud(final byte[] key, final byte[] item) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -245,8 +241,8 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE2JUD, key, item);
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2JUD, key, item);
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
     /**
@@ -261,7 +257,7 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: String List; Fail: error.
      */
-    public Update2JudResult cpcUpdate2Jud(final String key, final String item, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Update2JudResult> cpcUpdate2Jud(final String key, final String item, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -269,12 +265,12 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.CPCUPDATE2JUD,
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2JUD,
                 params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(item)));
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
-    public Update2JudResult cpcUpdate2Jud(final byte[] key, final byte[] item, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Update2JudResult> cpcUpdate2Jud(final byte[] key, final byte[] item, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -282,8 +278,8 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE2JUD, params.getByteParams(key, item));
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2JUD, params.getByteParams(key, item));
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
     /**
@@ -293,7 +289,7 @@ public class TairCpcCluster {
      * @param item the item
      * @return Success: Double value; Fail: error.
      */
-    public Double cpcUpdate2Est(final String key, final String item) throws JedisConnectionException,IllegalArgumentException,
+    public Response<Double> cpcUpdate2Est(final String key, final String item) throws JedisConnectionException,IllegalArgumentException,
             JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -301,11 +297,11 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE2EST, key, item);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2EST, key, item);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcUpdate2Est(final byte[] key, final byte[] item) throws JedisConnectionException,IllegalArgumentException,
+    public Response<Double> cpcUpdate2Est(final byte[] key, final byte[] item) throws JedisConnectionException,IllegalArgumentException,
             JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -313,8 +309,8 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE2EST, key, item);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2EST, key, item);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -329,29 +325,29 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: Double value; Fail: error.
      */
-    public Double cpcUpdate2Est(final String key, final String item, final CpcUpdateParams params) throws JedisConnectionException,IllegalArgumentException,
-            JedisDataException {
+    public Response<Double> cpcUpdate2Est(final String key, final String item, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.CPCUPDATE2EST,
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2EST,
                 params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(item)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcUpdate2Est(final byte[] key, final byte[] item, final CpcUpdateParams params) throws JedisConnectionException,IllegalArgumentException,
-            JedisDataException {
+    public Response<Double> cpcUpdate2Est(final byte[] key, final byte[] item, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCUPDATE2EST, params.getByteParams(key, item));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCUPDATE2EST, params.getByteParams(key, item));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -363,7 +359,7 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: OK; Fail: error.
      */
-    public String cpcArrayUpdate(final String key, final long offset, final String item, final long size) throws JedisConnectionException,
+    public Response<String> cpcArrayUpdate(final String key, final long offset, final String item, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -371,11 +367,11 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE, key, String.valueOf(offset), item, String.valueOf(size));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE, key, String.valueOf(offset), item, String.valueOf(size));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String cpcArrayUpdate(final byte[] key, final long offset, final byte[] item, final long size) throws JedisConnectionException,
+    public Response<String> cpcArrayUpdate(final byte[] key, final long offset, final byte[] item, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -383,8 +379,8 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE, key, toByteArray(offset), item, toByteArray(size));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE, key, toByteArray(offset), item, toByteArray(size));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -401,7 +397,7 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: OK; Fail: error.
      */
-    public String cpcArrayUpdate(final String key, final long offset, final String item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> cpcArrayUpdate(final String key, final long offset, final String item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -409,11 +405,11 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.CPCARRAYUPDATE, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(item), toByteArray(size)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(item), toByteArray(size)));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String cpcArrayUpdate(final byte[] key, final long offset, final byte[] item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> cpcArrayUpdate(final byte[] key, final long offset, final byte[] item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -421,8 +417,8 @@ public class TairCpcCluster {
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE, params.getByteParams(key, toByteArray(offset), item, toByteArray(size)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE, params.getByteParams(key, toByteArray(offset), item, toByteArray(size)));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -434,28 +430,28 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: Double value; Fail: error.
      */
-    public Double cpcArrayUpdate2Est(final String key, final long offset, final String item, final long size) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException{
+    public Response<Double> cpcArrayUpdate2Est(final String key, final long offset, final String item, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE2EST, key, String.valueOf(offset), item, String.valueOf(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2EST, key, String.valueOf(offset), item, String.valueOf(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcArrayUpdate2Est(final byte[] key, final long offset, final byte[] item, final long size) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException{
+    public Response<Double> cpcArrayUpdate2Est(final byte[] key, final long offset, final byte[] item, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE2EST, key, toByteArray(offset), item, toByteArray(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2EST, key, toByteArray(offset), item, toByteArray(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -472,30 +468,30 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: Double value; Fail: error.
      */
-    public Double cpcArrayUpdate2Est(final String key, final long offset, final String item, final long size, final CpcUpdateParams params)
-            throws JedisConnectionException, IllegalArgumentException, JedisDataException {
+    public Response<Double> cpcArrayUpdate2Est(final String key, final long offset, final String item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.CPCARRAYUPDATE2EST, params.getByteParams(SafeEncoder.encode(key),
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2EST, params.getByteParams(SafeEncoder.encode(key),
                 toByteArray(offset), SafeEncoder.encode(item), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcArrayUpdate2Est(final byte[] key, final long offset, final byte[] item, final long size, final CpcUpdateParams params)
-            throws JedisConnectionException, IllegalArgumentException, JedisDataException {
+    public Response<Double> cpcArrayUpdate2Est(final byte[] key, final long offset, final byte[] item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE2EST, params.getByteParams(key, toByteArray(offset),
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2EST, params.getByteParams(key, toByteArray(offset),
                 item, toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -507,28 +503,28 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: Update2JudResult; Fail: error.
      */
-    public Update2JudResult cpcArrayUpdate2Jud(final String key, final long offset, final String item, final long size)
-            throws JedisConnectionException, IllegalArgumentException, JedisDataException {
+    public Response<Update2JudResult> cpcArrayUpdate2Jud(final String key, final long offset, final String item, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE2JUD, key, String.valueOf(offset), item, String.valueOf(size));
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2JUD, key, String.valueOf(offset), item, String.valueOf(size));
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
-    public Update2JudResult cpcArrayUpdate2Jud(final byte[] key, final long offset, final byte[] item, final long size)
-            throws JedisConnectionException, IllegalArgumentException, JedisDataException {
+    public Response<Update2JudResult> cpcArrayUpdate2Jud(final byte[] key, final long offset, final byte[] item, final long size) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE2JUD, key, toByteArray(offset), item, toByteArray(size));
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2JUD, key, toByteArray(offset), item, toByteArray(size));
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
     /**
@@ -545,30 +541,30 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: Update2JudResult; Fail: error.
      */
-    public Update2JudResult cpcArrayUpdate2Jud(final String key, final long offset, final String item, final long size, final CpcUpdateParams params)
-            throws JedisConnectionException, IllegalArgumentException, JedisDataException {
+    public Response<Update2JudResult> cpcArrayUpdate2Jud(final String key, final long offset, final String item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.CPCARRAYUPDATE2JUD, params.getByteParams(SafeEncoder.encode(key),
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2JUD, params.getByteParams(SafeEncoder.encode(key),
                 toByteArray(offset), SafeEncoder.encode(item), toByteArray(size)));
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
-    public Update2JudResult cpcArrayUpdate2Jud(final byte[] key, final long offset, final byte[] item, final long size, final CpcUpdateParams params)
-            throws JedisConnectionException, IllegalArgumentException, JedisDataException {
+    public Response<Update2JudResult> cpcArrayUpdate2Jud(final byte[] key, final long offset, final byte[] item, final long size, final CpcUpdateParams params) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         if (item == null) {
             throw new IllegalArgumentException(CommonResult.valueIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYUPDATE2JUD, params.getByteParams(key, toByteArray(offset),
+        getClient("").sendCommand(ModuleCommand.CPCARRAYUPDATE2JUD, params.getByteParams(key, toByteArray(offset),
                 item, toByteArray(size)));
-        return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
     /**
@@ -577,7 +573,7 @@ public class TairCpcCluster {
      * @param keys    {key offset item size expStr exp} [key offset item size expStr exp] ...
      * @return Success: OK; Fail: error.
      */
-    public String cpcArrayMUpdate(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,IllegalArgumentException,
+    public Response<String> cpcArrayMUpdate(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,IllegalArgumentException,
             JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -593,8 +589,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMARRAYUPDATE, keyList.getByteParams(keys));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE, keyList.getByteParams(keys));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -603,7 +599,7 @@ public class TairCpcCluster {
      * @param keys    {key offset item size expStr exp} [key offset item size expStr exp] ...
      * @return Success: List<Double>; Fail: error.
      */
-    public List<Double> cpcArrayMUpdate2Est(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
+    public Response<List<Double>> cpcArrayMUpdate2Est(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -619,8 +615,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMARRAYUPDATE2EST, keyList.getByteParams(keys));
-        return CpcBuilderFactory.CPCARRAYUPDATE2EST_MULTI_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2EST, keyList.getByteParams(keys));
+        return getResponse(CpcBuilderFactory.CPCARRAYUPDATE2EST_MULTI_RESULT);
     }
 
 //    /**
@@ -629,7 +625,7 @@ public class TairCpcCluster {
 //     * @param keys    {key offset item size expStr exp} [key offset item size expStr exp] ...
 //     * @return Success: HashMap<String, Double>; Fail: error.
 //     */
-//    public HashMap<String, Double> cpcArrayMUpdate2EstWithKey(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
+//    public Response<HashMap<String, Double>> cpcArrayMUpdate2EstWithKey(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
 //            IllegalArgumentException, JedisDataException {
 //        if (keys == null) {
 //            throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -645,8 +641,8 @@ public class TairCpcCluster {
 //            }
 //        }
 //        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-//        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMARRAYUPDATE2ESTWITHKEY, keyList.getByteParams(keys));
-//        return CpcBuilderFactory.CPCUPDATE2ESTWITHKEY_MULTI_RESULT.build(obj);
+//        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2ESTWITHKEY, keyList.getByteParams(keys));
+//        return getResponse(CpcBuilderFactory.CPCUPDATE2ESTWITHKEY_MULTI_RESULT);
 //    }
 
     /**
@@ -655,7 +651,7 @@ public class TairCpcCluster {
      * @param keys    {key offset item size expStr exp} [key offset item size expStr exp] ...
      * @return Success: List<Update2JudResult>; Fail: error.
      */
-    public List<Update2JudResult> cpcArrayMUpdate2Jud(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
+    public Response<List<Update2JudResult>> cpcArrayMUpdate2Jud(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -671,8 +667,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMARRAYUPDATE2JUD, keyList.getByteParams(keys));
-        return CpcBuilderFactory.CPCARRAYUPDATE2JUD_MULTI_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2JUD, keyList.getByteParams(keys));
+        return getResponse(CpcBuilderFactory.CPCARRAYUPDATE2JUD_MULTI_RESULT);
     }
 
     /**
@@ -681,7 +677,7 @@ public class TairCpcCluster {
      * @param keys    {key offset item size expStr exp} [key offset item size expStr exp] ...
      * @return Success: HashMap<String, Update2JudResult>; Fail: error.
      */
-    public HashMap<String, Update2JudResult> cpcArrayMUpdate2JudWithKey(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
+    public Response<HashMap<String, Update2JudResult>> cpcArrayMUpdate2JudWithKey(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (keys == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
@@ -697,8 +693,8 @@ public class TairCpcCluster {
             }
         }
         CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.CPCMARRAYUPDATE2JUDWITHKEY, keyList.getByteParams(keys));
-        return CpcBuilderFactory.CPCUPDATE2JUDWITHKEY_MULTI_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2JUDWITHKEY, keyList.getByteParams(keys));
+        return getResponse(CpcBuilderFactory.CPCUPDATE2JUDWITHKEY_MULTI_RESULT);
     }
 
     /**
@@ -708,22 +704,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Double cpcArrayEstimate(final String key, final long offset) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimate(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATE, key, String.valueOf(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATE, key, String.valueOf(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcArrayEstimate(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimate(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATE, key, toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATE, key, toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -734,22 +730,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: String List; Fail: error.
      */
-    public List<Double> cpcArrayEstimateRange(final String key, final long offset, final long range) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
+    public Response<List<Double>> cpcArrayEstimateRange(final String key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGE, key, String.valueOf(offset), String.valueOf(range));
-        return CpcBuilderFactory.CPCARRAY_ESTIMATE_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGE, key, String.valueOf(offset), String.valueOf(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_ESTIMATE_RANGE_RESULT);
     }
 
-    public List<Double> cpcArrayEstimateRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
+    public Response<List<Double>> cpcArrayEstimateRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGE, key, toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_ESTIMATE_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_ESTIMATE_RANGE_RESULT);
     }
 
     /**
@@ -760,22 +756,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Double cpcArrayEstimateRangeSum(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeSum(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGESUM, key, String.valueOf(offset), String.valueOf(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGESUM, key, String.valueOf(offset), String.valueOf(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcArrayEstimateRangeSum(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeSum(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGESUM, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGESUM, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -786,22 +782,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Double cpcArrayEstimateRangeMerge(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeMerge(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, String.valueOf(offset), String.valueOf(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, String.valueOf(offset), String.valueOf(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double cpcArrayEstimateRangeMerge(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> cpcArrayEstimateRangeMerge(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     public int getSlot (String key) throws JedisConnectionException {
@@ -817,22 +813,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: sum value; Fail: error.
      */
-    public Double sumAdd(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> sumAdd(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMADD, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMADD, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumAdd(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> sumAdd(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMADD, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMADD, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -847,23 +843,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: sum value; Fail: error.
      */
-    public Double sumAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> sumAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SUMADD,
+        getClient("").sendCommand(ModuleCommand.SUMADD,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> sumAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMADD, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMADD, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -873,22 +869,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: sum value; Fail: error.
      */
-    public Double sumSet(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> sumSet(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMSET, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMSET, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumSet(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> sumSet(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMSET, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMSET, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -903,23 +899,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: sum value; Fail: error.
      */
-    public Double sumSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> sumSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SUMSET,
+        getClient("").sendCommand(ModuleCommand.SUMSET,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> sumSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMSET, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMSET, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -928,22 +924,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: sum value; Fail: error.
      */
-    public Double sumGet(final String key) throws JedisConnectionException,
+    public Response<Double> sumGet(final String key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumGet(final byte[] key) throws JedisConnectionException,
+    public Response<Double> sumGet(final byte[] key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -955,22 +951,22 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: sum value of offset; Fail: error.
      */
-    public Double sumArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> sumArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> sumArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -987,22 +983,22 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: sum value of offset; Fail: error.
      */
-    public Double sumArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> sumArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SUMARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> sumArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1012,22 +1008,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: sum value; Fail: error.
      */
-    public Double sumArrayGet(final String key, final long offset) throws JedisConnectionException,
+    public Response<Double> sumArrayGet(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SUMARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<Double> sumArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMARRAYGET, key, toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGET, key, toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1038,22 +1034,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: sum value list; Fail: error.
      */
-    public List<Double> sumArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> sumArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SUMARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public List<Double> sumArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> sumArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
     /**
@@ -1062,22 +1058,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of sum value; Fail: error.
      */
-    public Double sumArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> sumArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SUMARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double sumArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> sumArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.SUMARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.SUMARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
 
@@ -1090,22 +1086,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: max value; Fail: error.
      */
-    public Double maxAdd(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> maxAdd(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXADD, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXADD, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxAdd(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> maxAdd(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXADD, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXADD, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1120,23 +1116,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: max value; Fail: error.
      */
-    public Double maxAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> maxAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MAXADD,
+        getClient("").sendCommand(ModuleCommand.MAXADD,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> maxAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXADD, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXADD, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1146,22 +1142,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: max value; Fail: error.
      */
-    public Double maxSet(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> maxSet(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXSET, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXSET, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxSet(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> maxSet(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXSET, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXSET, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1176,23 +1172,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: max value; Fail: error.
      */
-    public Double maxSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> maxSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MAXSET,
+        getClient("").sendCommand(ModuleCommand.MAXSET,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> maxSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXSET, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXSET, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1201,22 +1197,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: max value; Fail: error.
      */
-    public Double maxGet(final String key) throws JedisConnectionException,
+    public Response<Double> maxGet(final String key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxGet(final byte[] key) throws JedisConnectionException,
+    public Response<Double> maxGet(final byte[] key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1228,22 +1224,22 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: max value of offset; Fail: error.
      */
-    public Double maxArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> maxArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> maxArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1260,22 +1256,22 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: max value of offset; Fail: error.
      */
-    public Double maxArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> maxArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MAXARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> maxArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1285,22 +1281,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: max value; Fail: error.
      */
-    public Double maxArrayGet(final String key, final long offset) throws JedisConnectionException,
+    public Response<Double> maxArrayGet(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MAXARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<Double> maxArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXARRAYGET, key, toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGET, key, toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1311,22 +1307,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: max value list; Fail: error.
      */
-    public List<Double> maxArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> maxArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MAXARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public List<Double> maxArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> maxArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
     /**
@@ -1335,22 +1331,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of max value; Fail: error.
      */
-    public Double maxArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> maxArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MAXARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double maxArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> maxArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MAXARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MAXARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     // min operation
@@ -1362,22 +1358,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: min value; Fail: error.
      */
-    public Double minAdd(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> minAdd(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINADD, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINADD, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minAdd(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> minAdd(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINADD, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINADD, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1392,23 +1388,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: min value; Fail: error.
      */
-    public Double minAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> minAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MINADD,
+        getClient("").sendCommand(ModuleCommand.MINADD,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> minAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINADD, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINADD, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1418,22 +1414,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: min value; Fail: error.
      */
-    public Double minSet(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> minSet(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINSET, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINSET, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minSet(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> minSet(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINSET, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINSET, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1448,23 +1444,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: min value; Fail: error.
      */
-    public Double minSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> minSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MINSET,
+        getClient("").sendCommand(ModuleCommand.MINSET,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> minSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINSET, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINSET, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1473,22 +1469,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: min value; Fail: error.
      */
-    public Double minGet(final String key) throws JedisConnectionException,
+    public Response<Double> minGet(final String key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minGet(final byte[] key) throws JedisConnectionException,
+    public Response<Double> minGet(final byte[] key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1500,22 +1496,22 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: min value of offset; Fail: error.
      */
-    public Double minArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> minArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> minArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1532,22 +1528,22 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: min value of offset; Fail: error.
      */
-    public Double minArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> minArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MINARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> minArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1557,22 +1553,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: min value; Fail: error.
      */
-    public Double minArrayGet(final String key, final long offset) throws JedisConnectionException,
+    public Response<Double> minArrayGet(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MINARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<Double> minArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINARRAYGET, key, toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYGET, key, toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -1583,22 +1579,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: min value list; Fail: error.
      */
-    public List<Double> minArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> minArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MINARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public List<Double> minArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> minArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
     /**
@@ -1607,22 +1603,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of min value; Fail: error.
      */
-    public Double minArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> minArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.MINARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double minArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> minArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.MINARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.MINARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     // first operation
@@ -1635,22 +1631,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: first value; Fail: error.
      */
-    public String firstAdd(final String key, final String content, final double value) throws JedisConnectionException,
+    public Response<String> firstAdd(final String key, final String content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTADD, key, content, String.valueOf(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTADD, key, content, String.valueOf(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstAdd(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
+    public Response<String> firstAdd(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTADD, key, content, toByteArray(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTADD, key, content, toByteArray(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1666,23 +1662,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: first value; Fail: error.
      */
-    public String firstAdd(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> firstAdd(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTADD,
+        getClient("").sendCommand(ModuleCommand.FIRSTADD,
                 params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(content), toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstAdd(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> firstAdd(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTADD, params.getByteParams(key, content, toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTADD, params.getByteParams(key, content, toByteArray(value)));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1693,22 +1689,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: first value; Fail: error.
      */
-    public String firstSet(final String key, final String content, final double value) throws JedisConnectionException,
+    public Response<String> firstSet(final String key, final String content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTSET, key, content, String.valueOf(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTSET, key, content, String.valueOf(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstSet(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
+    public Response<String> firstSet(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTSET, key, content, toByteArray(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTSET, key, content, toByteArray(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1724,23 +1720,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: first value; Fail: error.
      */
-    public String firstSet(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> firstSet(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTSET,
+        getClient("").sendCommand(ModuleCommand.FIRSTSET,
                 params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(content), toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstSet(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> firstSet(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTSET, params.getByteParams(key, content, toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTSET, params.getByteParams(key, content, toByteArray(value)));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1749,22 +1745,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: first value; Fail: error.
      */
-    public String firstGet(final String key) throws JedisConnectionException,
+    public Response<String> firstGet(final String key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTGET, key);
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTGET, key);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstGet(final byte[] key) throws JedisConnectionException,
+    public Response<String> firstGet(final byte[] key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTGET, key);
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTGET, key);
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1777,22 +1773,22 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: first value of offset; Fail: error.
      */
-    public String firstArrayAdd(final String key, final long offset, final String content, final double value, final long size) throws JedisConnectionException,
+    public Response<String> firstArrayAdd(final String key, final long offset, final String content, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYADD, key, String.valueOf(offset), content, String.valueOf(value), String.valueOf(size));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYADD, key, String.valueOf(offset), content, String.valueOf(value), String.valueOf(size));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size) throws JedisConnectionException,
+    public Response<String> firstArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYADD, key, toByteArray(offset), content, toByteArray(value), toByteArray(size));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYADD, key, toByteArray(offset), content, toByteArray(value), toByteArray(size));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1810,22 +1806,22 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: first value of offset; Fail: error.
      */
-    public String firstArrayAdd(final String key, final long offset, final String content, final double value, final long size, final CpcUpdateParams params)
+    public Response<String> firstArrayAdd(final String key, final long offset, final String content, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(content), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(content), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size, final CpcUpdateParams params)
+    public Response<String> firstArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYADD, params.getByteParams(key, toByteArray(offset), content, toByteArray(value), toByteArray(size)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYADD, params.getByteParams(key, toByteArray(offset), content, toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1835,22 +1831,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: first value; Fail: error.
      */
-    public String firstArrayGet(final String key, final long offset) throws JedisConnectionException,
+    public Response<String> firstArrayGet(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<String> firstArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYGET, key, toByteArray(offset));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGET, key, toByteArray(offset));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1861,22 +1857,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: first value list; Fail: error.
      */
-    public List<String> firstArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<String>> firstArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING_LIST.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public List<String> firstArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<String>> firstArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING_LIST.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING_LIST);
     }
 
     /**
@@ -1885,22 +1881,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of first value; Fail: error.
      */
-    public String firstArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<String> firstArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String firstArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<String> firstArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.FIRSTARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING);
     }
 
     // last operation
@@ -1913,22 +1909,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: last value; Fail: error.
      */
-    public String lastAdd(final String key, final String content, final double value) throws JedisConnectionException,
+    public Response<String> lastAdd(final String key, final String content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTADD, key, content, String.valueOf(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTADD, key, content, String.valueOf(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastAdd(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
+    public Response<String> lastAdd(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTADD, key, content, toByteArray(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTADD, key, content, toByteArray(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1944,23 +1940,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: last value; Fail: error.
      */
-    public String lastAdd(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> lastAdd(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTADD,
+        getClient("").sendCommand(ModuleCommand.LASTADD,
                 params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(content), toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastAdd(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> lastAdd(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTADD, params.getByteParams(key, content, toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTADD, params.getByteParams(key, content, toByteArray(value)));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -1971,22 +1967,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: last value; Fail: error.
      */
-    public String lastSet(final String key, final String content, final double value) throws JedisConnectionException,
+    public Response<String> lastSet(final String key, final String content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTSET, key, content, String.valueOf(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTSET, key, content, String.valueOf(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastSet(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
+    public Response<String> lastSet(final byte[] key, final byte[] content, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTSET, key, content, toByteArray(value));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTSET, key, content, toByteArray(value));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -2002,23 +1998,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: last value; Fail: error.
      */
-    public String lastSet(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> lastSet(final String key, final String content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTSET,
+        getClient("").sendCommand(ModuleCommand.LASTSET,
                 params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(content), toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastSet(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<String> lastSet(final byte[] key, final byte[] content, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTSET, params.getByteParams(key, content, toByteArray(value)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTSET, params.getByteParams(key, content, toByteArray(value)));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -2027,22 +2023,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: last value; Fail: error.
      */
-    public String lastGet(final String key) throws JedisConnectionException,
+    public Response<String> lastGet(final String key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTGET, key);
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTGET, key);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastGet(final byte[] key) throws JedisConnectionException,
+    public Response<String> lastGet(final byte[] key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTGET, key);
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTGET, key);
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -2055,22 +2051,22 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: last value of offset; Fail: error.
      */
-    public String lastArrayAdd(final String key, final long offset, final String content, final double value, final long size) throws JedisConnectionException,
+    public Response<String> lastArrayAdd(final String key, final long offset, final String content, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYADD, key, String.valueOf(offset), content, String.valueOf(value), String.valueOf(size));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYADD, key, String.valueOf(offset), content, String.valueOf(value), String.valueOf(size));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size) throws JedisConnectionException,
+    public Response<String> lastArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYADD, key, toByteArray(offset), content, toByteArray(value), toByteArray(size));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYADD, key, toByteArray(offset), content, toByteArray(value), toByteArray(size));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -2088,22 +2084,22 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: last value of offset; Fail: error.
      */
-    public String lastArrayAdd(final String key, final long offset, final String content, final double value, final long size, final CpcUpdateParams params)
+    public Response<String> lastArrayAdd(final String key, final long offset, final String content, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(content), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(content), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size, final CpcUpdateParams params)
+    public Response<String> lastArrayAdd(final byte[] key, final long offset, final byte[] content, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYADD, params.getByteParams(key, toByteArray(offset), content, toByteArray(value), toByteArray(size)));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYADD, params.getByteParams(key, toByteArray(offset), content, toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -2113,22 +2109,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: last value; Fail: error.
      */
-    public String lastArrayGet(final String key, final long offset) throws JedisConnectionException,
+    public Response<String> lastArrayGet(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<String> lastArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYGET, key, toByteArray(offset));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGET, key, toByteArray(offset));
+        return getResponse(BuilderFactory.STRING);
     }
 
     /**
@@ -2139,22 +2135,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: last value list; Fail: error.
      */
-    public List<String> lastArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<String>> lastArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING_LIST.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public List<String> lastArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<String>> lastArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING_LIST.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING_LIST);
     }
 
     /**
@@ -2163,22 +2159,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of last value; Fail: error.
      */
-    public String lastArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<String> lastArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public String lastArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<String> lastArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.STRING.build(obj);
+        getClient("").sendCommand(ModuleCommand.LASTARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.STRING);
     }
 
     // avg operation
@@ -2191,22 +2187,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: avg value; Fail: error.
      */
-    public Double avgAdd(final String key, final long count, final double value) throws JedisConnectionException,
+    public Response<Double> avgAdd(final String key, final long count, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGADD, key, String.valueOf(count), String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGADD, key, String.valueOf(count), String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgAdd(final byte[] key, final long count, final double value) throws JedisConnectionException,
+    public Response<Double> avgAdd(final byte[] key, final long count, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGADD, key, toByteArray(count), toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGADD, key, toByteArray(count), toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2222,23 +2218,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: avg value; Fail: error.
      */
-    public Double avgAdd(final String key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> avgAdd(final String key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.AVGADD,
+        getClient("").sendCommand(ModuleCommand.AVGADD,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(count), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgAdd(final byte[] key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> avgAdd(final byte[] key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGADD, params.getByteParams(key, toByteArray(count), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGADD, params.getByteParams(key, toByteArray(count), toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2249,22 +2245,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: avg value; Fail: error.
      */
-    public Double avgSet(final String key, final long count, final double value) throws JedisConnectionException,
+    public Response<Double> avgSet(final String key, final long count, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGSET, key, String.valueOf(count), String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGSET, key, String.valueOf(count), String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgSet(final byte[] key, final long count, final double value) throws JedisConnectionException,
+    public Response<Double> avgSet(final byte[] key, final long count, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGSET, key, toByteArray(count), toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGSET, key, toByteArray(count), toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2280,23 +2276,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: avg value; Fail: error.
      */
-    public Double avgSet(final String key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> avgSet(final String key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.AVGSET,
+        getClient("").sendCommand(ModuleCommand.AVGSET,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(count), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgSet(final byte[] key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> avgSet(final byte[] key, final long count, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGSET, params.getByteParams(key, toByteArray(count), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGSET, params.getByteParams(key, toByteArray(count), toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2305,22 +2301,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: avg value; Fail: error.
      */
-    public Double avgGet(final String key) throws JedisConnectionException,
+    public Response<Double> avgGet(final String key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgGet(final byte[] key) throws JedisConnectionException,
+    public Response<Double> avgGet(final byte[] key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2330,24 +2326,25 @@ public class TairCpcCluster {
      * @param offset the offset
      * @param count the count
      * @param value the value
+     * @param size the size
      * @return Success: avg value of offset; Fail: error.
      */
-    public Double avgArrayAdd(final String key, final long offset, final long count, final double value) throws JedisConnectionException,
+    public Response<Double> avgArrayAdd(final String key, final long offset, final long count, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGARRAYADD, key, String.valueOf(offset), String.valueOf(count), String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, key, String.valueOf(offset), String.valueOf(count), String.valueOf(value), String.valueOf(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgArrayAdd(final byte[] key, final long offset, final long count, final double value) throws JedisConnectionException,
+    public Response<Double> avgArrayAdd(final byte[] key, final long offset, final long count, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGARRAYADD, key, toByteArray(offset), toByteArray(count), toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, key, toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2357,6 +2354,7 @@ public class TairCpcCluster {
      * @param offset the offset
      * @param count the count
      * @param value the value
+     * @param size the size
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
      * `EX` - Set expire time (seconds)
      * `EXAT` - Set expire time as a UNIX timestamp (seconds)
@@ -2364,22 +2362,22 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: avg value of offset; Fail: error.
      */
-    public Double avgArrayAdd(final String key, final long offset, final long count, final double value, final CpcUpdateParams params)
+    public Response<Double> avgArrayAdd(final String key, final long offset, final long count, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.AVGARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(count), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgArrayAdd(final byte[] key, final long offset, final long count, final double value, final CpcUpdateParams params)
+    public Response<Double> avgArrayAdd(final byte[] key, final long offset, final long count, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(count), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2389,22 +2387,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: avg value; Fail: error.
      */
-    public Double avgArrayGet(final String key, final long offset) throws JedisConnectionException,
+    public Response<Double> avgArrayGet(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.AVGARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<Double> avgArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGARRAYGET, key, toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGET, key, toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2415,40 +2413,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: avg value list; Fail: error.
      */
-    public List<Double> avgArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> avgArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.AVGARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public List<Double> avgArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> avgArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
-    }
-
-    public Double avgArrayGetRangeTimeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (key == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.AVGARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
-    }
-
-    public Double avgArrayGetRangeTimeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (key == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGARRAYGETTIMEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
     /**
@@ -2457,22 +2437,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of avg value; Fail: error.
      */
-    public Double avgArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> avgArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.AVGARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double avgArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> avgArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.AVGARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     // stddev operation
@@ -2484,22 +2464,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: stddev value; Fail: error.
      */
-    public Double stddevAdd(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> stddevAdd(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVADD, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVADD, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevAdd(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> stddevAdd(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVADD, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVADD, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2514,23 +2494,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: stddev value; Fail: error.
      */
-    public Double stddevAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> stddevAdd(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.STDDEVADD,
+        getClient("").sendCommand(ModuleCommand.STDDEVADD,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> stddevAdd(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVADD, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVADD, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2540,22 +2520,22 @@ public class TairCpcCluster {
      * @param value the value
      * @return Success: stddev value; Fail: error.
      */
-    public Double stddevSet(final String key, final double value) throws JedisConnectionException,
+    public Response<Double> stddevSet(final String key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVSET, key, String.valueOf(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVSET, key, String.valueOf(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevSet(final byte[] key, final double value) throws JedisConnectionException,
+    public Response<Double> stddevSet(final byte[] key, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVSET, key, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVSET, key, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2570,23 +2550,23 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: stddev value; Fail: error.
      */
-    public Double stddevSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> stddevSet(final String key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.STDDEVSET,
+        getClient("").sendCommand(ModuleCommand.STDDEVSET,
                 params.getByteParams(SafeEncoder.encode(key), toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
+    public Response<Double> stddevSet(final byte[] key, final double value, final CpcUpdateParams params) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVSET, params.getByteParams(key, toByteArray(value)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVSET, params.getByteParams(key, toByteArray(value)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2595,22 +2575,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: stddev value; Fail: error.
      */
-    public Double stddevGet(final String key) throws JedisConnectionException,
+    public Response<Double> stddevGet(final String key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevGet(final byte[] key) throws JedisConnectionException,
+    public Response<Double> stddevGet(final byte[] key) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVGET, key);
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVGET, key);
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2622,22 +2602,22 @@ public class TairCpcCluster {
      * @param size the size
      * @return Success: stddev value of offset; Fail: error.
      */
-    public Double stddevArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> stddevArrayAdd(final String key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYADD, key, String.valueOf(offset), String.valueOf(value), String.valueOf(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> stddevArrayAdd(final byte[] key, final long offset, final double value, final long size) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYADD, key, toByteArray(offset), toByteArray(value), toByteArray(size));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2654,22 +2634,22 @@ public class TairCpcCluster {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: stddev value of offset; Fail: error.
      */
-    public Double stddevArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> stddevArrayAdd(final String key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.STDDEVARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> stddevArrayAdd(final byte[] key, final long offset, final double value, final long size, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(value), toByteArray(size)));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2679,22 +2659,22 @@ public class TairCpcCluster {
      * @param offset the offset
      * @return Success: stddev value; Fail: error.
      */
-    public Double stddevArrayGet(final String key, final long offset) throws JedisConnectionException,
+    public Response<Double> stddevArrayGet(final String key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.STDDEVARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGET, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
+    public Response<Double> stddevArrayGet(final byte[] key, final long offset) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVARRAYGET, key, toByteArray(offset));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGET, key, toByteArray(offset));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**
@@ -2705,22 +2685,22 @@ public class TairCpcCluster {
      * @param range the range
      * @return Success: stddev value list; Fail: error.
      */
-    public List<Double> stddevArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> stddevArrayGetRange(final String key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.STDDEVARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public List<Double> stddevArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
+    public Response<List<Double>> stddevArrayGetRange(final byte[] key, final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
-        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
     /**
@@ -2729,21 +2709,21 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of stddev value; Fail: error.
      */
-    public Double stddevArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> stddevArrayGetRangeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.STDDEVARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Double stddevArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+    public Response<Double> stddevArrayGetRangeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.STDDEVARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
-        return BuilderFactory.DOUBLE.build(obj);
+        getClient("").sendCommand(ModuleCommand.STDDEVARRAYGETRANGEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 }

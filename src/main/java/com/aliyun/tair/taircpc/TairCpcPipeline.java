@@ -2326,24 +2326,23 @@ public class TairCpcPipeline extends Pipeline {
      * @param offset the offset
      * @param count the count
      * @param value the value
-     * @param size the size
      * @return Success: avg value of offset; Fail: error.
      */
-    public Response<Double> avgArrayAdd(final String key, final long offset, final long count, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> avgArrayAdd(final String key, final long offset, final long count, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, key, String.valueOf(offset), String.valueOf(count), String.valueOf(value), String.valueOf(size));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, key, String.valueOf(offset), String.valueOf(count), String.valueOf(value));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> avgArrayAdd(final byte[] key, final long offset, final long count, final double value, final long size) throws JedisConnectionException,
+    public Response<Double> avgArrayAdd(final byte[] key, final long offset, final long count, final double value) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, key, toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, key, toByteArray(offset), toByteArray(count), toByteArray(value));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -2354,7 +2353,6 @@ public class TairCpcPipeline extends Pipeline {
      * @param offset the offset
      * @param count the count
      * @param value the value
-     * @param size the size
      * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time]
      * `EX` - Set expire time (seconds)
      * `EXAT` - Set expire time as a UNIX timestamp (seconds)
@@ -2362,21 +2360,21 @@ public class TairCpcPipeline extends Pipeline {
      * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
      * @return Success: avg value of offset; Fail: error.
      */
-    public Response<Double> avgArrayAdd(final String key, final long offset, final long count, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> avgArrayAdd(final String key, final long offset, final long count, final double value, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size)));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, params.getByteParams(SafeEncoder.encode(key), toByteArray(offset), toByteArray(count), toByteArray(value)));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
-    public Response<Double> avgArrayAdd(final byte[] key, final long offset, final long count, final double value, final long size, final CpcUpdateParams params)
+    public Response<Double> avgArrayAdd(final byte[] key, final long offset, final long count, final double value, final CpcUpdateParams params)
             throws JedisConnectionException,IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(count), toByteArray(value), toByteArray(size)));
+        getClient("").sendCommand(ModuleCommand.AVGARRAYADD, params.getByteParams(key, toByteArray(offset), toByteArray(count), toByteArray(value)));
         return getResponse(BuilderFactory.DOUBLE);
     }
 
@@ -2429,6 +2427,25 @@ public class TairCpcPipeline extends Pipeline {
         }
         getClient("").sendCommand(ModuleCommand.AVGARRAYGETRANGE, key, toByteArray(offset), toByteArray(range));
         return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
+    }
+
+
+    public Response<Double> avgArrayGetRangeTimeMerge(final String key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETTIMEMERGE, SafeEncoder.encode(key), toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<Double> avgArrayGetRangeTimeMerge(final byte[] key,  final long offset, final long range) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.AVGARRAYGETTIMEMERGE, key, toByteArray(offset), toByteArray(range));
+        return getResponse(BuilderFactory.DOUBLE);
     }
 
     /**

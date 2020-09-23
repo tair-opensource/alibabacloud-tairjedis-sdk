@@ -12,6 +12,8 @@ public class CpcUpdateParams extends Params {
     private static final String EX = "ex";
     private static final String EXAT = "exat";
     private static final String PXAT = "pxat";
+    private static final String SIZE = "size";
+    private static final String WIN = "win";
 
     public CpcUpdateParams() {}
 
@@ -63,6 +65,16 @@ public class CpcUpdateParams extends Params {
         return this;
     }
 
+    public CpcUpdateParams size(long size) {
+        addParam(SIZE, size);
+        return this;
+    }
+
+    public CpcUpdateParams win(long winsize) {
+        addParam(WIN, winsize);
+        return this;
+    }
+
     private int addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -85,6 +97,9 @@ public class CpcUpdateParams extends Params {
         if (ex + px + exat + pxat > 1) {
             throw new IllegalArgumentException(CommonResult.multiExpireParam);
         }
+
+        addParamWithValue(byteParams, SIZE);
+        addParamWithValue(byteParams, WIN);
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
