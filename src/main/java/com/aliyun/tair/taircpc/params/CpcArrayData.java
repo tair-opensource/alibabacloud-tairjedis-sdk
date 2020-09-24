@@ -4,26 +4,32 @@ import com.aliyun.tair.taircpc.CommonResult;
 
 public class CpcArrayData {
     private String key;
-    private long offset;
+    private long timestamp;
     private String item;
-    private long size;
     private String expStr;
     private long exp;
     private boolean hasSetExp;
+    private String sizeStr;
+    private long size;
+    private String winSizeStr;
+    private long winSize;
 
     private static final String PX = "px";
     private static final String EX = "ex";
     private static final String EXAT = "exat";
     private static final String PXAT = "pxat";
 
-    public CpcArrayData(String key, long offset, String item, long size) {
+    public CpcArrayData(String key, long timestamp, String item) {
         this.key = key;
-        this.offset = offset;
+        this.timestamp = timestamp;
         this.item = item;
-        this.size = size;
         this.expStr = EX;
         this.exp = 0;
         this.hasSetExp = false;
+        this.sizeStr = "size";
+        this.size = 10;
+        this.winSizeStr = "win";
+        this.winSize = 1*60*1000;
     }
 
     public String getKey() {
@@ -34,12 +40,12 @@ public class CpcArrayData {
         this.key = key;
     }
 
-    public long getOffset() {
-        return offset;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public void setOffset(long offset) {
-        this.offset = offset;
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getItem() {
@@ -58,12 +64,36 @@ public class CpcArrayData {
         this.size = size;
     }
 
+    public long getWinSize() {
+        return winSize;
+    }
+
+    public void setWinSize(long winSize) {
+        this.winSize = winSize;
+    }
+
     public String getExpStr() {
         return expStr;
     }
 
     public long getExp() {
         return exp;
+    }
+
+    public String getSizeStr() {
+        return sizeStr;
+    }
+
+    public void setSizeStr(String sizeStr) {
+        this.sizeStr = sizeStr;
+    }
+
+    public String getWinSizeStr() {
+        return winSizeStr;
+    }
+
+    public void setWinSizeStr(String winSizeStr) {
+        this.winSizeStr = winSizeStr;
     }
 
     /**
@@ -107,4 +137,15 @@ public class CpcArrayData {
         this.exp = millisecondsToExpire;
         return this;
     }
+
+    public CpcArrayData size(long size) {
+        this.size = size;
+        return this;
+    }
+
+    public CpcArrayData win(long winSize) {
+        this.winSize = winSize;
+        return this;
+    }
+
 }

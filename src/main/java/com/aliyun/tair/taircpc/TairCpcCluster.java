@@ -1893,31 +1893,31 @@ public class TairCpcCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
-    /**
-     * Get the values of an array first key range.
-     *
-     * @param key   the key
-     * @param starttime the starttime
-     * @param endtime the endtime
-     * @return Success: first value list; Fail: error.
-     */
-    public List<String> firstArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (key == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
-        return BuilderFactory.STRING_LIST.build(obj);
-    }
-
-    public List<String> firstArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (key == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
-        return BuilderFactory.STRING_LIST.build(obj);
-    }
+//    /**
+//     * Get the values of an array first key range.
+//     *
+//     * @param key   the key
+//     * @param starttime the starttime
+//     * @param endtime the endtime
+//     * @return Success: first value list; Fail: error.
+//     */
+//    public List<String> firstArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
+//            IllegalArgumentException, JedisDataException {
+//        if (key == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.FIRSTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+//        return BuilderFactory.STRING_LIST.build(obj);
+//    }
+//
+//    public List<String> firstArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
+//            IllegalArgumentException, JedisDataException {
+//        if (key == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        Object obj = jc.sendCommand(key, ModuleCommand.FIRSTARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
+//        return BuilderFactory.STRING_LIST.build(obj);
+//    }
 
     public String firstArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
@@ -2187,31 +2187,31 @@ public class TairCpcCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
-    /**
-     * Get the values of an array last key range.
-     *
-     * @param key   the key
-     * @param starttime the starttime
-     * @param endtime the endtime
-     * @return Success: last value list; Fail: error.
-     */
-    public List<String> lastArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (key == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
-        return BuilderFactory.STRING_LIST.build(obj);
-    }
-
-    public List<String> lastArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (key == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
-        return BuilderFactory.STRING_LIST.build(obj);
-    }
+//    /**
+//     * Get the values of an array last key range.
+//     *
+//     * @param key   the key
+//     * @param starttime the starttime
+//     * @param endtime the endtime
+//     * @return Success: last value list; Fail: error.
+//     */
+//    public List<String> lastArrayGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
+//            IllegalArgumentException, JedisDataException {
+//        if (key == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.LASTARRAYGETRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+//        return BuilderFactory.STRING_LIST.build(obj);
+//    }
+//
+//    public List<String> lastArrayGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
+//            IllegalArgumentException, JedisDataException {
+//        if (key == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        Object obj = jc.sendCommand(key, ModuleCommand.LASTARRAYGETRANGE, key, toByteArray(starttime), toByteArray(endtime));
+//        return BuilderFactory.STRING_LIST.build(obj);
+//    }
 
     public String lastArrayGetRangeTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {

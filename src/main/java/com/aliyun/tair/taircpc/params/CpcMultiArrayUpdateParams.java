@@ -19,11 +19,14 @@ public class CpcMultiArrayUpdateParams extends Params {
 
         for (CpcArrayData key:keys) {
             byteParams.add(SafeEncoder.encode(key.getKey()));
-            byteParams.add(toByteArray(key.getOffset()));
+            byteParams.add(toByteArray(key.getTimestamp()));
             byteParams.add(SafeEncoder.encode(key.getItem()));
-            byteParams.add(toByteArray(key.getSize()));
             byteParams.add(SafeEncoder.encode(key.getExpStr()));
             byteParams.add(toByteArray(key.getExp()));
+            byteParams.add(SafeEncoder.encode(key.getSizeStr()));
+            byteParams.add(toByteArray(key.getSize()));
+            byteParams.add(SafeEncoder.encode(key.getWinSizeStr()));
+            byteParams.add(toByteArray(key.getWinSize()));
         }
 
         return byteParams.toArray(new byte[byteParams.size()][]);

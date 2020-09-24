@@ -343,221 +343,219 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
 //        Assert.assertEquals(1.0, addRet.get(key).getDiffValue(), 0.1);
 //    }
 
-    @Test
-    public void cpcArrayUpdateTest() throws Exception {
-
-        String addRet = tairCpcClusterNew.cpcArrayUpdate(key, 1, item, 5);
-        Assert.assertEquals("OK", addRet);
-        addRet = tairCpcClusterNew.cpcArrayUpdate(key, 1, item2, 5);
-        Assert.assertEquals("OK", addRet);
-        addRet = tairCpcClusterNew.cpcArrayUpdate(key, 3, item, 5);
-        Assert.assertEquals("OK", addRet);
-        addRet = tairCpcClusterNew.cpcArrayUpdate(key, 5, item, 5);
-        Assert.assertEquals("OK", addRet);
-
-        Double estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 1);
-        assertEquals(2.00, estimateRet, 0.001);
-        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 3);
-        assertEquals(1.00, estimateRet, 0.001);
-        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 5);
-        assertEquals(1.00, estimateRet, 0.001);
-    }
-
-    @Test
-    public void cpcArrayUpdate2EstTest() throws Exception {
-
-        Double addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 1, item, 5);
-        assertEquals(1.00, addRet, 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 1, item2, 5);
-        assertEquals(2.00, addRet, 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 3, item, 5);
-        assertEquals(1.00, addRet, 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 5, item, 5);
-        assertEquals(1.00, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 7, item2, 5);
-        assertEquals(1.00, addRet, 0.001);
-
-        Double estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 7);
-        assertEquals(1.00, estimateRet, 0.001);
-        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 3);
-        assertEquals(1.00, estimateRet, 0.001);
-        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 5);
-        assertEquals(1.00, estimateRet, 0.001);
-    }
-
-    @Test
-    public void cpcArrayUpdate2JudTest() throws Exception {
-
-        Update2JudResult addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
-        assertEquals(1.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-        Update2JudResult addRet2 = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
-        assertEquals(1.00, addRet2.getValue(), 0.001);
-        assertEquals(0.00, addRet2.getDiffValue(), 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item2, 5);
-        assertEquals(2.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 3, item, 5);
-        assertEquals(1.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 5, item, 5);
-        assertEquals(1.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 7, item2, 5);
-        assertEquals(1.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-
-        Double estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 7);
-        assertEquals(1.00, estimateRet, 0.001);
-        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 3);
-        assertEquals(1.00, estimateRet, 0.001);
-        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 5);
-        assertEquals(1.00, estimateRet, 0.001);
-    }
-
 //    @Test
-//    public void cpcArrayMUpdate2JudWithKeyTest() throws Exception {
+//    public void cpcArrayUpdateTest() throws Exception {
 //
-//        ArrayList<CpcArrayData> addList = new ArrayList<CpcArrayData>();
-//        CpcArrayData add1 = new CpcArrayData(key, 1, item, 5);
-//        CpcArrayData add2 = new CpcArrayData(key, 1, item, 5);
-//        CpcArrayData add3 = new CpcArrayData(key,1, item2, 5);
-//        addList.add(add1);
-//        addList.add(add2);
-//        addList.add(add3);
+//        String addRet = tairCpcClusterNew.cpcArrayUpdate(key, 1, item, 5);
+//        Assert.assertEquals("OK", addRet);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate(key, 1, item2, 5);
+//        Assert.assertEquals("OK", addRet);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate(key, 3, item, 5);
+//        Assert.assertEquals("OK", addRet);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate(key, 5, item, 5);
+//        Assert.assertEquals("OK", addRet);
 //
-//        HashMap<String, Update2JudResult> addRet = tairCpcClusterNew.cpcArrayMUpdate2JudWithKey(addList);
-//
-//        Assert.assertEquals(2.0, addRet.get(key).getValue(), 0.1);
-//        Assert.assertEquals(2.0, addRet.get(key).getDiffValue(), 0.1);
+//        Double estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 1);
+//        assertEquals(2.00, estimateRet, 0.001);
+//        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 3);
+//        assertEquals(1.00, estimateRet, 0.001);
+//        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 5);
+//        assertEquals(1.00, estimateRet, 0.001);
 //    }
-
-    @Test
-    public void cpcArrayEstimateRangeTest() throws Exception {
-
-        Update2JudResult addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
-        assertEquals(1.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-        Update2JudResult addRet2 = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
-        assertEquals(1.00, addRet2.getValue(), 0.001);
-        assertEquals(0.00, addRet2.getDiffValue(), 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item2, 5);
-        assertEquals(2.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 3, item, 5);
-        assertEquals(1.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 5, item, 5);
-        assertEquals(1.00, addRet.getValue(), 0.001);
-        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-
-//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 6, item2, 5);
+//
+//    @Test
+//    public void cpcArrayUpdate2EstTest() throws Exception {
+//
+//        Double addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 1, item, 5);
+//        assertEquals(1.00, addRet, 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 1, item2, 5);
+//        assertEquals(2.00, addRet, 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 3, item, 5);
+//        assertEquals(1.00, addRet, 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 5, item, 5);
+//        assertEquals(1.00, addRet, 0.001);
+//
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Est(key, 7, item2, 5);
+//        assertEquals(1.00, addRet, 0.001);
+//
+//        Double estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 7);
+//        assertEquals(1.00, estimateRet, 0.001);
+//        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 3);
+//        assertEquals(1.00, estimateRet, 0.001);
+//        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 5);
+//        assertEquals(1.00, estimateRet, 0.001);
+//    }
+//
+//    @Test
+//    public void cpcArrayUpdate2JudTest() throws Exception {
+//
+//        Update2JudResult addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
 //        assertEquals(1.00, addRet.getValue(), 0.001);
 //        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        Update2JudResult addRet2 = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
+//        assertEquals(1.00, addRet2.getValue(), 0.001);
+//        assertEquals(0.00, addRet2.getDiffValue(), 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item2, 5);
+//        assertEquals(2.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 3, item, 5);
+//        assertEquals(1.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 5, item, 5);
+//        assertEquals(1.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 7, item2, 5);
+//        assertEquals(1.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//
+//        Double estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 7);
+//        assertEquals(1.00, estimateRet, 0.001);
+//        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 3);
+//        assertEquals(1.00, estimateRet, 0.001);
+//        estimateRet = tairCpcClusterNew.cpcArrayEstimate(key, 5);
+//        assertEquals(1.00, estimateRet, 0.001);
+//    }
+//
+////    @Test
+////    public void cpcArrayMUpdate2JudWithKeyTest() throws Exception {
+////
+////        ArrayList<CpcArrayData> addList = new ArrayList<CpcArrayData>();
+////        CpcArrayData add1 = new CpcArrayData(key, 1, item, 5);
+////        CpcArrayData add2 = new CpcArrayData(key, 1, item, 5);
+////        CpcArrayData add3 = new CpcArrayData(key,1, item2, 5);
+////        addList.add(add1);
+////        addList.add(add2);
+////        addList.add(add3);
+////
+////        HashMap<String, Update2JudResult> addRet = tairCpcClusterNew.cpcArrayMUpdate2JudWithKey(addList);
+////
+////        Assert.assertEquals(2.0, addRet.get(key).getValue(), 0.1);
+////        Assert.assertEquals(2.0, addRet.get(key).getDiffValue(), 0.1);
+////    }
+//
+//    @Test
+//    public void cpcArrayEstimateRangeTest() throws Exception {
+//
+//        Update2JudResult addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
+//        assertEquals(1.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        Update2JudResult addRet2 = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item, 5);
+//        assertEquals(1.00, addRet2.getValue(), 0.001);
+//        assertEquals(0.00, addRet2.getDiffValue(), 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 1, item2, 5);
+//        assertEquals(2.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 3, item, 5);
+//        assertEquals(1.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 5, item, 5);
+//        assertEquals(1.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//
+////        addRet = tairCpcClusterNew.cpcArrayUpdate2Jud(key, 6, item2, 5);
+////        assertEquals(1.00, addRet.getValue(), 0.001);
+////        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//
+//        List<Double> estimateRet = tairCpcClusterNew.cpcArrayEstimateRange(key, 5, 5);
+////        System.out.println(estimateRet.toString());
+//        assertEquals(2.00, estimateRet.get(0), 0.001);
+//        assertEquals(0.00, estimateRet.get(1), 0.001);
+//        assertEquals(1.00, estimateRet.get(2), 0.001);
+//        assertEquals(0.00, estimateRet.get(3), 0.001);
+//        assertEquals(1.00, estimateRet.get(4), 0.001);
+//    }
+//
+@Test
+public void sumTest() throws Exception {
 
-        List<Double> estimateRet = tairCpcClusterNew.cpcArrayEstimateRange(key, 5, 5);
-//        System.out.println(estimateRet.toString());
-        assertEquals(2.00, estimateRet.get(0), 0.001);
-        assertEquals(0.00, estimateRet.get(1), 0.001);
-        assertEquals(1.00, estimateRet.get(2), 0.001);
-        assertEquals(0.00, estimateRet.get(3), 0.001);
-        assertEquals(1.00, estimateRet.get(4), 0.001);
-    }
+    Double addRet = tairCpcClusterNew.sumAdd(key, 100);
+    assertEquals(100.00, addRet, 0.001);
 
-    @Test
-    public void sumTest() throws Exception {
+    addRet = tairCpcClusterNew.sumAdd(key, 150);
+    assertEquals(250.00, addRet, 0.001);
 
-        Double addRet = tairCpcClusterNew.sumAdd(key, 100);
-        assertEquals(100.00, addRet, 0.001);
+    Double getRet = tairCpcClusterNew.sumGet(key);
+    assertEquals(250.00, getRet, 0.001);
 
-        addRet = tairCpcClusterNew.sumAdd(key, 150);
-        assertEquals(250.00, addRet, 0.001);
+    CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+    cpcUpdateParams2.ex(2);
 
-        Double getRet = tairCpcClusterNew.sumGet(key);
-        assertEquals(250.00, getRet, 0.001);
+    addRet = tairCpcClusterNew.sumAdd(key2, 100, cpcUpdateParams2);
+    assertEquals(100.00, addRet, 0.001);
 
-        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
-        cpcUpdateParams2.ex(2);
+    addRet = tairCpcClusterNew.sumAdd(key2, 150, cpcUpdateParams2);
+    assertEquals(250.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.sumAdd(key2, 100, cpcUpdateParams2);
-        assertEquals(100.00, addRet, 0.001);
+    Thread.sleep(3000);
 
-        addRet = tairCpcClusterNew.sumAdd(key2, 150, cpcUpdateParams2);
-        assertEquals(250.00, addRet, 0.001);
+    getRet = tairCpcClusterNew.sumGet(key2);
+    assertEquals(0.00, getRet, 0.001);
 
-        Thread.sleep(3000);
+    CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+    cpcUpdateParams3.px(2000);
 
-        getRet = tairCpcClusterNew.sumGet(key2);
-        assertEquals(0.00, getRet, 0.001);
+    addRet = tairCpcClusterNew.sumAdd(key3, 100, cpcUpdateParams3);
+    assertEquals(100.00, addRet, 0.001);
 
-        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
+    addRet = tairCpcClusterNew.sumAdd(key3, 150, cpcUpdateParams3);
+    assertEquals(250.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.sumAdd(key3, 100, cpcUpdateParams3);
-        assertEquals(100.00, addRet, 0.001);
+    Thread.sleep(3000);
 
-        addRet = tairCpcClusterNew.sumAdd(key3, 150, cpcUpdateParams3);
-        assertEquals(250.00, addRet, 0.001);
+    getRet = tairCpcClusterNew.sumGet(key3);
+    assertEquals(0.00, getRet, 0.001);
 
-        Thread.sleep(3000);
-
-        getRet = tairCpcClusterNew.sumGet(key3);
-        assertEquals(0.00, getRet, 0.001);
-
-        Double setRet = tairCpcClusterNew.sumSet(key, 100);
-        assertEquals(100.00, setRet, 0.001);
-    }
+    Double setRet = tairCpcClusterNew.sumSet(key, 100);
+    assertEquals(100.00, setRet, 0.001);
+}
 
     @Test
     public void sumArrayTest() throws Exception {
 
-        Double addRet = tairCpcClusterNew.sumArrayAdd(key, 1, 100, 7);
+        Double addRet = tairCpcClusterNew.sumArrayAdd(key, timestamp, 100);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.sumArrayAdd(key, 1, 150, 7);
-        assertEquals(250.00, addRet, 0.001);
+        addRet = tairCpcClusterNew.sumArrayAdd(key, timestamp, 300);
+        assertEquals(400.00, addRet, 0.001);
 
-        Double getRet = tairCpcClusterNew.sumArrayGet(key, 1);
-        assertEquals(250.00, getRet, 0.001);
+        Double getRet = tairCpcClusterNew.sumArrayGet(key, timestamp);
+        assertEquals(400.00, getRet, 0.001);
 
         CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
         cpcUpdateParams2.ex(2);
+        cpcUpdateParams2.size(7);
+        cpcUpdateParams2.win(winsize);
 
-        addRet = tairCpcClusterNew.sumArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.sumArrayAdd(key2, timestamp, 100, cpcUpdateParams2);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.sumArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
-        assertEquals(250.00, addRet, 0.001);
+        addRet = tairCpcClusterNew.sumArrayAdd(key2, timestamp, 300, cpcUpdateParams2);
+        assertEquals(400.00, addRet, 0.001);
 
         Thread.sleep(3000);
 
-        getRet = tairCpcClusterNew.sumArrayGet(key2, 1);
+        getRet = tairCpcClusterNew.sumArrayGet(key2, timestamp);
         assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
 
         CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
+        cpcUpdateParams3.size(7);
+        cpcUpdateParams3.win(winsize);
 
-        addRet = tairCpcClusterNew.sumArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
+        addRet = tairCpcClusterNew.sumArrayAdd(key3, timestamp, 100, cpcUpdateParams3);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.sumArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
-        assertEquals(250.00, addRet, 0.001);
+        addRet = tairCpcClusterNew.sumArrayAdd(key3, timestamp, 300, cpcUpdateParams3);
+        assertEquals(400.00, addRet, 0.001);
 
-        Thread.sleep(3000);
+        addRet = tairCpcClusterNew.sumArrayAdd(key3, timestamp-winsize, 300, cpcUpdateParams3);
+        assertEquals(300.00, addRet, 0.001);
 
-        getRet = tairCpcClusterNew.sumArrayGet(key3, 2);
-        assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
+        getRet = tairCpcClusterNew.sumArrayGetRangeTimeMerge(key3, timestamp-winsize, timestamp);
+        assertEquals(700.00, getRet, 0.001);
 
-        List<Double> rangeRet = tairCpcClusterNew.sumArrayGetRange(key, 7, 7);
-        assertEquals(7, rangeRet.size());
-        assertEquals(250.00, rangeRet.get(0), 0.001);
-
-        Double mergeRet = tairCpcClusterNew.sumArrayGetRangeMerge(key, 7, 7);
-        assertEquals(250.00, mergeRet, 0.001);
+        getRet = tairCpcClusterNew.sumArrayGetRangeMerge(key3, timestamp, 2);
+        assertEquals(700.00, getRet, 0.001);
     }
 
     @Test
@@ -607,51 +605,49 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
     @Test
     public void maxArrayTest() throws Exception {
 
-        Double addRet = tairCpcClusterNew.maxArrayAdd(key, 1, 100, 7);
+        Double addRet = tairCpcClusterNew.maxArrayAdd(key, timestamp, 100);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.maxArrayAdd(key, 1, 150, 7);
-        assertEquals(150.00, addRet, 0.001);
+        addRet = tairCpcClusterNew.maxArrayAdd(key, timestamp, 300);
+        assertEquals(300.00, addRet, 0.001);
 
-        Double getRet = tairCpcClusterNew.maxArrayGet(key, 1);
-        assertEquals(150.00, getRet, 0.001);
+        Double getRet = tairCpcClusterNew.maxArrayGet(key, timestamp);
+        assertEquals(300.00, getRet, 0.001);
 
         CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
         cpcUpdateParams2.ex(2);
+        cpcUpdateParams2.size(7);
+        cpcUpdateParams2.win(winsize);
 
-        addRet = tairCpcClusterNew.maxArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.maxArrayAdd(key2, timestamp, 100, cpcUpdateParams2);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.maxArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
-        assertEquals(150.00, addRet, 0.001);
+        addRet = tairCpcClusterNew.maxArrayAdd(key2, timestamp, 300, cpcUpdateParams2);
+        assertEquals(300.00, addRet, 0.001);
 
         Thread.sleep(3000);
 
-        getRet = tairCpcClusterNew.maxArrayGet(key2, 1);
+        getRet = tairCpcClusterNew.maxArrayGet(key2, timestamp);
         assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
 
         CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
+        cpcUpdateParams3.size(7);
+        cpcUpdateParams3.win(winsize);
 
-        addRet = tairCpcClusterNew.maxArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
+        addRet = tairCpcClusterNew.maxArrayAdd(key3, timestamp, 100, cpcUpdateParams3);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.maxArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
-        assertEquals(150.00, addRet, 0.001);
+        addRet = tairCpcClusterNew.maxArrayAdd(key3, timestamp, 300, cpcUpdateParams3);
+        assertEquals(300.00, addRet, 0.001);
 
-        Thread.sleep(3000);
+        addRet = tairCpcClusterNew.maxArrayAdd(key3, timestamp-winsize, 300, cpcUpdateParams3);
+        assertEquals(300.00, addRet, 0.001);
 
-        getRet = tairCpcClusterNew.maxArrayGet(key3, 2);
-        assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
+        getRet = tairCpcClusterNew.maxArrayGetRangeTimeMerge(key3, timestamp-winsize, timestamp);
+        assertEquals(300.00, getRet, 0.001);
 
-        List<Double> rangeRet = tairCpcClusterNew.maxArrayGetRange(key, 7, 7);
-        assertEquals(7, rangeRet.size());
-        assertEquals(150.00, rangeRet.get(0), 0.001);
-
-        Double mergeRet = tairCpcClusterNew.maxArrayGetRangeMerge(key, 7, 7);
-        assertEquals(150.00, mergeRet, 0.001);
+        getRet = tairCpcClusterNew.maxArrayGetRangeMerge(key3, timestamp, 2);
+        assertEquals(300.00, getRet, 0.001);
     }
 
     @Test
@@ -701,51 +697,49 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
     @Test
     public void minArrayTest() throws Exception {
 
-        Double addRet = tairCpcClusterNew.minArrayAdd(key, 1, 100, 7);
+        Double addRet = tairCpcClusterNew.minArrayAdd(key, timestamp, 100);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.minArrayAdd(key, 1, 150, 7);
+        addRet = tairCpcClusterNew.minArrayAdd(key, timestamp, 300);
         assertEquals(100.00, addRet, 0.001);
 
-        Double getRet = tairCpcClusterNew.minArrayGet(key, 1);
+        Double getRet = tairCpcClusterNew.minArrayGet(key, timestamp);
         assertEquals(100.00, getRet, 0.001);
 
         CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
         cpcUpdateParams2.ex(2);
+        cpcUpdateParams2.size(7);
+        cpcUpdateParams2.win(winsize);
 
-        addRet = tairCpcClusterNew.minArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.minArrayAdd(key2, timestamp, 100, cpcUpdateParams2);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.minArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.minArrayAdd(key2, timestamp, 300, cpcUpdateParams2);
         assertEquals(100.00, addRet, 0.001);
 
         Thread.sleep(3000);
 
-        getRet = tairCpcClusterNew.minArrayGet(key2, 1);
+        getRet = tairCpcClusterNew.minArrayGet(key2, timestamp);
         assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
 
         CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
+        cpcUpdateParams3.size(7);
+        cpcUpdateParams3.win(winsize);
 
-        addRet = tairCpcClusterNew.minArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
+        addRet = tairCpcClusterNew.minArrayAdd(key3, timestamp, 100, cpcUpdateParams3);
         assertEquals(100.00, addRet, 0.001);
 
-        addRet = tairCpcClusterNew.minArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
+        addRet = tairCpcClusterNew.minArrayAdd(key3, timestamp, 300, cpcUpdateParams3);
         assertEquals(100.00, addRet, 0.001);
 
-        Thread.sleep(3000);
+        addRet = tairCpcClusterNew.minArrayAdd(key3, timestamp-winsize, 300, cpcUpdateParams3);
+        assertEquals(300.00, addRet, 0.001);
 
-        getRet = tairCpcClusterNew.minArrayGet(key3, 2);
-        assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
+        getRet = tairCpcClusterNew.minArrayGetRangeTimeMerge(key3, timestamp-winsize, timestamp);
+        assertEquals(100.00, getRet, 0.001);
 
-        List<Double> rangeRet = tairCpcClusterNew.minArrayGetRange(key, 7, 7);
-        assertEquals(7, rangeRet.size());
-        assertEquals(100.00, rangeRet.get(0), 0.001);
-
-        Double mergeRet = tairCpcClusterNew.minArrayGetRangeMerge(key, 7, 7);
-        assertEquals(100.00, mergeRet, 0.001);
+        getRet = tairCpcClusterNew.minArrayGetRangeMerge(key3, timestamp, 2);
+        assertEquals(100.00, getRet, 0.001);
     }
 
     @Test
@@ -795,22 +789,22 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
     @Test
     public void firstArrayTest() throws Exception {
 
-        String addRet = tairCpcClusterNew.firstArrayAdd(key, 1, content1, 100, 7);
+        String addRet = tairCpcClusterNew.firstArrayAdd(key, timestamp, content1, 100);
         Assert.assertEquals(content1, addRet);
 
-        addRet = tairCpcClusterNew.firstArrayAdd(key, 1, content2, 150, 7);
+        addRet = tairCpcClusterNew.firstArrayAdd(key, timestamp, content2, 150);
         Assert.assertEquals(content1, addRet);
 
-        String getRet = tairCpcClusterNew.firstArrayGet(key, 1);
+        String getRet = tairCpcClusterNew.firstArrayGet(key, timestamp);
         Assert.assertEquals(content1, getRet);
 
         CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
         cpcUpdateParams2.ex(2);
 
-        addRet = tairCpcClusterNew.firstArrayAdd(key2, 1, content1, 100, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.firstArrayAdd(key2, timestamp, content1, 100, cpcUpdateParams2);
         Assert.assertEquals(content1, addRet);
 
-        addRet = tairCpcClusterNew.firstArrayAdd(key2, 1, content2, 150, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.firstArrayAdd(key2, timestamp, content2, 150, cpcUpdateParams2);
         Assert.assertEquals(content1, addRet);
 
         Thread.sleep(3000);
@@ -819,25 +813,23 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
         Assert.assertNull(getRet);
 
         CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
+        cpcUpdateParams3.size(7);
+        cpcUpdateParams3.win(winsize);
 
-        addRet = tairCpcClusterNew.firstArrayAdd(key3, 2, content1, 100, 7, cpcUpdateParams3);
+        addRet = tairCpcClusterNew.firstArrayAdd(key3, timestamp, content1, 100, cpcUpdateParams3);
         Assert.assertEquals(content1, addRet);
 
-        addRet = tairCpcClusterNew.firstArrayAdd(key3, 2, content2, 150, 7, cpcUpdateParams3);
+        addRet = tairCpcClusterNew.firstArrayAdd(key3, timestamp, content1, 300, cpcUpdateParams3);
         Assert.assertEquals(content1, addRet);
 
-        Thread.sleep(3000);
+        addRet = tairCpcClusterNew.firstArrayAdd(key3, timestamp-winsize, content1, 300, cpcUpdateParams3);
+        Assert.assertEquals(content1, addRet);
 
-        getRet = tairCpcClusterNew.firstArrayGet(key3, 2);
-        Assert.assertNull(getRet);
+        getRet = tairCpcClusterNew.firstArrayGetRangeTimeMerge(key3, timestamp-winsize, timestamp);
+        Assert.assertEquals(content1, addRet);
 
-        List<String> rangeRet = tairCpcClusterNew.firstArrayGetRange(key, 7, 7);
-        assertEquals(7, rangeRet.size());
-        Assert.assertEquals(content1, rangeRet.get(0));
-
-//        String mergeRet = tairCpcClusterNew.firstArrayGetRangeMerge(key, 7, 7);
-//        Assert.assertEquals(content1, mergeRet);
+        getRet = tairCpcClusterNew.firstArrayGetRangeMerge(key3, timestamp, 2);
+        Assert.assertEquals(content1, addRet);
     }
 
     @Test
@@ -887,22 +879,22 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
     @Test
     public void lastArrayTest() throws Exception {
 
-        String addRet = tairCpcClusterNew.lastArrayAdd(key, 1, content1, 100, 7);
+        String addRet = tairCpcClusterNew.lastArrayAdd(key, timestamp, content1, 100);
         Assert.assertEquals(content1, addRet);
 
-        addRet = tairCpcClusterNew.lastArrayAdd(key, 1, content2, 150, 7);
+        addRet = tairCpcClusterNew.lastArrayAdd(key, timestamp, content2, 150);
         Assert.assertEquals(content2, addRet);
 
-        String getRet = tairCpcClusterNew.lastArrayGet(key, 1);
+        String getRet = tairCpcClusterNew.lastArrayGet(key, timestamp);
         Assert.assertEquals(content2, getRet);
 
         CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
         cpcUpdateParams2.ex(2);
 
-        addRet = tairCpcClusterNew.lastArrayAdd(key2, 1, content1, 100, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.lastArrayAdd(key2, timestamp, content1, 100, cpcUpdateParams2);
         Assert.assertEquals(content1, addRet);
 
-        addRet = tairCpcClusterNew.lastArrayAdd(key2, 1, content2, 150, 7, cpcUpdateParams2);
+        addRet = tairCpcClusterNew.lastArrayAdd(key2, timestamp, content2, 150, cpcUpdateParams2);
         Assert.assertEquals(content2, addRet);
 
         Thread.sleep(3000);
@@ -911,25 +903,23 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
         Assert.assertNull(getRet);
 
         CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
+        cpcUpdateParams3.size(7);
+        cpcUpdateParams3.win(winsize);
 
-        addRet = tairCpcClusterNew.lastArrayAdd(key3, 2, content1, 100, 7, cpcUpdateParams3);
+        addRet = tairCpcClusterNew.lastArrayAdd(key3, timestamp, content1, 100, cpcUpdateParams3);
         Assert.assertEquals(content1, addRet);
 
-        addRet = tairCpcClusterNew.lastArrayAdd(key3, 2, content2, 150, 7, cpcUpdateParams3);
-        Assert.assertEquals(content2, addRet);
+        addRet = tairCpcClusterNew.lastArrayAdd(key3, timestamp, content1, 300, cpcUpdateParams3);
+        Assert.assertEquals(content1, addRet);
 
-        Thread.sleep(3000);
+        addRet = tairCpcClusterNew.lastArrayAdd(key3, timestamp-winsize, content1, 300, cpcUpdateParams3);
+        Assert.assertEquals(content1, addRet);
 
-        getRet = tairCpcClusterNew.lastArrayGet(key3, 2);
-        Assert.assertNull(getRet);
+        getRet = tairCpcClusterNew.lastArrayGetRangeTimeMerge(key3, timestamp-winsize, timestamp);
+        Assert.assertEquals(content1, addRet);
 
-        List<String> rangeRet = tairCpcClusterNew.lastArrayGetRange(key, 7, 7);
-        assertEquals(7, rangeRet.size());
-        Assert.assertEquals(content2, rangeRet.get(0));
-
-        String mergeRet = tairCpcClusterNew.lastArrayGetRangeMerge(key, 7, 7);
-        Assert.assertEquals(content2, mergeRet);
+        getRet = tairCpcClusterNew.lastArrayGetRangeMerge(key3, timestamp, 2);
+        Assert.assertEquals(content1, addRet);
     }
 
     @Test
@@ -948,10 +938,10 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
         cpcUpdateParams2.ex(2);
 
         addRet = tairCpcClusterNew.avgAdd(key2, count1, 100, cpcUpdateParams2);
-        assertEquals(100, addRet, 0.001);
+        assertEquals(150, addRet, 0.001);
 
         addRet = tairCpcClusterNew.avgAdd(key2, count2, 150, cpcUpdateParams2);
-        assertEquals(137.5, addRet, 0.001);
+        assertEquals(112.5, addRet, 0.001);
 
         Thread.sleep(3000);
 
@@ -962,10 +952,10 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
         cpcUpdateParams3.px(2000);
 
         addRet = tairCpcClusterNew.avgAdd(key3, count1, 100, cpcUpdateParams3);
-        assertEquals(100, addRet, 0.001);
+        assertEquals(150, addRet, 0.001);
 
         addRet = tairCpcClusterNew.avgAdd(key3, count2, 150, cpcUpdateParams3);
-        assertEquals(137.5, addRet, 0.001);
+        assertEquals(112.5, addRet, 0.001);
 
         Thread.sleep(3000);
 
@@ -986,10 +976,10 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
         assertEquals(112.5, getRet, 0.001);
 
         addRet = tairCpcClusterNew.avgAdd(bkey2, count1, 100, cpcUpdateParams2);
-        assertEquals(100, addRet, 0.001);
+        assertEquals(150, addRet, 0.001);
 
         addRet = tairCpcClusterNew.avgAdd(bkey2, count2, 150, cpcUpdateParams2);
-        assertEquals(137.5, addRet, 0.001);
+        assertEquals(112.5, addRet, 0.001);
     }
 
     @Test
@@ -1038,6 +1028,7 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
 
         getRet = tairCpcClusterNew.avgArrayGetRangeMerge(key3, timestamp, 2);
         assertEquals(250.00, getRet, 0.001);
+
     }
 
     @Test
@@ -1084,53 +1075,53 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
 //        assertEquals(0.00, setRet, 0.001);
     }
 
-    @Test
-    public void stddevArrayTest() throws Exception {
-
-        Double addRet = tairCpcClusterNew.stddevArrayAdd(key, 1,100, 7);
-        assertEquals(0.00, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.stddevArrayAdd(key, 1,150, 7);
-        assertEquals(25.00, addRet, 0.001);
-
-        Double getRet = tairCpcClusterNew.stddevArrayGet(key, 1);
-        assertEquals(25.00, getRet, 0.001);
-
-        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
-        cpcUpdateParams2.ex(2);
-
-        addRet = tairCpcClusterNew.stddevArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
-        assertEquals(0.00, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.stddevArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
-        assertEquals(25.00, addRet, 0.001);
-
-        Thread.sleep(3000);
-
-        getRet = tairCpcClusterNew.stddevArrayGet(key2, 1);
-        assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
-
-        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
-
-        addRet = tairCpcClusterNew.stddevArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
-        assertEquals(0.00, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.stddevArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
-        assertEquals(25.00, addRet, 0.001);
-
-        Thread.sleep(3000);
-
-        getRet = tairCpcClusterNew.stddevArrayGet(key3, 2);
-        assertNull(getRet);
-//        assertEquals(0.00, getRet, 0.001);
-
-        List<Double> rangeRet = tairCpcClusterNew.stddevArrayGetRange(key, 7, 7);
-        assertEquals(7, rangeRet.size());
-        assertEquals(25.00, rangeRet.get(0), 0.001);
-
-        Double mergeRet = tairCpcClusterNew.stddevArrayGetRangeMerge(key, 7, 7);
-        assertEquals(25.00, mergeRet, 0.001);
-    }
+//    @Test
+//    public void stddevArrayTest() throws Exception {
+//
+//        Double addRet = tairCpcClusterNew.stddevArrayAdd(key, 1,100, 7);
+//        assertEquals(0.00, addRet, 0.001);
+//
+//        addRet = tairCpcClusterNew.stddevArrayAdd(key, 1,150, 7);
+//        assertEquals(25.00, addRet, 0.001);
+//
+//        Double getRet = tairCpcClusterNew.stddevArrayGet(key, 1);
+//        assertEquals(25.00, getRet, 0.001);
+//
+//        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
+//        cpcUpdateParams2.ex(2);
+//
+//        addRet = tairCpcClusterNew.stddevArrayAdd(key2, 1, 100, 7, cpcUpdateParams2);
+//        assertEquals(0.00, addRet, 0.001);
+//
+//        addRet = tairCpcClusterNew.stddevArrayAdd(key2, 1, 150, 7, cpcUpdateParams2);
+//        assertEquals(25.00, addRet, 0.001);
+//
+//        Thread.sleep(3000);
+//
+//        getRet = tairCpcClusterNew.stddevArrayGet(key2, 1);
+//        assertNull(getRet);
+////        assertEquals(0.00, getRet, 0.001);
+//
+//        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
+//        cpcUpdateParams3.px(2000);
+//
+//        addRet = tairCpcClusterNew.stddevArrayAdd(key3, 2, 100, 7, cpcUpdateParams3);
+//        assertEquals(0.00, addRet, 0.001);
+//
+//        addRet = tairCpcClusterNew.stddevArrayAdd(key3, 2, 150, 7, cpcUpdateParams3);
+//        assertEquals(25.00, addRet, 0.001);
+//
+//        Thread.sleep(3000);
+//
+//        getRet = tairCpcClusterNew.stddevArrayGet(key3, 2);
+//        assertNull(getRet);
+////        assertEquals(0.00, getRet, 0.001);
+//
+//        List<Double> rangeRet = tairCpcClusterNew.stddevArrayGetRange(key, 7, 7);
+//        assertEquals(7, rangeRet.size());
+//        assertEquals(25.00, rangeRet.get(0), 0.001);
+//
+//        Double mergeRet = tairCpcClusterNew.stddevArrayGetRangeMerge(key, 7, 7);
+//        assertEquals(25.00, mergeRet, 0.001);
+//    }
 }
