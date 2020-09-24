@@ -314,54 +314,37 @@ public class TairCpcTestNew extends TairCpcTestBase {
 //        assertEquals(1.00, estimateRet, 0.001);
 //    }
 
-    @Test
-    public void cpcArrayMUpdate2JudWithKeyTest() throws Exception {
-
-        ArrayList<CpcArrayData> addList = new ArrayList<CpcArrayData>();
-        CpcArrayData add1 = new CpcArrayData(key, timestamp, item);
-        CpcArrayData add2 = new CpcArrayData(key, timestamp, item);
-        CpcArrayData add3 = new CpcArrayData(key,timestamp, item2);
-        addList.add(add1);
-        addList.add(add2);
-        addList.add(add3);
-
-        String addRet = tairCpcNew.cpcArrayMUpdate(addList);
-
-//        Assert.assertEquals(2.0, addRet.get(key).getValue(), 0.1);
-//        Assert.assertEquals(2.0, addRet.get(key).getDiffValue(), 0.1);
-    }
-
 //    @Test
-//    public void cpcArrayEstimateRangeTest() throws Exception {
+//    public void cpcArrayMUpdate2JudWithKeyTest() throws Exception {
 //
-//        Update2JudResult addRet = tairCpcNew.cpcArrayUpdate2Jud(key, 1, item, 5);
-//        assertEquals(1.00, addRet.getValue(), 0.001);
-//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-//        Update2JudResult addRet2 = tairCpcNew.cpcArrayUpdate2Jud(key, 1, item, 5);
-//        assertEquals(1.00, addRet2.getValue(), 0.001);
-//        assertEquals(0.00, addRet2.getDiffValue(), 0.001);
-//        addRet = tairCpcNew.cpcArrayUpdate2Jud(key, 1, item2, 5);
-//        assertEquals(2.00, addRet.getValue(), 0.001);
-//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-//        addRet = tairCpcNew.cpcArrayUpdate2Jud(key, 3, item, 5);
-//        assertEquals(1.00, addRet.getValue(), 0.001);
-//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
-//        addRet = tairCpcNew.cpcArrayUpdate2Jud(key, 5, item, 5);
-//        assertEquals(1.00, addRet.getValue(), 0.001);
-//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        ArrayList<CpcArrayData> addList = new ArrayList<CpcArrayData>();
+//        CpcArrayData add1 = new CpcArrayData(key, timestamp, item);
+//        CpcArrayData add2 = new CpcArrayData(key, timestamp, item);
+//        CpcArrayData add3 = new CpcArrayData(key,timestamp, item2);
+//        addList.add(add1);
+//        addList.add(add2);
+//        addList.add(add3);
 //
-////        addRet = tairCpcNew.cpcArrayUpdate2Jud(key, 6, item2, 5);
-////        assertEquals(1.00, addRet.getValue(), 0.001);
-////        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+//        String addRet = tairCpcNew.cpcArrayMUpdate(addList);
 //
-//        List<Double> estimateRet = tairCpcNew.cpcArrayEstimateRange(key, 5, 5);
-////        System.out.println(estimateRet.toString());
-//        assertEquals(2.00, estimateRet.get(0), 0.001);
-//        assertEquals(0.00, estimateRet.get(1), 0.001);
-//        assertEquals(1.00, estimateRet.get(2), 0.001);
-//        assertEquals(0.00, estimateRet.get(3), 0.001);
-//        assertEquals(1.00, estimateRet.get(4), 0.001);
+////        Assert.assertEquals(2.0, addRet.get(key).getValue(), 0.1);
+////        Assert.assertEquals(2.0, addRet.get(key).getDiffValue(), 0.1);
 //    }
+
+    @Test
+    public void cpcArrayEstimateRangeTest() throws Exception {
+
+        String addRet = tairCpcNew.cpcArrayUpdate(key, timestamp, item);
+        assertEquals("OK", addRet);
+
+//        addRet = tairCpcNew.cpcArrayUpdate2Jud(key, 6, item2, 5);
+//        assertEquals(1.00, addRet.getValue(), 0.001);
+//        assertEquals(1.00, addRet.getDiffValue(), 0.001);
+
+        List<Double> estimateRet = tairCpcNew.cpcArrayEstimateRange(key, timestamp-1000, timestamp+1000);
+//        System.out.println(estimateRet.toString());
+        assertEquals(1.00, estimateRet.get(0), 0.001);
+    }
 //
 //    @Test
 //    public void cpcArrayEstimateRangeSumTest() throws Exception {
@@ -1041,5 +1024,44 @@ public class TairCpcTestNew extends TairCpcTestBase {
 
         getRet = tairCpcNew.stddevArrayGetRangeMerge(key3, timestamp, 2);
         assertEquals(94.2809041, getRet, 0.001);
+    }
+
+
+    @Test
+    public void sketchesTest() throws Exception {
+
+        Double addRet = tairCpcNew.avgArrayAdd(key, timestamp, count1, 100);
+        assertEquals(100.00, addRet, 0.001);
+
+        addRet = tairCpcNew.avgArrayAdd(key, timestamp, count1, 300);
+        assertEquals(200.00, addRet, 0.001);
+
+        Double getRet = tairCpcNew.avgArrayGet(key, timestamp);
+        assertEquals(200.00, getRet, 0.001);
+
+
+        addRet = tairCpcNew.stddevArrayAdd(key2, timestamp, 100);
+        assertEquals(0.00, addRet, 0.001);
+
+        addRet = tairCpcNew.stddevArrayAdd(key2, timestamp, 300);
+        assertEquals(100.00, addRet, 0.001);
+
+        getRet = tairCpcNew.stddevArrayGet(key2, timestamp);
+        assertEquals(100.00, getRet, 0.001);
+
+        Object sketGetRet = tairCpcNew.sketchesGet(key, timestamp);
+        String getValueStr = new String((byte[]) sketGetRet);
+        Double value= Double.parseDouble(getValueStr);
+        assertEquals(200.00, value, 0.001);
+
+        Object sketMergeRet = tairCpcNew.sketchesRangeMerge(key, timestamp-winsize, timestamp);
+        getValueStr = new String((byte[]) sketMergeRet);
+        value= Double.parseDouble(getValueStr);
+        assertEquals(200.00, value, 0.001);
+
+        List<Object> sketRangeRet = tairCpcNew.sketchesRange(key, timestamp-winsize, timestamp);
+        getValueStr = new String((byte[]) sketRangeRet.get(0));
+        value= Double.parseDouble(getValueStr);
+        assertEquals(200.00, value, 0.001);
     }
 }
