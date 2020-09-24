@@ -228,4 +228,25 @@ public class CpcBuilderFactory {
         }
     };
 
+    public static final Builder<List<Object>> SKETCHES_RANGE_RESULT = new Builder<List<Object>>() {
+        @Override
+        public List<Object> build(Object data) {
+            if (data == null) {
+                return null;
+            }
+            List l = (List) data;
+            final ArrayList<Object> results = new ArrayList<Object>();
+            int num = l.size();
+            for (int i = 0; i < num; i++) {
+                results.add(l.get(i));
+            }
+            return results;
+        }
+
+        @Override
+        public String toString() {
+            return "sketchesRangeResult";
+        }
+    };
+
 }
