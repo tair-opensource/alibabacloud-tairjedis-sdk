@@ -51,35 +51,4 @@ public class TairCpcPipelineTest extends TairCpcTestBase {
         Assert.assertEquals("OK", objs.get(i++));
         Assert.assertEquals("OK", objs.get(i++));
     }
-
-    @Test
-    public void cpcArrayUpdateTest() throws Exception {
-
-        int i = 0;
-
-        tairCpcPipeline.cpcArrayUpdate(key, 1, item, 5);
-        tairCpcPipeline.cpcArrayUpdate(key, 1, item2, 5);
-        tairCpcPipeline.cpcArrayUpdate(key, 3, item, 5);
-        tairCpcPipeline.cpcArrayUpdate(key, 5, item, 5);
-
-        List<Object> objs = tairCpcPipeline.syncAndReturnAll();
-        i = 0;
-
-        Assert.assertEquals("OK", objs.get(i++));
-        Assert.assertEquals("OK", objs.get(i++));
-        Assert.assertEquals("OK", objs.get(i++));
-        Assert.assertEquals("OK", objs.get(i++));
-
-        tairCpcPipeline.cpcArrayEstimate(key, 1);
-        tairCpcPipeline.cpcArrayEstimate(key, 3);
-        tairCpcPipeline.cpcArrayEstimate(key, 5);
-
-        objs = tairCpcPipeline.syncAndReturnAll();
-        i = 0;
-
-        assertEquals(2.00, Double.parseDouble(objs.get(i++).toString()), 0.001);
-        assertEquals(1.00, Double.parseDouble(objs.get(i++).toString()), 0.001);
-        assertEquals(1.00, Double.parseDouble(objs.get(i++).toString()), 0.001);
-
-    }
 }

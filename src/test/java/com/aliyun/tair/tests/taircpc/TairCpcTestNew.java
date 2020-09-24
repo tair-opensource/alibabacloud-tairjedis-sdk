@@ -1,5 +1,6 @@
 package com.aliyun.tair.tests.taircpc;
 
+import com.aliyun.tair.taircpc.params.CpcArrayData;
 import com.aliyun.tair.taircpc.params.CpcData;
 import com.aliyun.tair.taircpc.params.CpcUpdateParams;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
@@ -7,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -239,42 +241,6 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
 //    @Test
-//    public void cpcMupdate2EstWithKeyTest() throws Exception {
-//
-//        ArrayList<CpcData> addList = new ArrayList<CpcData>();
-//        CpcData add1 = new CpcData(key, item);
-//        CpcData add2 = new CpcData(key2, item2);
-//        CpcData add3 = new CpcData(key, item2);
-//        addList.add(add1);
-//        addList.add(add2);
-//        addList.add(add3);
-//
-//        HashMap<String, Double> addRet = tairCpcNew.cpcMUpdate2EstWithKey(addList);
-////        Assert.assertEquals(1.0, addRet.get(0).getValue(), 0.1);
-//        Assert.assertEquals(1.0, addRet.get(key2), 0.1);
-//        Assert.assertEquals(2.0, addRet.get(key), 0.1);
-//    }
-//
-//    @Test
-//    public void cpcMupdate2JudWithKeyTest() throws Exception {
-//
-//        ArrayList<CpcData> addList = new ArrayList<CpcData>();
-//        CpcData add1 = new CpcData(key, item);
-//        CpcData add2 = new CpcData(key2, item2);
-//        CpcData add3 = new CpcData(key, item2);
-//        addList.add(add1);
-//        addList.add(add2);
-//        addList.add(add3);
-//
-//        HashMap<String, Update2JudResult> addRet = tairCpcNew.cpcMUpdate2JudWithKey(addList);
-//
-//        Assert.assertEquals(1.0, addRet.get(key2).getValue(), 0.1);
-//        Assert.assertEquals(1.0, addRet.get(key2).getDiffValue(), 0.1);
-//        Assert.assertEquals(2.0, addRet.get(key).getValue(), 0.1);
-//        Assert.assertEquals(1.0, addRet.get(key).getDiffValue(), 0.1);
-//    }
-
-//    @Test
 //    public void cpcArrayUpdateTest() throws Exception {
 //
 //        String addRet = tairCpcNew.cpcArrayUpdate(key, 1, item, 5);
@@ -347,24 +313,24 @@ public class TairCpcTestNew extends TairCpcTestBase {
 //        estimateRet = tairCpcNew.cpcArrayEstimate(key, 5);
 //        assertEquals(1.00, estimateRet, 0.001);
 //    }
-//
-////    @Test
-////    public void cpcArrayMUpdate2JudWithKeyTest() throws Exception {
-////
-////        ArrayList<CpcArrayData> addList = new ArrayList<CpcArrayData>();
-////        CpcArrayData add1 = new CpcArrayData(key, 1, item, 5);
-////        CpcArrayData add2 = new CpcArrayData(key, 1, item, 5);
-////        CpcArrayData add3 = new CpcArrayData(key,1, item2, 5);
-////        addList.add(add1);
-////        addList.add(add2);
-////        addList.add(add3);
-////
-////        HashMap<String, Update2JudResult> addRet = tairCpcNew.cpcArrayMUpdate2JudWithKey(addList);
-////
-////        Assert.assertEquals(2.0, addRet.get(key).getValue(), 0.1);
-////        Assert.assertEquals(2.0, addRet.get(key).getDiffValue(), 0.1);
-////    }
-//
+
+    @Test
+    public void cpcArrayMUpdate2JudWithKeyTest() throws Exception {
+
+        ArrayList<CpcArrayData> addList = new ArrayList<CpcArrayData>();
+        CpcArrayData add1 = new CpcArrayData(key, timestamp, item);
+        CpcArrayData add2 = new CpcArrayData(key, timestamp, item);
+        CpcArrayData add3 = new CpcArrayData(key,timestamp, item2);
+        addList.add(add1);
+        addList.add(add2);
+        addList.add(add3);
+
+        String addRet = tairCpcNew.cpcArrayMUpdate(addList);
+
+//        Assert.assertEquals(2.0, addRet.get(key).getValue(), 0.1);
+//        Assert.assertEquals(2.0, addRet.get(key).getDiffValue(), 0.1);
+    }
+
 //    @Test
 //    public void cpcArrayEstimateRangeTest() throws Exception {
 //
