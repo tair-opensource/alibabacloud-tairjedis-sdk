@@ -1096,6 +1096,9 @@ public class TairCpcTestNew extends TairCpcTestBase {
         List<Double> rangeRet = tairCpcNew.sketchesGetRange(key2, timestamp-winsize, timestamp);
         assertEquals(2, rangeRet.get(0), 0.001);
 
+        rangeRet = tairCpcNew.sketchesGetRange(key3, timestamp-winsize, timestamp);
+        assertEquals(2, rangeRet.get(0), 0.001);
+
 //        List<Object> rangeRet = tairCpcNew.sketchesRange(key, timestamp-winsize, timestamp);
 //        assertEquals(1, rangeRet.get(0));
     }

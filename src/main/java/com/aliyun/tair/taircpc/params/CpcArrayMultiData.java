@@ -79,7 +79,7 @@ public class CpcArrayMultiData  {
         return sizeStr;
     }
 
-    public void setSizeStr(String sizeStr) {
+    private void setSizeStr(String sizeStr) {
         this.sizeStr = sizeStr;
     }
 
@@ -87,7 +87,7 @@ public class CpcArrayMultiData  {
         return winSizeStr;
     }
 
-    public void setWinSizeStr(String winSizeStr) {
+    private void setWinSizeStr(String winSizeStr) {
         this.winSizeStr = winSizeStr;
     }
 
