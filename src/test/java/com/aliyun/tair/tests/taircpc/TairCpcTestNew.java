@@ -1,8 +1,6 @@
 package com.aliyun.tair.tests.taircpc;
 
-import com.aliyun.tair.taircpc.params.CpcArrayData;
-import com.aliyun.tair.taircpc.params.CpcData;
-import com.aliyun.tair.taircpc.params.CpcUpdateParams;
+import com.aliyun.tair.taircpc.params.*;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -1054,14 +1052,52 @@ public class TairCpcTestNew extends TairCpcTestBase {
         Double value= Double.parseDouble(getValueStr);
         assertEquals(200.00, value, 0.001);
 
-        Object sketMergeRet = tairCpcNew.sketchesRangeMerge(key, timestamp-winsize, timestamp);
+        Object sketMergeRet = tairCpcNew.sketchesGetRangeMerge(key, timestamp-winsize, timestamp);
         getValueStr = new String((byte[]) sketMergeRet);
         value= Double.parseDouble(getValueStr);
         assertEquals(200.00, value, 0.001);
 
-        List<Object> sketRangeRet = tairCpcNew.sketchesRange(key, timestamp-winsize, timestamp);
-        getValueStr = new String((byte[]) sketRangeRet.get(0));
-        value= Double.parseDouble(getValueStr);
-        assertEquals(200.00, value, 0.001);
+//        List<Object> sketRangeRet = tairCpcNew.sketchesGetRange(key, timestamp-winsize, timestamp);
+//        getValueStr = new String((byte[]) sketRangeRet.get(0));
+//        value= Double.parseDouble(getValueStr);
+//        assertEquals(200.00, value, 0.001);
     }
+
+    @Test
+    public void sketchesBatchWriteTest() throws Exception {
+        CpcArrayMultiData multiData = CpcDataUtil.buildCpc(key, "sffjls", timestamp);
+        multiData.setSize(10);
+        multiData.setWinSize(10);
+        CpcArrayMultiData multiData2 = CpcDataUtil.buildSum(key2, 2, timestamp);
+        CpcArrayMultiData multiData3 = CpcDataUtil.buildFirst(key3, content1, 100, timestamp);
+        ArrayList<CpcArrayMultiData> list = new ArrayList<>();
+        list.add(multiData);
+        list.add(multiData2);
+        list.add(multiData3);
+        String res = tairCpcNew.sketchesBatchWrite(list);
+        assertEquals("OK", res);
+
+        Object estimateRet = tairCpcNew.sketchesGet(key, timestamp);
+        if (estimateRet instanceof Double) {
+            assertEquals(1, Double.parseDouble(estimateRet.toString()), 0.001);
+        }
+        else if (estimateRet instanceof String) {
+            Assert.assertEquals(content1, estimateRet);
+        }
+
+        estimateRet = tairCpcNew.sketchesGet(key3, timestamp);
+        if (estimateRet instanceof Double) {
+            assertEquals(1, Double.parseDouble(estimateRet.toString()), 0.001);
+        }
+        else if (estimateRet instanceof String) {
+            Assert.assertEquals(content1, estimateRet);
+        }
+
+        List<Double> rangeRet = tairCpcNew.sketchesGetRange(key2, timestamp-winsize, timestamp);
+        assertEquals(2, rangeRet.get(0), 0.001);
+
+//        List<Object> rangeRet = tairCpcNew.sketchesRange(key, timestamp-winsize, timestamp);
+//        assertEquals(1, rangeRet.get(0));
+    }
+
 }
