@@ -2847,7 +2847,7 @@ public class TairCpcPipeline extends Pipeline {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         getClient("").sendCommand(ModuleCommand.SKETCHESGET, SafeEncoder.encode(key), toByteArray(timestamp));
-        return getResponse(BuilderFactory.OBJECT);
+        return getResponse(CpcBuilderFactory.SKETCHES_GET_RESULT);
     }
 
     public Response<Object> sketchesGet(final byte[] key, final long timestamp) throws JedisConnectionException,
@@ -2856,7 +2856,7 @@ public class TairCpcPipeline extends Pipeline {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         getClient("").sendCommand(ModuleCommand.SKETCHESGET, key, toByteArray(timestamp));
-        return getResponse(BuilderFactory.OBJECT);
+        return getResponse(CpcBuilderFactory.SKETCHES_GET_RESULT);
     }
 
     /**
@@ -2865,22 +2865,22 @@ public class TairCpcPipeline extends Pipeline {
      * @param key   the key
      * @return getResponse(Success: merge of sum value; Fail: error.
      */
-    public Response<Object> sketchesRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
+    public Response<Object> sketchesGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         getClient("").sendCommand(ModuleCommand.SKETCHESRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
-        return getResponse(BuilderFactory.OBJECT);
+        return getResponse(CpcBuilderFactory.SKETCHES_GET_RESULT);
     }
 
-    public Response<Object> sketchesRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
+    public Response<Object> sketchesGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         getClient("").sendCommand(ModuleCommand.SKETCHESRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
-        return getResponse(BuilderFactory.OBJECT);
+        return getResponse(CpcBuilderFactory.SKETCHES_GET_RESULT);
     }
 
     /**
@@ -2891,22 +2891,22 @@ public class TairCpcPipeline extends Pipeline {
      * @param endtime the endtime
      * @return getResponse(Success: sum value list; Fail: error.
      */
-    public Response<List<Object>> sketchesRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
+    public Response<List<Double>> sketchesGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         getClient("").sendCommand(ModuleCommand.SKETCHESRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
-        return getResponse(CpcBuilderFactory.SKETCHES_RANGE_RESULT);
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
-    public Response<List<Object>> sketchesRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
+    public Response<List<Double>> sketchesGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         getClient("").sendCommand(ModuleCommand.SKETCHESRANGE, key, toByteArray(starttime), toByteArray(endtime));
-        return getResponse(CpcBuilderFactory.SKETCHES_RANGE_RESULT);
+        return getResponse(CpcBuilderFactory.CPCARRAY_RANGE_RESULT);
     }
 
     /**

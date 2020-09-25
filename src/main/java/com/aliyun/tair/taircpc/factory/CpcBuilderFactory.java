@@ -4,6 +4,8 @@ import com.aliyun.tair.taircpc.results.Update2EstWithKeyResult;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import com.aliyun.tair.taircpc.results.Update2JudWithKeyResult;
 import redis.clients.jedis.Builder;
+import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -228,25 +230,59 @@ public class CpcBuilderFactory {
         }
     };
 
-    public static final Builder<List<Object>> SKETCHES_RANGE_RESULT = new Builder<List<Object>>() {
+    public static final Builder<Object> SKETCHES_GET_RESULT = new Builder<Object>() {
         @Override
-        public List<Object> build(Object data) {
+        public Object build(Object data) {
             if (data == null) {
                 return null;
             }
             List l = (List) data;
-            final ArrayList<Object> results = new ArrayList<Object>();
             int num = l.size();
-            for (int i = 0; i < num; i++) {
-                results.add(l.get(i));
+            if (num == 2) {
+                if (SafeEncoder.encode((byte[])((byte[])l.get(0))).equals("s")) {
+                    return BuilderFactory.STRING.build(l.get(1));
+                }
+                else if (SafeEncoder.encode((byte[])((byte[])l.get(0))).equals("d")) {
+                    return BuilderFactory.DOUBLE.build(l.get(1));
+//                    return (l.get(1) == null ? null : SafeEncoder.encode((byte[])((byte[])l.get(1))));
+                }
+                else {
+                    return null;
+                }
             }
-            return results;
+            else {
+                return BuilderFactory.STRING.build(data);
+            }
         }
 
         @Override
         public String toString() {
-            return "sketchesRangeResult";
+            return "sketchesGetResult";
         }
     };
+
+//    public static final Builder<List<Object>> SKETCHES_RANGE_RESULT = new Builder<List<Object>>() {
+//        @Override
+//        public List<Object> build(Object data) {
+//            if (data == null) {
+//                return null;
+//            }
+//            List l = (List) data;
+//            final ArrayList<Object> results = new ArrayList<Object>();
+//            int resultNum = l.size();
+//            for (int i = 0; i < resultNum; i++) {
+//
+//
+//                Object subdata = SafeEncoder.encode((byte[])((byte[])l.get(i)));
+//                results.add(subdata);
+//            }
+//            return results;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "sketchesRangeResult";
+//        }
+//    };
 
 }

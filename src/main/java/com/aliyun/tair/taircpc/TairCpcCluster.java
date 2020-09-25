@@ -2856,7 +2856,7 @@ public class TairCpcCluster {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SKETCHESGET, SafeEncoder.encode(key), toByteArray(timestamp));
-        return BuilderFactory.OBJECT.build(obj);
+        return CpcBuilderFactory.SKETCHES_GET_RESULT.build(obj);
     }
 
     public Object sketchesGet(final byte[] key, final long timestamp) throws JedisConnectionException,
@@ -2865,7 +2865,7 @@ public class TairCpcCluster {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         Object obj = jc.sendCommand(key, ModuleCommand.SKETCHESGET, key, toByteArray(timestamp));
-        return BuilderFactory.OBJECT.build(obj);
+        return CpcBuilderFactory.SKETCHES_GET_RESULT.build(obj);
     }
 
     /**
@@ -2874,22 +2874,22 @@ public class TairCpcCluster {
      * @param key   the key
      * @return Success: merge of sum value; Fail: error.
      */
-    public Object sketchesRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
+    public Object sketchesGetRangeMerge(final String key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SKETCHESRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
-        return BuilderFactory.OBJECT.build(obj);
+        return CpcBuilderFactory.SKETCHES_GET_RESULT.build(obj);
     }
 
-    public Object sketchesRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
+    public Object sketchesGetRangeMerge(final byte[] key,  final long endtime, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         Object obj = jc.sendCommand(key, ModuleCommand.SKETCHESRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
-        return BuilderFactory.OBJECT.build(obj);
+        return CpcBuilderFactory.SKETCHES_GET_RESULT.build(obj);
     }
 
     /**
@@ -2900,22 +2900,22 @@ public class TairCpcCluster {
      * @param endtime the endtime
      * @return Success: sum value list; Fail: error.
      */
-    public List<Object> sketchesRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
+    public List<Double> sketchesGetRange(final String key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.SKETCHESRANGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
-        return CpcBuilderFactory.SKETCHES_RANGE_RESULT.build(obj);
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
     }
 
-    public List<Object> sketchesRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
+    public List<Double> sketchesGetRange(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
         Object obj = jc.sendCommand(key, ModuleCommand.SKETCHESRANGE, key, toByteArray(starttime), toByteArray(endtime));
-        return CpcBuilderFactory.SKETCHES_RANGE_RESULT.build(obj);
+        return CpcBuilderFactory.CPCARRAY_RANGE_RESULT.build(obj);
     }
 
     /**
