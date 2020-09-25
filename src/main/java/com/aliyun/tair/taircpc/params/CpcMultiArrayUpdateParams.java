@@ -102,7 +102,7 @@ public class CpcMultiArrayUpdateParams extends Params {
                     break;
                 }
                 case STDDEVARRAYADD : {
-                    checkAvgMultiData(key);
+                    checkCpcMultiData(key);
                     byteParams.add(ModuleCommand.STDDEVARRAYADD.getRaw());
                     byteParams.add(SafeEncoder.encode(key.getKey()));
                     byteParams.add(toByteArray(key.getTimestamp()));
