@@ -561,58 +561,58 @@ public class TairCpcPipeline extends Pipeline {
         return getResponse(CpcBuilderFactory.CPCUPDATE2JUD_RESULT);
     }
 
-    /**
-     * MutiUpdate the item of a cpcArray.
-     *
-     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
-     * @return Success: OK; Fail: error.
-     */
-    public Response<String> cpcArrayMUpdate(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,IllegalArgumentException,
-            JedisDataException {
-        if (keys == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getKey() == null) {
-                throw new IllegalArgumentException(CommonResult.keyIsNull);
-            }
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getItem() == null) {
-                throw new IllegalArgumentException(CommonResult.valueIsNull);
-            }
-        }
-        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE, keyList.getByteParams(keys));
-        return getResponse(BuilderFactory.STRING);
-    }
-
-    /**
-     * MutiUpdate the item of a cpcArray.
-     *
-     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
-     * @return Success: List<Double>; Fail: error.
-     */
-    public Response<List<Double>> cpcArrayMUpdate2Est(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (keys == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getKey() == null) {
-                throw new IllegalArgumentException(CommonResult.keyIsNull);
-            }
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getItem() == null) {
-                throw new IllegalArgumentException(CommonResult.valueIsNull);
-            }
-        }
-        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2EST, keyList.getByteParams(keys));
-        return getResponse(CpcBuilderFactory.CPCARRAYUPDATE2EST_MULTI_RESULT);
-    }
-
+//    /**
+//     * MutiUpdate the item of a cpcArray.
+//     *
+//     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
+//     * @return Success: OK; Fail: error.
+//     */
+//    public Response<String> cpcArrayMUpdate(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,IllegalArgumentException,
+//            JedisDataException {
+//        if (keys == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getKey() == null) {
+//                throw new IllegalArgumentException(CommonResult.keyIsNull);
+//            }
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getItem() == null) {
+//                throw new IllegalArgumentException(CommonResult.valueIsNull);
+//            }
+//        }
+//        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
+//        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE, keyList.getByteParams(keys));
+//        return getResponse(BuilderFactory.STRING);
+//    }
+//
+//    /**
+//     * MutiUpdate the item of a cpcArray.
+//     *
+//     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
+//     * @return Success: List<Double>; Fail: error.
+//     */
+//    public Response<List<Double>> cpcArrayMUpdate2Est(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
+//            IllegalArgumentException, JedisDataException {
+//        if (keys == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getKey() == null) {
+//                throw new IllegalArgumentException(CommonResult.keyIsNull);
+//            }
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getItem() == null) {
+//                throw new IllegalArgumentException(CommonResult.valueIsNull);
+//            }
+//        }
+//        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
+//        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2EST, keyList.getByteParams(keys));
+//        return getResponse(CpcBuilderFactory.CPCARRAYUPDATE2EST_MULTI_RESULT);
+//    }
+//
 //    /**
 //     * MutiUpdate the item of a cpcArray.
 //     *
@@ -638,58 +638,58 @@ public class TairCpcPipeline extends Pipeline {
 //        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2ESTWITHKEY, keyList.getByteParams(keys));
 //        return getResponse(CpcBuilderFactory.CPCUPDATE2ESTWITHKEY_MULTI_RESULT);
 //    }
-
-    /**
-     * MutiUpdate the item of a cpcArray.
-     *
-     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
-     * @return Success: List<Update2JudResult>; Fail: error.
-     */
-    public Response<List<Update2JudResult>> cpcArrayMUpdate2Jud(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (keys == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getKey() == null) {
-                throw new IllegalArgumentException(CommonResult.keyIsNull);
-            }
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getItem() == null) {
-                throw new IllegalArgumentException(CommonResult.valueIsNull);
-            }
-        }
-        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2JUD, keyList.getByteParams(keys));
-        return getResponse(CpcBuilderFactory.CPCARRAYUPDATE2JUD_MULTI_RESULT);
-    }
-
-    /**
-     * MutiUpdate the item of a cpcArray.
-     *
-     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
-     * @return Success: HashMap<String, Update2JudResult>; Fail: error.
-     */
-    public Response<HashMap<String, Update2JudResult>> cpcArrayMUpdate2JudWithKey(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
-            IllegalArgumentException, JedisDataException {
-        if (keys == null) {
-            throw new IllegalArgumentException(CommonResult.keyIsNull);
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getKey() == null) {
-                throw new IllegalArgumentException(CommonResult.keyIsNull);
-            }
-        }
-        for (CpcArrayData key : keys) {
-            if (key.getItem() == null) {
-                throw new IllegalArgumentException(CommonResult.valueIsNull);
-            }
-        }
-        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
-        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2JUDWITHKEY, keyList.getByteParams(keys));
-        return getResponse(CpcBuilderFactory.CPCUPDATE2JUDWITHKEY_MULTI_RESULT);
-    }
+//
+//    /**
+//     * MutiUpdate the item of a cpcArray.
+//     *
+//     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
+//     * @return Success: List<Update2JudResult>; Fail: error.
+//     */
+//    public Response<List<Update2JudResult>> cpcArrayMUpdate2Jud(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
+//            IllegalArgumentException, JedisDataException {
+//        if (keys == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getKey() == null) {
+//                throw new IllegalArgumentException(CommonResult.keyIsNull);
+//            }
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getItem() == null) {
+//                throw new IllegalArgumentException(CommonResult.valueIsNull);
+//            }
+//        }
+//        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
+//        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2JUD, keyList.getByteParams(keys));
+//        return getResponse(CpcBuilderFactory.CPCARRAYUPDATE2JUD_MULTI_RESULT);
+//    }
+//
+//    /**
+//     * MutiUpdate the item of a cpcArray.
+//     *
+//     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
+//     * @return Success: HashMap<String, Update2JudResult>; Fail: error.
+//     */
+//    public Response<HashMap<String, Update2JudResult>> cpcArrayMUpdate2JudWithKey(final ArrayList<CpcArrayData> keys) throws JedisConnectionException,
+//            IllegalArgumentException, JedisDataException {
+//        if (keys == null) {
+//            throw new IllegalArgumentException(CommonResult.keyIsNull);
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getKey() == null) {
+//                throw new IllegalArgumentException(CommonResult.keyIsNull);
+//            }
+//        }
+//        for (CpcArrayData key : keys) {
+//            if (key.getItem() == null) {
+//                throw new IllegalArgumentException(CommonResult.valueIsNull);
+//            }
+//        }
+//        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
+//        getClient("").sendCommand(ModuleCommand.CPCMARRAYUPDATE2JUDWITHKEY, keyList.getByteParams(keys));
+//        return getResponse(CpcBuilderFactory.CPCUPDATE2JUDWITHKEY_MULTI_RESULT);
+//    }
 
     /**
      * Estimate the cpcArray.
