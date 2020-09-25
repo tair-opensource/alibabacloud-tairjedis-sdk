@@ -750,25 +750,25 @@ public class TairCpcCluster {
      * Estimate & sum the cpcArray for a range.
      *
      * @param key   the key
-     * @param starttime the starttime
-     * @param endtime the endtime
+     * @param timestamp the timestamp
+     * @param range the range
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Double cpcArrayEstimateRangeSum(final String key, final long starttime, final long endtime) throws JedisConnectionException,
+    public Double cpcArrayEstimateRangeSum(final String key, final long timestamp, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGESUM, key, String.valueOf(starttime), String.valueOf(endtime));
+        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGESUM, key, String.valueOf(timestamp), String.valueOf(range));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
-    public Double cpcArrayEstimateRangeSum(final byte[] key, final long starttime, final long endtime) throws JedisConnectionException,
+    public Double cpcArrayEstimateRangeSum(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGESUM, key, toByteArray(starttime), toByteArray(endtime));
+        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGESUM, key, toByteArray(timestamp), toByteArray(range));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
@@ -776,25 +776,25 @@ public class TairCpcCluster {
      * Estimate & merge the cpcArray for a range.
      *
      * @param key   the key
-     * @param endtime the endtime
+     * @param timestamp the timestamp
      * @param range the range
      * @return Success: double; Empty: 0; Fail: error.
      */
-    public Double cpcArrayEstimateRangeMerge(final String key, final long endtime, final long range) throws JedisConnectionException,
+    public Double cpcArrayEstimateRangeMerge(final String key, final long timestamp, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, String.valueOf(endtime), String.valueOf(range));
+        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, String.valueOf(timestamp), String.valueOf(range));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
-    public Double cpcArrayEstimateRangeMerge(final byte[] key, final long endtime, final long range) throws JedisConnectionException,
+    public Double cpcArrayEstimateRangeMerge(final byte[] key, final long timestamp, final long range) throws JedisConnectionException,
             IllegalArgumentException, JedisDataException{
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
-        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, toByteArray(endtime), toByteArray(range));
+        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATERANGEMERGE, key, toByteArray(timestamp), toByteArray(range));
         return BuilderFactory.DOUBLE.build(obj);
     }
 
@@ -2916,5 +2916,26 @@ public class TairCpcCluster {
         }
         Object obj = jc.sendCommand(key, ModuleCommand.SKETCHESRANGE, key, toByteArray(starttime), toByteArray(endtime));
         return CpcBuilderFactory.SKETCHES_RANGE_RESULT.build(obj);
+    }
+
+    /**
+     * MutiUpdate the item of a cpcArray.
+     *
+     * @param keys    {key timestamp item size expStr exp} [key timestamp item size expStr exp] ...
+     * @return Success: OK; Fail: error.
+     */
+    public String sketchesBatchWrite(final ArrayList<CpcArrayMultiData> keys) throws JedisConnectionException,IllegalArgumentException, JedisDataException {
+        if (keys == null || keys.isEmpty()) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        for (CpcArrayMultiData key : keys) {
+            if (key.getKey() == null) {
+                throw new IllegalArgumentException(CommonResult.keyIsNull);
+            }
+        }
+
+        CpcMultiArrayUpdateParams keyList = new CpcMultiArrayUpdateParams();
+        Object obj = jc.sendCommand(SafeEncoder.encode(keys.get(0).getKey()), ModuleCommand.SKETCHESBATCHWRITE, keyList.getByteMultiParams(keys));
+        return BuilderFactory.STRING.build(obj);
     }
 }

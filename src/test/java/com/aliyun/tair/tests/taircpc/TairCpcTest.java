@@ -1,8 +1,6 @@
 package com.aliyun.tair.tests.taircpc;
 
-import com.aliyun.tair.taircpc.params.CpcArrayData;
-import com.aliyun.tair.taircpc.params.CpcData;
-import com.aliyun.tair.taircpc.params.CpcUpdateParams;
+import com.aliyun.tair.taircpc.params.*;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -1084,5 +1082,14 @@ public class TairCpcTest extends TairCpcTestBase {
 
         Double mergeRet = tairCpc.stddevArrayGetRangeMerge(key, 7, 7);
         assertEquals(25.00, mergeRet, 0.001);
+    }
+
+    @Test
+    public void sketchesBatchWriteTest() throws Exception {
+        CpcArrayMultiData multiData = CpcDataUtil.buildCpc("keycpc", "sffjls", System.currentTimeMillis());
+        ArrayList<CpcArrayMultiData> list = new ArrayList<>();
+        list.add(multiData);
+        String res = tairCpcNew.sketchesBatchWrite(list);
+        assertEquals("OK", res);
     }
 }
