@@ -1,5 +1,6 @@
 package com.aliyun.tair.tests.taircpc;
 
+import com.taobao.eagleeye.EagleEye;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -50,5 +51,17 @@ public class TairCpcPipelineTest extends TairCpcTestBase {
         i = 0;
         Assert.assertEquals("OK", objs.get(i++));
         Assert.assertEquals("OK", objs.get(i++));
+    }
+
+    @Test
+    public void sketchesGetRangeMergeWithEagleeyeTest() throws Exception {
+        EagleEye.startTrace(null, "test123", 0);
+
+        tairCpcPipeline.sketchesGetRangeMerge(key, System.currentTimeMillis(),1);
+        tairCpcPipeline.sketchesGetRangeMerge(key, System.currentTimeMillis(),2);
+        List<Object> objs = tairCpcPipeline.syncAndReturnAll();
+
+        EagleEye.endTrace("00");
+        Thread.sleep(10000);
     }
 }

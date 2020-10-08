@@ -2870,7 +2870,9 @@ public class TairCpcPipeline extends Pipeline {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
+        setEagleEyeIgnore();
         getClient("").sendCommand(ModuleCommand.SKETCHESRANGEMERGE, SafeEncoder.encode(key), toByteArray(endtime), toByteArray(range));
+        removeEagleEyeIgnore();
         return getResponse(CpcBuilderFactory.SKETCHES_GET_RESULT);
     }
 
@@ -2879,7 +2881,9 @@ public class TairCpcPipeline extends Pipeline {
         if (key == null) {
             throw new IllegalArgumentException(CommonResult.keyIsNull);
         }
+        setEagleEyeIgnore();
         getClient("").sendCommand(ModuleCommand.SKETCHESRANGEMERGE, key, toByteArray(endtime), toByteArray(range));
+        removeEagleEyeIgnore();
         return getResponse(CpcBuilderFactory.SKETCHES_GET_RESULT);
     }
 
