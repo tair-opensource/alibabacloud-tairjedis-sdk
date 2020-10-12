@@ -51,6 +51,9 @@ public class TsBuilderFactory {
             final ArrayList<ExtsSkeyResult> results = new ArrayList<ExtsSkeyResult>();
             int num = l.size();
             for (int i = 0; i < num; i++) {
+                if (l.get(i) == null) {
+                    return results;
+                }
                 List subl = (List) l.get(i);
                 List labelsList = (List) subl.get(1);
                 List dataPointsList = (List) subl.get(2);
