@@ -340,8 +340,10 @@ public class TairCpcTestNew extends TairCpcTestBase {
 //        assertEquals(1.00, addRet.getDiffValue(), 0.001);
 
         List<Double> estimateRet = tairCpcNew.cpcArrayEstimateRange(key, timestamp-1000, timestamp+1000);
-//        System.out.println(estimateRet.toString());
         assertEquals(1.00, estimateRet.get(0), 0.001);
+
+        Double getRet = tairCpcNew.cpcArrayEstimateTimeMerge(key, timestamp-1000, timestamp+1000);
+        assertEquals(1.00, getRet, 0.001);
     }
 //
 //    @Test
