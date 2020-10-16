@@ -798,6 +798,24 @@ public class TairCpcPipeline extends Pipeline {
         return JedisClusterCRC16.getSlot(key);
     }
 
+    public Response<Double> cpcArrayEstimateTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATETIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<Double> cpcArrayEstimateTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        getClient("").sendCommand(ModuleCommand.CPCARRAYESTIMATETIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
     // sum operation
 
     /**

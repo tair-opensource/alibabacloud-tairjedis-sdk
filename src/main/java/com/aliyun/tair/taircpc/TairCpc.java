@@ -811,6 +811,24 @@ public class TairCpc {
     }
 
 
+    public Double cpcArrayEstimateTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.CPCARRAYESTIMATETIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double cpcArrayEstimateTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.CPCARRAYESTIMATETIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
     // sum operation
 
     /**

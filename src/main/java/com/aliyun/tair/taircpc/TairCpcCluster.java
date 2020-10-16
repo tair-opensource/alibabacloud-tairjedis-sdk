@@ -798,6 +798,25 @@ public class TairCpcCluster {
         return BuilderFactory.DOUBLE.build(obj);
     }
 
+    public Double cpcArrayEstimateTimeMerge(final String key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.CPCARRAYESTIMATETIMEMERGE, SafeEncoder.encode(key), toByteArray(starttime), toByteArray(endtime));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double cpcArrayEstimateTimeMerge(final byte[] key,  final long starttime, final long endtime) throws JedisConnectionException,
+            IllegalArgumentException, JedisDataException {
+        if (key == null) {
+            throw new IllegalArgumentException(CommonResult.keyIsNull);
+        }
+        Object obj = jc.sendCommand(key, ModuleCommand.CPCARRAYESTIMATETIMEMERGE, key, toByteArray(starttime), toByteArray(endtime));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+
     public int getSlot (String key) throws JedisConnectionException {
         return JedisClusterCRC16.getSlot(key);
     }
