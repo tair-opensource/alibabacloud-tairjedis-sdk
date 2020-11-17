@@ -1,10 +1,6 @@
-![](https://img.alicdn.com/tfs/TB1Ly5oS3HqK1RjSZFPXXcwapXa-238-54.png)
+# alibabacloud-tairjedis-sdk
 
-# 概述
-
-alibabacloud-tairjedis-sdk是基于[Jedis](https://github.com/xetorthio/jedis)封装的，操作[云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) 的客户端，主要包含下列功能：
-
-- 支持企业版多种[Module](https://help.aliyun.com/document_detail/146579.html)的操作命令
+基于 [Jedis](https://github.com/xetorthio/jedis) 封装的，操作 [云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) 的客户端，支持企业版多种 [Module](https://help.aliyun.com/document_detail/146579.html) (TairHash, TairDoc等)的操作命令。
 
 # 安装方法
 
@@ -12,7 +8,7 @@ alibabacloud-tairjedis-sdk是基于[Jedis](https://github.com/xetorthio/jedis)�
 <dependency>
   <groupId>com.aliyun.tair</groupId>
   <artifactId>alibabacloud-tairjedis-sdk</artifactId>
-  <version>1.0.0（建议使用最新版本）</version>
+  <version>（建议使用最新版本）</version>
 </dependency>
 ```
 

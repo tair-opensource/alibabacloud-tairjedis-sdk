@@ -43,7 +43,7 @@ public enum ModuleCommand implements ProtocolCommand {
     EXHSTRLEN("EXHSTRLEN"),
     EXHKEYS("EXHKEYS"),
     EXHVALS("EXHVALS"),
-    EXHGETALL("EXHGETALL2"),
+    EXHGETALL("EXHGETALL"),
     EXHMGETWITHVER("EXHMGETWITHVER"),
     EXHSCAN("EXHSCAN"),
 
