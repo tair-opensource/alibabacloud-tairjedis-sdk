@@ -56,7 +56,7 @@ public class TairTs {
      * @param value  the value
      * @param params the params: [DATA_ET time] [CHUNK_SIZE size] [UNCOMPRESSED] [LABELS label1 val1 ...]
      * `DATA_ET` - Set expire time (milliseconds)
-     * `CHUNK_SIZE` - Set datapoints num per chunk 256~1024 (size)
+     * `CHUNK_SIZE` - Set datapoints num per chunk 2~1024 (size)
      * `UNCOMPRESSED` - set the skey if compressed
      * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
      * @return Success: OK; Fail: error.
@@ -117,18 +117,19 @@ public class TairTs {
      *
      * @param pkey   the pkey
      * @param skey   the skey
-     * @param expireTime the expireTime: [DATA_ET time]
+     * @param params the params: [DATA_ET time] [LABELS label1 val1 ...]
      * `DATA_ET` - Set expire time (milliseconds)
-     * Note that: `LABELS` `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * Note that: `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
      * @return Success: OK; Fail: error.
      */
-    public String extsalter(String pkey, String skey, long expireTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTER, pkey, skey, "DATA_ET", String.valueOf(expireTime));
+    public String extsalter(String pkey, String skey, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTER, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 
-    public String extsalter(byte[] pkey, byte[] skey, long expireTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTER, pkey, skey, SafeEncoder.encode("DATA_ET"), toByteArray(expireTime));
+    public String extsalter(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTER, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -298,6 +299,7 @@ public class TairTs {
      * @param endTs   the end ts
      * @param params the aggregation params: [MAXCOUNT count] [aggregationType timeBucket]
      * `MAXCOUNT` - Set the maxcount for output
+     * `REVERSE` - reverse output.
      * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
      * `timeBucket` - set the timeBucket of the aggregation.
      * @return Success: OK; Fail: error.
@@ -342,6 +344,7 @@ public class TairTs {
      * @param endTs   the end ts
      * @param params the aggregation params: [MAXCOUNT count] [aggregationType timeBucket]
      * `MAXCOUNT` - Set the maxcount for output
+     * `REVERSE` - reverse output.
      * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
      * `timeBucket` - set the timeBucket of the aggregation.
      * @return Success: OK; Fail: error.
@@ -390,6 +393,7 @@ public class TairTs {
      * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
      * `timeBucket` - set the timeBucket of the aggregation.
      * `WITHLABELS` - output the labels.
+     * `REVERSE` - reverse output.
      * @return Success: OK; Fail: error.
      */
     public List<ExtsSkeyResult> extsmrange(String pkey, String startTs, String endTs, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
@@ -439,6 +443,7 @@ public class TairTs {
      * `MAXCOUNT` - Set the maxcount for output
      * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
      * `timeBucket` - set the timeBucket of the aggregation.
+     * `REVERSE` - reverse output.
      * @return Success: OK; Fail: error.
      */
 
@@ -726,18 +731,19 @@ public class TairTs {
      *
      * @param pkey   the pkey
      * @param skey   the skey
-     * @param expireTime the expireTime: [DATA_ET time]
+     * @param params the params: [DATA_ET time] [LABELS label1 val1 ...]
      * `DATA_ET` - Set expire time (milliseconds)
-     * Note that: `LABELS` `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * Note that: `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
      * @return Success: OK; Fail: error.
      */
-    public String extsalterstr(String pkey, String skey, long expireTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTERSTR, pkey, skey, "DATA_ET", String.valueOf(expireTime));
+    public String extsalterstr(String pkey, String skey, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 
-    public String extsalterstr(byte[] pkey, byte[] skey, long expireTime) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTERSTR, pkey, skey, SafeEncoder.encode("DATA_ET"), toByteArray(expireTime));
+    public String extsalterstr(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -824,6 +830,7 @@ public class TairTs {
      * `MAXCOUNT` - Set the maxcount for output
      * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
      * `timeBucket` - set the timeBucket of the aggregation.
+     * `REVERSE` - reverse output.
      * @return Success: OK; Fail: error.
      */
     public ExtsStringSkeyResult extsrangestr(String pkey, String skey, String startTs, String endTs, ExtsStringAggregationParams params) {
@@ -870,6 +877,7 @@ public class TairTs {
      * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
      * `timeBucket` - set the timeBucket of the aggregation.
      * `WITHLABELS` - output the labels.
+     * `REVERSE` - reverse output.
      * @return Success: OK; Fail: error.
      */
     public List<ExtsStringSkeyResult> extsmrangestr(String pkey, String startTs, String endTs, ExtsStringAggregationParams params, ArrayList<ExtsFilter<String>> filters) {

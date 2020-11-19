@@ -61,12 +61,12 @@ public class TairTsPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING_LIST);
     }
 
-    public Response<String> extsalter(String pkey, String skey, long expireTime) {
-        return extsalter(SafeEncoder.encode(pkey), SafeEncoder.encode(skey), expireTime);
+    public Response<String> extsalter(String pkey, String skey, ExtsAttributesParams params) {
+        return extsalter(SafeEncoder.encode(pkey), SafeEncoder.encode(skey), params);
     }
 
-    public Response<String> extsalter(byte[] pkey, byte[] skey, long expireTime) {
-        getClient("").sendCommand(ModuleCommand.TSSALTER, pkey, skey, SafeEncoder.encode("DATA_ET"), toByteArray(expireTime));
+    public Response<String> extsalter(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
+        getClient("").sendCommand(ModuleCommand.TSSALTER, params.getByteParams(pkey, skey));
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -506,18 +506,19 @@ public class TairTsPipeline extends Pipeline {
      *
      * @param pkey   the pkey
      * @param skey   the skey
-     * @param expireTime the expireTime: [DATA_ET time]
+     * @param params the params: [DATA_ET time] [LABELS label1 val1 ...]
      * `DATA_ET` - Set expire time (milliseconds)
-     * Note that: `LABELS` `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * Note that: `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
      * @return Success: OK; Fail: error.
      */
-    public Response<String> extsalterstr(String pkey, String skey, long expireTime) {
-        getClient("").sendCommand(ModuleCommand.TSSALTERSTR, pkey, skey, "DATA_ET", String.valueOf(expireTime));
+    public Response<String> extsalterstr(String pkey, String skey, ExtsAttributesParams params) {
+        getClient("").sendCommand(ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> extsalterstr(byte[] pkey, byte[] skey, long expireTime) {
-        getClient("").sendCommand(ModuleCommand.TSSALTERSTR, pkey, skey, SafeEncoder.encode("DATA_ET"), toByteArray(expireTime));
+    public Response<String> extsalterstr(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
+        getClient("").sendCommand(ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
         return getResponse(BuilderFactory.STRING);
     }
 

@@ -23,6 +23,16 @@ public class TairTsCluster {
         this.jc = jc;
     }
 
+    /**
+     * Set the ts value of the key.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @param ts     the timestamp
+     * @param value  the value
+     * @return Success: OK; Fail: error.
+     */
+
     public String extsadd(String pkey, String skey, String ts, double value) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSADD, pkey, skey, ts, String.valueOf(value));
         return BuilderFactory.STRING.build(obj);
@@ -33,6 +43,21 @@ public class TairTsCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+    /**
+     * Set the ts value of the key.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @param ts     the timestamp
+     * @param value  the value
+     * @param params the params: [DATA_ET time] [CHUNK_SIZE size] [UNCOMPRESSED] [LABELS label1 val1 ...]
+     * `DATA_ET` - Set expire time (milliseconds)
+     * `CHUNK_SIZE` - Set datapoints num per chunk 2~1024 (size)
+     * `UNCOMPRESSED` - set the skey if compressed
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * @return Success: OK; Fail: error.
+     */
+
     public String extsadd(String pkey, String skey, String ts, double value, ExtsAttributesParams params) {
         return extsadd(SafeEncoder.encode(pkey), SafeEncoder.encode(skey), SafeEncoder.encode(ts), value, params);
     }
@@ -42,6 +67,13 @@ public class TairTsCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+    /**
+     * Set multi ts value of multi key.
+     *
+     * @param pkey   the pkey
+     * @param skeys   the {skey ts value}
+     * @return Success: OK; Fail: error.
+     */
     public List<String> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
@@ -54,6 +86,19 @@ public class TairTsCluster {
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
+    /**
+     * Set multi ts value of multi key.
+     *
+     * @param pkey   the pkey
+     * @param skeys   the {skey ts value}
+     * @param params the params: [DATA_ET time] [CHUNK_SIZE size] [UNCOMPRESSED] [LABELS label1 val1 ...]
+     * `DATA_ET` - Set expire time (milliseconds)
+     * `CHUNK_SIZE` - Set datapoints num per chunk 256~1024 (size)
+     * `UNCOMPRESSED` - set the skey if compressed
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * @return Success: List of OK; Fail: error.
+     */
+
     public List<String> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
@@ -64,16 +109,37 @@ public class TairTsCluster {
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
-    public String extsalter(String pkey, String skey, long expireTime) {
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSALTER, pkey, skey, "DATA_ET", String.valueOf(expireTime));
+    /**
+     * Alter the Attributes of the skey.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @param params the params: [DATA_ET time] [LABELS label1 val1 ...]
+     * `DATA_ET` - Set expire time (milliseconds)
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * Note that: `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
+     * @return Success: OK; Fail: error.
+     */
+    public String extsalter(String pkey, String skey, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSALTER, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 
-    public String extsalter(byte[] pkey, byte[] skey, long expireTime) {
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSALTER, pkey, skey, SafeEncoder.encode("DATA_ET"), toByteArray(expireTime));
+    public String extsalter(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSALTER, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 
+
+    /**
+     * Incr the ts value of the key.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @param ts     the timestamp
+     * @param value  the value
+     * @return Success: OK; Fail: error.
+     */
     public String extsincr(String pkey, String skey, String ts, double value) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSINCRBY, pkey, skey, ts, String.valueOf(value));
         return BuilderFactory.STRING.build(obj);
@@ -84,6 +150,20 @@ public class TairTsCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+    /**
+     * Incr the ts value of the key.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @param ts     the timestamp
+     * @param value  the value
+     * @param params the params: [DATA_ET time] [CHUNK_SIZE size] [UNCOMPRESSED] [LABELS label1 val1 ...]
+     * `DATA_ET` - Set expire time (milliseconds)
+     * `CHUNK_SIZE` - Set datapoints num per chunk 256~1024 (size)
+     * `UNCOMPRESSED` - set the skey if compressed
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * @return Success: OK; Fail: error.
+     */
     public String extsincr(String pkey, String skey, String ts, double value, ExtsAttributesParams params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSINCRBY, params.getByteParams(pkey, skey, ts, String.valueOf(value)));
         return BuilderFactory.STRING.build(obj);
@@ -94,6 +174,13 @@ public class TairTsCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+    /**
+     * Incr multi ts value of multi key.
+     *
+     * @param pkey   the pkey
+     * @param skeys   the {skey ts value}
+     * @return Success: OK; Fail: error.
+     */
     public List<String> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
@@ -106,6 +193,18 @@ public class TairTsCluster {
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
+    /**
+     * Incr multi ts value of multi key.
+     *
+     * @param pkey   the pkey
+     * @param skeys   the {skey ts value}
+     * @param params the params: [DATA_ET time] [CHUNK_SIZE size] [UNCOMPRESSED] [LABELS label1 val1 ...]
+     * `DATA_ET` - Set expire time (milliseconds)
+     * `CHUNK_SIZE` - Set datapoints num per chunk 256~1024 (size)
+     * `UNCOMPRESSED` - set the skey if compressed
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * @return Success: List of OK; Fail: error.
+     */
     public List<String> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
         return BuilderFactory.STRING_LIST.build(obj);
@@ -116,6 +215,14 @@ public class TairTsCluster {
         return BuilderFactory.STRING_LIST.build(obj);
     }
 
+
+    /**
+     * Del the skey.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @return Success: OK; Fail: error.
+     */
     public String extsdel(String pkey, String skey) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSDEL, pkey, skey);
         return BuilderFactory.STRING.build(obj);
@@ -126,6 +233,14 @@ public class TairTsCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+
+    /**
+     * Get the skey.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @return Success: ExtsDataPointResult; Fail: error.
+     */
     public ExtsDataPointResult extsget(String pkey, String skey) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSGET, pkey, skey);
         return TsBuilderFactory.EXTSGET_RESULT_STRING.build(obj);
@@ -136,6 +251,13 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSGET_RESULT_STRING.build(obj);
     }
 
+    /**
+     * Query skeys for the pkey.
+     *
+     * @param pkey   the pkey
+     * @param filters   the filters used to query skeys
+     * @return Success: OK; Fail: error.
+     */
     public List<String> extsquery(String pkey, ArrayList<ExtsFilter<String>> filters) {
         ExtsQueryParams addList = new ExtsQueryParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSQUERYINDEX, addList.getByteParams(pkey, filters));
@@ -148,6 +270,16 @@ public class TairTsCluster {
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
+
+    /**
+     * Range one skey for the pkey.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @return Success: OK; Fail: error.
+     */
     public ExtsSkeyResult extsrange(String pkey, String skey, String startTs, String endTs) {
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSRANGE, pkey, skey, startTs, endTs);
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
@@ -158,6 +290,21 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
+
+    /**
+     * Range one skey for the pkey.
+     *
+     * @param pkey   the pkey
+     * @param skey   the skey
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @param params the aggregation params: [MAXCOUNT count] [aggregationType timeBucket]
+     * `MAXCOUNT` - Set the maxcount for output
+     * `REVERSE` - reverse output.
+     * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
+     * `timeBucket` - set the timeBucket of the aggregation.
+     * @return Success: OK; Fail: error.
+     */
     public ExtsSkeyResult extsrange(String pkey, String skey, String startTs, String endTs, ExtsAggregationParams params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSRANGE, params.getByteRangeParams(pkey, skey, startTs, endTs));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
@@ -168,7 +315,15 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
-
+    /**
+     * Range one skey for the pkey.
+     *
+     * @param pkey   the pkey
+     * @param skeys   the skeys
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @return Success: OK; Fail: error.
+     */
     public List<ExtsSkeyResult> extsmrange(String pkey, ArrayList<String> skeys, String startTs, String endTs) {
         ExtsSpecifiedKeysParams params = new ExtsSpecifiedKeysParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSRANGESPECIFIEDKEYS, params.getByteParams(pkey, skeys, startTs, endTs));
@@ -181,6 +336,20 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSMRANGE_RESULT_STRING.build(obj);
     }
 
+    /**
+     * Range one skey for the pkey.
+     *
+     * @param pkey   the pkey
+     * @param skeys   the skeys
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @param params the aggregation params: [MAXCOUNT count] [aggregationType timeBucket]
+     * `MAXCOUNT` - Set the maxcount for output
+     * `REVERSE` - reverse output.
+     * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
+     * `timeBucket` - set the timeBucket of the aggregation.
+     * @return Success: OK; Fail: error.
+     */
     public List<ExtsSkeyResult> extsmrange(String pkey, ArrayList<String> skeys, String startTs, String endTs, ExtsAggregationParams params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSRANGESPECIFIEDKEYS, params.getByteRangeParams(pkey, skeys, startTs, endTs));
         return TsBuilderFactory.EXTSMRANGE_RESULT_STRING.build(obj);
@@ -191,6 +360,16 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSMRANGE_RESULT_STRING.build(obj);
     }
 
+
+    /**
+     * Mrange skeys for the pkey.
+     *
+     * @param pkey   the pkey
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @param filters   the filters used to query skeys
+     * @return Success: OK; Fail: error.
+     */
     public List<ExtsSkeyResult> extsmrange(String pkey, String startTs, String endTs, ArrayList<ExtsFilter<String>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMRANGE, params.getByteMrangeParams(pkey, startTs, endTs, filters));
@@ -203,6 +382,21 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSMRANGE_RESULT_STRING.build(obj);
     }
 
+    /**
+     * Mrange skeys for the pkey.
+     *
+     * @param pkey   the pkey
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @param filters   the filters used to query skeys
+     * @param params the aggregation params: [MAXCOUNT count] [aggregationType timeBucket]
+     * `MAXCOUNT` - Set the maxcount for output
+     * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
+     * `timeBucket` - set the timeBucket of the aggregation.
+     * `WITHLABELS` - output the labels.
+     * `REVERSE` - reverse output.
+     * @return Success: OK; Fail: error.
+     */
     public List<ExtsSkeyResult> extsmrange(String pkey, String startTs, String endTs, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSMRANGE, params.getByteMrangeParams(pkey, startTs, endTs, filters));
         return TsBuilderFactory.EXTSMRANGE_RESULT_STRING.build(obj);
@@ -213,6 +407,17 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSMRANGE_RESULT_STRING.build(obj);
     }
 
+    /**
+     * Prange the pkey.
+     *
+     * @param pkey   the pkey
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @param pkeyAggregationType   the aggregation type for the pkey
+     * @param pkeyTimeBucket   the timeBucket for the pkey
+     * @param filters   the filters used to query skeys
+     * @return Success: OK; Fail: error.
+     */
     public ExtsSkeyResult extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<String>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
@@ -225,6 +430,24 @@ public class TairTsCluster {
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
     }
 
+
+    /**
+     * Prange the pkey.
+     *
+     * @param pkey   the pkey
+     * @param startTs   the start ts
+     * @param endTs   the end ts
+     * @param pkeyAggregationType   the aggregation type for the pkey
+     *                              - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
+     * @param pkeyTimeBucket   the timeBucket for the pkey
+     * @param filters   the filters used to query skeys
+     * @param params the aggregation params: [MAXCOUNT count] [aggregationType timeBucket]
+     * `MAXCOUNT` - Set the maxcount for output
+     * `aggregationType` - aggregation type MIN, MAX, SUM, AVG, STDP, STDS, COUNT, FIRST, LAST, RANGE.
+     * `timeBucket` - set the timeBucket of the aggregation.
+     * `REVERSE` - reverse output.
+     * @return Success: OK; Fail: error.
+     */
     public ExtsSkeyResult extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
         Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
         return TsBuilderFactory.EXTSRANGE_RESULT_STRING.build(obj);
@@ -509,18 +732,19 @@ public class TairTsCluster {
      *
      * @param pkey   the pkey
      * @param skey   the skey
-     * @param expireTime the expireTime: [DATA_ET time]
+     * @param params the params: [DATA_ET time] [LABELS label1 val1 ...]
      * `DATA_ET` - Set expire time (milliseconds)
-     * Note that: `LABELS` `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
+     * `LABELS` - Set the skey's labels (label1 val1 label2 val2...)
+     * Note that: `CHUNK_SIZE` `UNCOMPRESSED` can be set only first add.
      * @return Success: OK; Fail: error.
      */
-    public String extsalterstr(String pkey, String skey, long expireTime) {
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSALTERSTR, pkey, skey, "DATA_ET", String.valueOf(expireTime));
+    public String extsalterstr(String pkey, String skey, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(pkey), ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 
-    public String extsalterstr(byte[] pkey, byte[] skey, long expireTime) {
-        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSALTERSTR, pkey, skey, SafeEncoder.encode("DATA_ET"), toByteArray(expireTime));
+    public String extsalterstr(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
+        Object obj = jc.sendCommand(pkey, ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
         return BuilderFactory.STRING.build(obj);
     }
 

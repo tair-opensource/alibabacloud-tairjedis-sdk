@@ -88,6 +88,70 @@ public class TairTsStringTest extends TairTsTestBase {
     }
 
     @Test
+    public void extsaddAlterTest() throws Exception {
+
+        String startTsStr = String.valueOf(startTs);
+        String endTsStr = String.valueOf(endTs);
+
+        for (int i = 0; i < 1; i++) {
+            String val = value + String.valueOf(i);
+            long ts = startTs + i*1;
+            String tsStr = String.valueOf(ts);
+            ExtsAttributesParams params = new ExtsAttributesParams();
+            params.dataEt(1000000000);
+            params.chunkSize(1024);
+            params.uncompressed();
+            ArrayList<String> labels = new ArrayList<String>();
+            labels.add("label1");
+            labels.add("1");
+            labels.add("label2");
+            labels.add("2");
+            params.labels(labels);
+
+            String addRet = tairTs.extsaddstr(randomPkey, randomSkey, tsStr, val, params);
+            Assert.assertEquals("OK", addRet);
+            ts = ts + 1;
+            tsStr = String.valueOf(ts);
+            addRet = tairTs.extsaddstr(randomPkey, randomSkey, tsStr, val, params);
+            Assert.assertEquals("OK", addRet);
+        }
+
+        ExtsFilter<String> filter1 = new ExtsFilter<String>("label1=1");
+        ExtsFilter<String> filter2 = new ExtsFilter<String>("label2=2");
+        ExtsFilter<String> filter3 = new ExtsFilter<String>("label3=3");
+        ExtsFilter<String> filter4 = new ExtsFilter<String>("label4=4");
+
+        ArrayList<ExtsFilter<String>> filterList1 = new ArrayList<ExtsFilter<String>>();
+        filterList1.add(filter1);
+        filterList1.add(filter2);
+
+        List<ExtsStringSkeyResult> rangeByteRet = tairTs.extsmrangestr(randomPkey, startTsStr, endTsStr, filterList1);
+        assertEquals(1, rangeByteRet.size());
+        assertEquals(randomSkey, rangeByteRet.get(0).getSkey());
+        List<ExtsLabelResult> labelRet = rangeByteRet.get(0).getLabels();
+        assertEquals(0, labelRet.size());
+
+        ExtsAttributesParams params = new ExtsAttributesParams();
+        ArrayList<String> labels = new ArrayList<String>();
+        labels.add("label3");
+        labels.add("3");
+        labels.add("label4");
+        labels.add("4");
+        params.labels(labels);
+        String alterRet = tairTs.extsalterstr(randomPkey, randomSkey, params);
+
+        ArrayList<ExtsFilter<String>> filterList2 = new ArrayList<ExtsFilter<String>>();
+        filterList2.add(filter3);
+        filterList2.add(filter4);
+
+        rangeByteRet = tairTs.extsmrangestr(randomPkey, startTsStr, endTsStr, filterList1);
+        assertEquals(0, rangeByteRet.size());
+
+        rangeByteRet = tairTs.extsmrangestr(randomPkey, startTsStr, endTsStr, filterList2);
+        assertEquals(1, rangeByteRet.size());
+    }
+
+    @Test
     public void extsmaddTest() throws Exception {
 
         for (int i = 0; i < 1; i++) {
