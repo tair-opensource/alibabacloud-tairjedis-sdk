@@ -10,6 +10,7 @@ public class ExtsStringAggregationParams extends Params {
 
     private static final String MAXCOUNT = "MAXCOUNT";
     private static final String WITHLABELS = "WITHLABELS";
+    private static final String REVERSE = "REVERSE";
     private static final String FILTER = "FILTER";
 
     /**
@@ -18,6 +19,15 @@ public class ExtsStringAggregationParams extends Params {
      */
     public ExtsStringAggregationParams withLabels() {
         addParam(WITHLABELS);
+        return this;
+    }
+
+    /**
+     * Output reverse.
+     * @return SetParams
+     */
+    public ExtsStringAggregationParams reverse() {
+        addParam(REVERSE);
         return this;
     }
 
@@ -44,6 +54,10 @@ public class ExtsStringAggregationParams extends Params {
             byteParams.add(SafeEncoder.encode(arg));
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
+
         if (contains(MAXCOUNT)) {
             addParamWithValue(byteParams, MAXCOUNT);
         }
@@ -55,6 +69,10 @@ public class ExtsStringAggregationParams extends Params {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
         for (byte[] arg : args) {
             byteParams.add(arg);
+        }
+
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
         }
 
         if (contains(MAXCOUNT)) {
@@ -78,6 +96,10 @@ public class ExtsStringAggregationParams extends Params {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
+
         byteParams.add(SafeEncoder.encode(FILTER));
         for (ExtsFilter<String> arg : args) {
             byteParams.add(SafeEncoder.encode(arg.getFilter()));
@@ -97,6 +119,10 @@ public class ExtsStringAggregationParams extends Params {
 
         if (contains(WITHLABELS)) {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
+        }
+
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
         }
 
         byteParams.add(SafeEncoder.encode(FILTER));
@@ -123,6 +149,10 @@ public class ExtsStringAggregationParams extends Params {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
+
         byteParams.add(SafeEncoder.encode(FILTER));
         for (ExtsFilter<String> arg : args) {
             byteParams.add(SafeEncoder.encode(arg.getFilter()));
@@ -144,6 +174,10 @@ public class ExtsStringAggregationParams extends Params {
 
         if (contains(WITHLABELS)) {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
+        }
+
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
         }
 
         byteParams.add(SafeEncoder.encode(FILTER));

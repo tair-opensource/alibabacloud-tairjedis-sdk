@@ -90,6 +90,70 @@ public class TairTsTest extends TairTsTestBase {
     }
 
     @Test
+    public void extsAlterTest() throws Exception {
+
+        String startTsStr = String.valueOf(startTs);
+        String endTsStr = String.valueOf(endTs);
+
+        for (int i = 0; i < 1; i++) {
+            double val = i;
+            long ts = startTs + i*1;
+            String tsStr = String.valueOf(ts);
+            ExtsAttributesParams params = new ExtsAttributesParams();
+            params.dataEt(1000000000);
+            params.chunkSize(1024);
+            params.uncompressed();
+            ArrayList<String> labels = new ArrayList<String>();
+            labels.add("label1");
+            labels.add("1");
+            labels.add("label2");
+            labels.add("2");
+            params.labels(labels);
+
+            String addRet = tairTs.extsadd(randomPkey, randomSkey, tsStr, val, params);
+            Assert.assertEquals("OK", addRet);
+            ts = ts + 1;
+            tsStr = String.valueOf(ts);
+            addRet = tairTs.extsadd(randomPkey, randomSkey, tsStr, val, params);
+            Assert.assertEquals("OK", addRet);
+        }
+
+        ExtsFilter<String> filter1 = new ExtsFilter<String>("label1=1");
+        ExtsFilter<String> filter2 = new ExtsFilter<String>("label2=2");
+        ExtsFilter<String> filter3 = new ExtsFilter<String>("label3=3");
+        ExtsFilter<String> filter4 = new ExtsFilter<String>("label4=4");
+
+        ArrayList<ExtsFilter<String>> filterList1 = new ArrayList<ExtsFilter<String>>();
+        filterList1.add(filter1);
+        filterList1.add(filter2);
+
+        List<ExtsSkeyResult> rangeByteRet = tairTs.extsmrange(randomPkey, startTsStr, endTsStr, filterList1);
+        assertEquals(1, rangeByteRet.size());
+        assertEquals(randomSkey, rangeByteRet.get(0).getSkey());
+        List<ExtsLabelResult> labelRet = rangeByteRet.get(0).getLabels();
+        assertEquals(0, labelRet.size());
+
+        ExtsAttributesParams params = new ExtsAttributesParams();
+        ArrayList<String> labels = new ArrayList<String>();
+        labels.add("label3");
+        labels.add("3");
+        labels.add("label4");
+        labels.add("4");
+        params.labels(labels);
+        String alterRet = tairTs.extsalter(randomPkey, randomSkey, params);
+
+        ArrayList<ExtsFilter<String>> filterList2 = new ArrayList<ExtsFilter<String>>();
+        filterList2.add(filter3);
+        filterList2.add(filter4);
+
+        rangeByteRet = tairTs.extsmrange(randomPkey, startTsStr, endTsStr, filterList1);
+        assertEquals(0, rangeByteRet.size());
+
+        rangeByteRet = tairTs.extsmrange(randomPkey, startTsStr, endTsStr, filterList2);
+        assertEquals(1, rangeByteRet.size());
+    }
+
+    @Test
     public void extsRawModifyTest() throws Exception {
 
         for (int i = 0; i < 1; i++) {
@@ -710,7 +774,7 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsrangeTest() throws Exception {
-        long num = 3;
+        int num = 3;
         String startTsStr = String.valueOf(startTs);
         String endTsStr = String.valueOf(endTs);
 
@@ -778,6 +842,17 @@ public class TairTsTest extends TairTsTestBase {
             long ts = startTs + i*1000;
             assertEquals(ts, dataPointRet.get(i).getTs());
             assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
+        }
+
+        paramsAgg.reverse();
+        rangeByteRet = tairTs.extsrange(randomPKeyBinary, bSkey, startTsStr.getBytes(), endTsStr.getBytes(), paramsAgg);
+        dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
+        for (int i = 0; i < num; i++) {
+            double val = i;
+            long ts = startTs + i*1000;
+            assertEquals(ts, dataPointRet.get(num-1-i).getTs());
+            assertEquals(val, dataPointRet.get(num-1-i).getDoubleValue(), 0.0);
         }
     }
 
@@ -1162,7 +1237,7 @@ public class TairTsTest extends TairTsTestBase {
 
     @Test
     public void extsmrangeLabelsTest() throws Exception {
-        long num = 3;
+        int num = 3;
         long labelNum = 0;
         String startTsStr = String.valueOf(startTs);
         String endTsStr = String.valueOf(endTs);
@@ -1182,8 +1257,9 @@ public class TairTsTest extends TairTsTestBase {
             labels.add("2");
             params.labels(labels);
             labelNum = labels.size() / 2;
-
-            String addRet = tairTs.extsadd(randomPkey, randomSkey, tsStr, val, params);
+            String addRet = null;
+            addRet = tairTs.extsadd(randomPkey, randomSkey, tsStr, val, params);
+            Assert.assertEquals("OK", addRet);
             addRet = tairTs.extsadd(randomPkey, randomSkey2, tsStr, val, params);
             Assert.assertEquals("OK", addRet);
         }
@@ -1203,7 +1279,7 @@ public class TairTsTest extends TairTsTestBase {
 
         List<ExtsSkeyResult> rangeByteRet = tairTs.extsmrange(randomPkey, startTsStr, endTsStr, paramsAgg, filterList);
         assertEquals(2, rangeByteRet.size());
-        assertEquals(randomSkey, rangeByteRet.get(0).getSkey());
+        assertEquals(randomSkey, rangeByteRet.get(1).getSkey());
         List<ExtsLabelResult> labelRet = rangeByteRet.get(0).getLabels();
 
         assertEquals("label1", labelRet.get(0).getName());
@@ -1219,7 +1295,7 @@ public class TairTsTest extends TairTsTestBase {
             assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
 
-        assertEquals(randomSkey2, rangeByteRet.get(1).getSkey());
+        assertEquals(randomSkey2, rangeByteRet.get(0).getSkey());
         labelRet = rangeByteRet.get(1).getLabels();
 
         assertEquals("label1", labelRet.get(0).getName());
@@ -1234,6 +1310,43 @@ public class TairTsTest extends TairTsTestBase {
             assertEquals(ts, dataPointRet.get(i).getTs());
             assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
         }
+
+        paramsAgg.reverse();
+
+        rangeByteRet = tairTs.extsmrange(randomPkey, startTsStr, endTsStr, paramsAgg, filterList);
+        assertEquals(2, rangeByteRet.size());
+        assertEquals(randomSkey, rangeByteRet.get(1).getSkey());
+        labelRet = rangeByteRet.get(0).getLabels();
+
+        assertEquals("label1", labelRet.get(0).getName());
+        assertEquals("1", labelRet.get(0).getValue());
+        assertEquals("label2", labelRet.get(1).getName());
+        assertEquals("2", labelRet.get(1).getValue());
+
+        dataPointRet = rangeByteRet.get(0).getDataPoints();
+        for (int i = 0; i < num; i++) {
+            double val = i;
+            long ts = startTs + i * 1000;
+            assertEquals(ts, dataPointRet.get(num-1-i).getTs());
+            assertEquals(val, dataPointRet.get(num-1-i).getDoubleValue(), 0.0);
+        }
+
+        assertEquals(randomSkey2, rangeByteRet.get(0).getSkey());
+        labelRet = rangeByteRet.get(1).getLabels();
+
+        assertEquals("label1", labelRet.get(0).getName());
+        assertEquals("1", labelRet.get(0).getValue());
+        assertEquals("label2", labelRet.get(1).getName());
+        assertEquals("2", labelRet.get(1).getValue());
+
+        dataPointRet = rangeByteRet.get(1).getDataPoints();
+        for (int i = 0; i < num; i++) {
+            double val = i;
+            long ts = startTs + i * 1000;
+            assertEquals(ts, dataPointRet.get(num-1-i).getTs());
+            assertEquals(val, dataPointRet.get(num-1-i).getDoubleValue(), 0.0);
+        }
+
     }
 
     @Test
@@ -1443,6 +1556,59 @@ public class TairTsTest extends TairTsTestBase {
             long ts = startTs + i*1000;
             assertEquals(ts, dataPointRet.get(i).getTs());
             assertEquals(val, dataPointRet.get(i).getDoubleValue(), 0.0);
+        }
+    }
+
+    @Test
+    public void extsprangeAggregationSkeyRevTest() throws Exception {
+        int num = 3;
+        long labelNum = 0;
+        String startTsStr = String.valueOf(startTs);
+        String endTsStr = String.valueOf(endTs);
+
+        for (int i = 0; i < num; i++) {
+            double val = i;
+            long ts = startTs + i*1000;
+            String tsStr = String.valueOf(ts);
+            ExtsAttributesParams params = new ExtsAttributesParams();
+            params.dataEt(1000000000);
+            params.chunkSize(1024);
+            params.uncompressed();
+            ArrayList<String> labels = new ArrayList<String>();
+            labels.add("label1");
+            labels.add("1");
+            labels.add("label2");
+            labels.add("2");
+            params.labels(labels);
+            labelNum = labels.size()/2;
+
+            String addRet = tairTs.extsadd(randomPkey, randomSkey, tsStr, val, params);
+            Assert.assertEquals("OK", addRet);
+        }
+
+        ExtsAggregationParams paramsAgg = new ExtsAggregationParams();
+        paramsAgg.maxCountSize(10);
+        paramsAgg.aggAvg(1000);
+
+        ExtsFilter<String> filter1 = new ExtsFilter<String>("label1=1");
+        ExtsFilter<String> filter2 = new ExtsFilter<String>("label2=2");
+        ExtsFilter<String> filter3 = new ExtsFilter<String>("label3=3");
+        ExtsFilter<String> filter4 = new ExtsFilter<String>("label2=3");
+        ArrayList<ExtsFilter<String>> filterList = new ArrayList<ExtsFilter<String>>();
+        filterList.add(filter1);
+        filterList.add(filter2);
+
+        ExtsAggregationParams params = new ExtsAggregationParams();
+        params.reverse();
+
+        ExtsSkeyResult rangeByteRet = tairTs.extsprange(randomPkey, startTsStr, endTsStr, "sum", 1000, params, filterList);
+        List<ExtsDataPointResult> dataPointRet = rangeByteRet.getDataPoints();
+        assertEquals(num, dataPointRet.size());
+        for (int i = 0; i < num; i++) {
+            double val = i;
+            long ts = startTs + i*1000;
+            assertEquals(ts, dataPointRet.get(num-1-i).getTs());
+            assertEquals(val, dataPointRet.get(num-1-i).getDoubleValue(), 0.0);
         }
     }
 

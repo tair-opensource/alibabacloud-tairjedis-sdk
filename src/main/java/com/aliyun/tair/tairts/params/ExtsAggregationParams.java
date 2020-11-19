@@ -12,6 +12,7 @@ public class ExtsAggregationParams extends Params {
 
     private static final String MAXCOUNT = "MAXCOUNT";
     private static final String WITHLABELS = "WITHLABELS";
+    private static final String REVERSE = "REVERSE";
     private static final String FILTER = "FILTER";
     private static final String AGGREGATION = "AGGREGATION";
     private static final String MIN = "MIN";
@@ -34,6 +35,15 @@ public class ExtsAggregationParams extends Params {
      */
     public ExtsAggregationParams withLabels() {
         addParam(WITHLABELS);
+        return this;
+    }
+
+    /**
+     * Output reverse.
+     * @return SetParams
+     */
+    public ExtsAggregationParams reverse() {
+        addParam(REVERSE);
         return this;
     }
 
@@ -164,6 +174,10 @@ public class ExtsAggregationParams extends Params {
             addParamWithValue(byteParams, MAXCOUNT);
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
+
 
         for (String menu: MENUS) {
             if (contains(menu)) {
@@ -186,6 +200,9 @@ public class ExtsAggregationParams extends Params {
             addParamWithValue(byteParams, MAXCOUNT);
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
 
         for (String menu: MENUS) {
             if (contains(menu)) {
@@ -215,6 +232,10 @@ public class ExtsAggregationParams extends Params {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
+
         for (String menu: MENUS) {
             if (contains(menu)) {
                 byteParams.add(SafeEncoder.encode(AGGREGATION));
@@ -242,6 +263,10 @@ public class ExtsAggregationParams extends Params {
 
         if (contains(WITHLABELS)) {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
+        }
+
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
         }
 
         for (String menu: MENUS) {
@@ -276,6 +301,10 @@ public class ExtsAggregationParams extends Params {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
+
         byteParams.add(SafeEncoder.encode(FILTER));
         for (ExtsFilter<String> arg : args) {
             byteParams.add(SafeEncoder.encode(arg.getFilter()));
@@ -303,6 +332,10 @@ public class ExtsAggregationParams extends Params {
 
         if (contains(WITHLABELS)) {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
+        }
+
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
         }
 
         byteParams.add(SafeEncoder.encode(FILTER));
@@ -337,6 +370,10 @@ public class ExtsAggregationParams extends Params {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
         }
 
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
+        }
+
         byteParams.add(SafeEncoder.encode(FILTER));
         for (ExtsFilter<String> arg : args) {
             byteParams.add(SafeEncoder.encode(arg.getFilter()));
@@ -366,6 +403,10 @@ public class ExtsAggregationParams extends Params {
 
         if (contains(WITHLABELS)) {
             byteParams.add(SafeEncoder.encode(WITHLABELS));
+        }
+
+        if (contains(REVERSE)) {
+            byteParams.add(SafeEncoder.encode(REVERSE));
         }
 
         byteParams.add(SafeEncoder.encode(FILTER));
