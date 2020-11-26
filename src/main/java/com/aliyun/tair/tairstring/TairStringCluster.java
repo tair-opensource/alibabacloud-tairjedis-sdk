@@ -8,6 +8,7 @@ import com.aliyun.tair.tairstring.params.ExsetParams;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
+import com.aliyun.tair.tairstring.results.ExincrbyVersionResult;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.util.SafeEncoder;
@@ -68,6 +69,18 @@ public class TairStringCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+    public Long exsetVersion(String key, String value, ExsetParams params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXSET,
+            params.getByteParams(key, value, "WITHVERSION"));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long exsetVersion(byte[] key, byte[] value, ExsetParams params) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXSET,
+            params.getByteParams(key, value, "WITHVERSION".getBytes()));
+        return BuilderFactory.LONG.build(obj);
+    }
+
     public ExgetResult<String> exget(String key) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXGET, key);
         return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
@@ -75,6 +88,16 @@ public class TairStringCluster {
 
     public ExgetResult<byte[]> exget(byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXGET, key);
+        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+    }
+
+    public ExgetResult<String> exgetFlags(String key) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXGET, key, "WITHFLAGS");
+        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+    }
+
+    public ExgetResult<byte[]> exgetFlags(byte[] key) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXGET, key, "WITHFLAGS".getBytes());
         return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
     }
 
@@ -103,6 +126,16 @@ public class TairStringCluster {
     public Long exincrBy(byte[] key, long incr, ExincrbyParams params) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXINCRBY, params.getByteParams(key, toByteArray(incr)));
         return BuilderFactory.LONG.build(obj);
+    }
+
+    public ExincrbyVersionResult exincrByVersion(String key, long incr, ExincrbyParams params) {
+        return exincrByVersion(SafeEncoder.encode(key), incr, params);
+    }
+
+    public ExincrbyVersionResult exincrByVersion(byte[] key, long incr, ExincrbyParams params) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXINCRBY,
+            params.getByteParams(key, toByteArray(incr), "WITHVERSION".getBytes()));
+        return StringBuilderFactory.EXINCRBY_VERSION_RESULT_STRING.build(obj);
     }
 
     public Double exincrByFloat(String key, Double incr) {
@@ -142,5 +175,36 @@ public class TairStringCluster {
     public Long excad(byte[] key, long version) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXCAD, key, toByteArray(version));
         return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long exappend(String key, String value, String nxxx, String verabs, long version) {
+        return exappend(SafeEncoder.encode(key), SafeEncoder.encode(value), nxxx, verabs, version);
+    }
+
+    public Long exappend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXAPPEND, key, value, SafeEncoder.encode(nxxx),
+            SafeEncoder.encode(verabs), toByteArray(version));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long exprepend(String key, String value, String nxxx, String verabs, long version) {
+        return exprepend(SafeEncoder.encode(key), SafeEncoder.encode(value), nxxx, verabs, version);
+    }
+
+    public Long exprepend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXPREPEND, key, value, SafeEncoder.encode(nxxx),
+            SafeEncoder.encode(verabs), toByteArray(version));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public ExgetResult<String> exgae(String key, String expxwithat, long time) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXGAE, key, expxwithat, Long.toString(time));
+        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+    }
+
+    public ExgetResult<byte[]> exgae(byte[] key, String expxwithat, long time) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXGAE, key, SafeEncoder.encode(expxwithat),
+            toByteArray(time));
+        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
     }
 }

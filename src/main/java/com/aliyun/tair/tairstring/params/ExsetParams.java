@@ -21,6 +21,16 @@ public class ExsetParams extends Params {
     private static final String MIN = "min";
     private static final String MAX = "max";
 
+    private static final String FLAGS = "flags";
+
+    /**
+     * MEMCACHED: flags
+     */
+    public ExsetParams flags(int flags) {
+        addParam(FLAGS, flags);
+        return this;
+    }
+
     /**
      * Only set the key if it already exist.
      * @return SetParams
@@ -130,6 +140,8 @@ public class ExsetParams extends Params {
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);
 
+        addParamWithValue(byteParams, FLAGS);
+
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
 
@@ -156,6 +168,8 @@ public class ExsetParams extends Params {
 
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);
+
+        addParamWithValue(byteParams, FLAGS);
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

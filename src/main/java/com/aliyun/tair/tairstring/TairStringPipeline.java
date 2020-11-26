@@ -8,6 +8,7 @@ import com.aliyun.tair.tairstring.params.ExsetParams;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
+import com.aliyun.tair.tairstring.results.ExincrbyVersionResult;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
@@ -64,6 +65,18 @@ public class TairStringPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
+    public Response<Long> exsetVersion(String key, String value, ExsetParams params) {
+        getClient("").sendCommand(ModuleCommand.EXSET,
+            params.getByteParams(key, value, "WITHVERSION"));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> exsetVersion(byte[] key, byte[] value, ExsetParams params) {
+        getClient("").sendCommand(ModuleCommand.EXSET,
+            params.getByteParams(key, value, "WITHVERSION".getBytes()));
+        return getResponse(BuilderFactory.LONG);
+    }
+
     public Response<ExgetResult<String>> exget(String key) {
         getClient("").sendCommand(ModuleCommand.EXGET, key);
         return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
@@ -71,6 +84,16 @@ public class TairStringPipeline extends Pipeline {
 
     public Response<ExgetResult<byte[]>> exget(byte[] key) {
         getClient("").sendCommand(ModuleCommand.EXGET, key);
+        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
+    }
+
+    public Response<ExgetResult<String>> exgetFlags(String key) {
+        getClient("").sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS");
+        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
+    }
+
+    public Response<ExgetResult<byte[]>> exgetFlags(byte[] key) {
+        getClient("").sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS".getBytes());
         return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
     }
 
@@ -99,6 +122,16 @@ public class TairStringPipeline extends Pipeline {
     public Response<Long> exincrBy(byte[] key, long incr, ExincrbyParams params) {
         getClient("").sendCommand(ModuleCommand.EXINCRBY, params.getByteParams(key, toByteArray(incr)));
         return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<ExincrbyVersionResult> exincrByVersion(String key, long incr, ExincrbyParams params) {
+        return exincrByVersion(SafeEncoder.encode(key), incr, params);
+    }
+
+    public Response<ExincrbyVersionResult> exincrByVersion(byte[] key, long incr, ExincrbyParams params) {
+        getClient("").sendCommand(ModuleCommand.EXINCRBY,
+            params.getByteParams(key, toByteArray(incr), "WITHVERSION".getBytes()));
+        return getResponse(StringBuilderFactory.EXINCRBY_VERSION_RESULT_STRING);
     }
 
     public Response<Double> exincrByFloat(String key, Double incr) {
@@ -136,5 +169,36 @@ public class TairStringPipeline extends Pipeline {
     public Response<Long> excad(byte[] key, long version) {
         getClient("").sendCommand(ModuleCommand.EXCAD, key, toByteArray(version));
         return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> exappend(String key, String value, String nxxx, String verabs, long version) {
+        return exappend(SafeEncoder.encode(key), SafeEncoder.encode(value), nxxx, verabs, version);
+    }
+
+    public Response<Long> exappend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
+        getClient("").sendCommand(ModuleCommand.EXAPPEND, key, value, SafeEncoder.encode(nxxx),
+            SafeEncoder.encode(verabs), toByteArray(version));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> exprepend(String key, String value, String nxxx, String verabs, long version) {
+        return exprepend(SafeEncoder.encode(key), SafeEncoder.encode(value), nxxx, verabs, version);
+    }
+
+    public Response<Long> exprepend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
+        getClient("").sendCommand(ModuleCommand.EXPREPEND, key, value, SafeEncoder.encode(nxxx),
+            SafeEncoder.encode(verabs), toByteArray(version));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<ExgetResult<String>> exgae(String key, String expxwithat, long time) {
+        getClient("").sendCommand(ModuleCommand.EXGAE, key, expxwithat, Long.toString(time));
+        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
+    }
+
+    public Response<ExgetResult<byte[]>> exgae(byte[] key, String expxwithat, long time) {
+        getClient("").sendCommand(ModuleCommand.EXGAE, key, SafeEncoder.encode(expxwithat),
+            toByteArray(time));
+        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
     }
 }

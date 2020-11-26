@@ -59,6 +59,9 @@ public enum ModuleCommand implements ProtocolCommand {
     EXINCRBYFLOAT("EXINCRBYFLOAT"),
     EXCAS("EXCAS"),
     EXCAD("EXCAD"),
+    EXAPPEND("EXAPPEND"),
+    EXPREPEND("EXPREPEND"),
+    EXGAE("EXGAE"),
 
     // TairGis command
     GISADD("GIS.ADD"),

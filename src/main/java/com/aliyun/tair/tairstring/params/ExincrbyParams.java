@@ -21,12 +21,24 @@ public class ExincrbyParams extends Params {
     private static final String MAX = "MAX";
     private static final String MIN = "MIN";
 
+    private static final String DEF = "def";
+    private static final String NONEGATIVE = "nonegative";
 
     public ExincrbyParams() {
     }
 
     public static ExincrbyParams ExincrbyParams() {
         return new ExincrbyParams();
+    }
+
+    public ExincrbyParams def(long defaultValue) {
+        addParam(DEF, defaultValue);
+        return this;
+    }
+
+    public ExincrbyParams nonegative() {
+        addParam(NONEGATIVE);
+        return this;
     }
 
     public ExincrbyParams max(long max) {
@@ -137,6 +149,9 @@ public class ExincrbyParams extends Params {
         if (contains(NX)) {
             byteParams.add(SafeEncoder.encode(NX));
         }
+        if (contains(NONEGATIVE)) {
+            byteParams.add(SafeEncoder.encode(NONEGATIVE));
+        }
 
         addParamWithValue(byteParams, EX);
         addParamWithValue(byteParams, PX);
@@ -148,6 +163,8 @@ public class ExincrbyParams extends Params {
 
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);
+
+        addParamWithValue(byteParams, DEF);
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

@@ -2,6 +2,7 @@ package com.aliyun.tair.tairstring.factory;
 
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
+import com.aliyun.tair.tairstring.results.ExincrbyVersionResult;
 import redis.clients.jedis.Builder;
 
 import java.util.List;
@@ -15,8 +16,12 @@ public class StringBuilderFactory {
                 return null;
             }
             List l = (List) data;
+            if (l.size() == 3) {
+                // WITHFLAGS, Success: [value, version, flags]
+                return new ExgetResult<String>((String)l.get(0), ((Number)l.get(1)).longValue(),
+                    ((Number)l.get(2)).longValue());
+            }
             return new ExgetResult<String>(new String((byte[]) l.get(0)),((Number) l.get(1)).longValue());
-
         }
 
         @Override
@@ -33,6 +38,11 @@ public class StringBuilderFactory {
                 return null;
             }
             List l = (List) data;
+            if (l.size() == 3) {
+                // WITHFLAGS, Success: [value, version, flags]
+                return new ExgetResult<byte[]>((byte[])l.get(0), ((Number)l.get(1)).longValue(),
+                    ((Number)l.get(2)).longValue());
+            }
             return new ExgetResult<byte[]>((byte[])l.get(0),((Number) l.get(1)).longValue());
         }
 
@@ -73,6 +83,22 @@ public class StringBuilderFactory {
         @Override
         public String toString() {
             return "ExcasResult";
+        }
+    };
+
+    public static final Builder<ExincrbyVersionResult> EXINCRBY_VERSION_RESULT_STRING = new Builder<ExincrbyVersionResult>() {
+        @Override
+        public ExincrbyVersionResult build(Object data) {
+            if (data == null) {
+                return null;
+            }
+            List l = (List) data;
+            return new ExincrbyVersionResult(((Number) l.get(0)).longValue(),((Number) l.get(1)).longValue());
+        }
+
+        @Override
+        public String toString() {
+            return "ExincrbyVersionResult";
         }
     };
 }
