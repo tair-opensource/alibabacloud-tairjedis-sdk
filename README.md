@@ -1,6 +1,6 @@
 # alibabacloud-tairjedis-sdk
 
-基于 [Jedis](https://github.com/xetorthio/jedis) 封装的，操作 [云数据库Redis企业版](https://help.aliyun.com/document_detail/146579.html) 的客户端，支持企业版多种 [Module](https://help.aliyun.com/document_detail/146579.html) (TairHash, TairDoc等)的操作命令。
+基于 [Jedis](https://github.com/xetorthio/jedis) 封装的，操作 [云数据库Redis企业版](https://help.aliyun.com/document_detail/145957.html) 的客户端，支持企业版多种 [Module](https://help.aliyun.com/document_detail/146579.html) 的操作命令。
 
 # 安装方法
 
@@ -12,193 +12,62 @@
 </dependency>
 ```
 
-最新版本查阅：[这里](https://oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)
+最新版本查阅：[这里](https://oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)  
+JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
 
-# 快速使用
+# 代码实例
 
-文档地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
+## 分布式锁
 
-初始化
+原理介绍见 [高性能分布式锁](https://help.aliyun.com/document_detail/146758.html) 
+
+加锁：Redis SET with NX and EX，Redis原生命令。  
+解锁：CAD(compare and delete)，阿里云Redis企业版特有命令，替代原生Redis Lua方案。
+
 ```
-public class TestBase {
-    private static final String HOST = "127.0.0.1";
-    private static final int PORT = 6379;
-    private static final int CLUSTER_PORT = 30001;
-
-    private static Jedis jedis;
-    private static JedisCluster jedisCluster;
-
-    public static TairDoc tairDoc;
-    public static TairDocPipeline tairDocPipeline;
-    public static TairDocCluster tairDocCluster;
-
-    @BeforeClass
-    public static void setUp() {
-        if (jedis == null) {
-            jedis = new Jedis(HOST, PORT);
-            if (!"PONG".equals(jedis.ping())) {
-                System.exit(-1);
-            }
-
-            Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-            jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
-            jedisCluster = new JedisCluster(jedisClusterNodes);
-
-            tairDoc = new TairDoc(jedis);
-            tairDocPipeline = new TairDocPipeline();
-            tairDocPipeline.setClient(jedis.getClient());
-            tairDocCluster = new TairDocCluster(jedisCluster);
+public static boolean releaseDistributedLock(String lockKey, String requestId) {
+    Jedis jedis = null;
+    try {
+        jedis = jedisPool.getResource();
+        TairString tairString = new TairString(jedis);
+        Long ret = tairString.cad(lockKey, requestId);
+        if (1 == ret) {
+            return true;
         }
-    }
-
-    @AfterClass
-    public static void tearDown() {
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
         if (jedis != null) {
             jedis.close();
         }
     }
+    return false;
 }
 ```
 
-普通命令：
+完整代码见：[这里](https://github.com/aliyun/alibabacloud-tairjedis-sdk/blob/master/src/test/java/com/aliyun/tair/tests/example/DistributeLock.java)
+
+执行结果如下，可以看到10个线程分别对total相加10次之后，得到的结果是100，说明分布式锁成功限制了线程并发的情况。
+
 ```
-    @Test
-    public void jsonSetTest() {
-        String ret = tairDoc.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE);
-        assertEquals("OK", ret);
-
-        ret = tairDoc.jsonget(jsonKey, ".");
-        assertEquals(JSON_STRING_EXAMPLE, ret);
-
-        ret = tairDoc.jsonget(jsonKey, ".foo");
-        assertEquals("\"bar\"", ret);
-
-        ret = tairDoc.jsonget(jsonKey, ".baz");
-        assertEquals("42", ret);
-    }
+...
+I am thread: Thread-8, unlock success, total: 98
+I am thread: Thread-5, lock success, total: 98
+I am thread: Thread-5, unlock success, total: 99
+I am thread: Thread-7, lock success, total: 99
+I am thread: Thread-7, unlock success, total: 100
+Final total is: 100
 ```
 
-Pipeline
-```
-    @Test
-    public void jsonSetPipelineTest() {
-        tairDocPipeline.jsonset(jsonKey, ".", JSON_STRING_EXAMPLE);
-        tairDocPipeline.jsonget(jsonKey, ".");
-        tairDocPipeline.jsonget(jsonKey, ".foo");
-        tairDocPipeline.jsonget(jsonKey, ".baz");
+## 通过终端操作TairDoc
 
-        List<Object> objs = tairDocPipeline.syncAndReturnAll();
+1，打开 https://shell.aliyun.com/ ，您将获得一个终端。
 
-        assertEquals("OK", objs.get(0));
-        assertEquals(JSON_STRING_EXAMPLE, objs.get(1));
-        assertEquals("\"bar\"", objs.get(2));
-        assertEquals("42", objs.get(3));
-    }
-```
+2，执行下面命令
+> cloudshell-git-open https://code.aliyun.com/redisuser/tairdoc-tutorial.git;teachme tutorial.md
 
-Cluster
-```
-    @Test
-    public void jsonSetClusterTest() {
-        String ret = tairDocCluster.jsonset(jsonKey, jsonKey, ".", JSON_STRING_EXAMPLE);
-        assertEquals("OK", ret);
+开始进行演示操作，右边有完整的示例过程，您可以点击`执行命令`，命令将被拷贝到左边的shell上。
 
-        ret = tairDocCluster.jsonget(jsonKey, jsonKey, ".");
-        assertEquals(JSON_STRING_EXAMPLE, ret);
+3，通过教程，您可以直接执行企业版的TairDoc命令。
 
-        ret = tairDocCluster.jsonget(jsonKey, jsonKey, ".foo");
-        assertEquals("\"bar\"", ret);
-
-        ret = tairDocCluster.jsonget(jsonKey, jsonKey, ".baz");
-        assertEquals("42", ret);
-    }
-```
-
-# 代码示例
-
-## 分布式锁
-
-加锁：redis set with nx，and expire time  
-解锁：cad(compare and delete) instead of lua
-```
-public class DistributeLock {
-    private TairString tairString;
-    private Jedis jedis;
-
-    public DistributeLock(Jedis j) {
-        jedis = j;
-        tairString = new TairString(j);
-    }
-
-    public boolean tryGetDistributedLock(String lockKey, String requestId, int expireTime) {
-        try {
-            String result = jedis.set(lockKey, requestId, SetParams.setParams().nx().ex(expireTime));
-            if ("OK".equals(result)) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean releaseDistributedLock(String lockKey, String requestId) {
-        try {
-            Long ret = tairString.cad(lockKey, requestId);
-            if (1 == ret) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-}
-```
-
-## TairDoc示例
-
-将学生信息存储为JSON格式，直接通过path更新部分JSON对象，并给年龄+1。
-```
-public class TairDocTest {
-    private static TairDoc tairDoc;
-
-    public static void main(String[] args) {
-        Jedis jedis = new Jedis("127.0.0.1", 6379);
-        tairDoc = new TairDoc(jedis);
-
-        Student student = new Student("Tom", 18);
-
-        // 存储
-        tairDoc.jsonset("tominfo", ".", JSON.toJSONString(student));
-
-        // 更新姓名为Danny, 年龄+1
-        tairDoc.jsonset("tominfo", ".name", "\"Danny\"");
-        tairDoc.jsonnumincrBy("tominfo", ".age", 2.0);
-
-        // 重新获取
-        String tomInfo = tairDoc.jsonget("tominfo");
-        System.out.println(tomInfo);
-
-        jedis.close();
-    }
-
-    static class Student {
-        private String name;
-        private int age;
-
-        Student(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getAge() {
-            return age;
-        }
-    }
-}
-```
+![](https://raw.githubusercontent.com/aliyun/alibabacloud-tairjedis-sdk/master/assets/tairdoc.jpg)
