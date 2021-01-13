@@ -16,6 +16,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.taobao.eagleeye.EagleEye;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
@@ -172,17 +173,23 @@ public class TairCluster extends JedisCluster {
         long ret = 0;
         Map<String, List<String>> map = preTreatKey(keys);
         List<FutureTask<Long>> list = new ArrayList<FutureTask<Long>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, List<String>> entry : map.entrySet()) {
             final String[] subkeys = new String[entry.getValue().size()];
             entry.getValue().toArray(subkeys);
             FutureTask<Long> task = new FutureTask<Long>(new Callable<Long>() {
                 public Long call() throws Exception {
-                    return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
-                        @Override
-                        public Long execute(Jedis connection) {
-                            return connection.texists(subkeys);
-                        }
-                    }.runMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
+                            @Override
+                            public Long execute(Jedis connection) {
+                                return connection.texists(subkeys);
+                            }
+                        }.runMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
@@ -216,17 +223,23 @@ public class TairCluster extends JedisCluster {
         long ret = 0;
         Map<String, List<byte[]>> map = preTreatKey(keys);
         List<FutureTask<Long>> list = new ArrayList<FutureTask<Long>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, List<byte[]>> entry : map.entrySet()) {
             final byte[][] subkeys = new byte[entry.getValue().size()][];
             entry.getValue().toArray(subkeys);
             FutureTask<Long> task = new FutureTask<Long>(new Callable<Long>() {
                 public Long call() throws Exception {
-                    return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
-                        @Override
-                        public Long execute(Jedis connection) {
-                            return connection.texists(subkeys);
-                        }
-                    }.runBinaryMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
+                            @Override
+                            public Long execute(Jedis connection) {
+                                return connection.texists(subkeys);
+                            }
+                        }.runBinaryMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
@@ -260,17 +273,23 @@ public class TairCluster extends JedisCluster {
         long ret = 0;
         Map<String, List<String>> map = preTreatKey(keys);
         List<FutureTask<Long>> list = new ArrayList<FutureTask<Long>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, List<String>> entry : map.entrySet()) {
             final String[] subkeys = new String[entry.getValue().size()];
             entry.getValue().toArray(subkeys);
             FutureTask<Long> task = new FutureTask<Long>(new Callable<Long>() {
                 public Long call() throws Exception {
-                    return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
-                        @Override
-                        public Long execute(Jedis connection) {
-                            return connection.tdel(subkeys);
-                        }
-                    }.runMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
+                            @Override
+                            public Long execute(Jedis connection) {
+                                return connection.tdel(subkeys);
+                            }
+                        }.runMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
@@ -304,17 +323,23 @@ public class TairCluster extends JedisCluster {
         long ret = 0;
         Map<String, List<byte[]>> map = preTreatKey(keys);
         List<FutureTask<Long>> list = new ArrayList<FutureTask<Long>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, List<byte[]>> entry : map.entrySet()) {
             final byte[][] subkeys = new byte[entry.getValue().size()][];
             entry.getValue().toArray(subkeys);
             FutureTask<Long> task = new FutureTask<Long>(new Callable<Long>() {
                 public Long call() throws Exception {
-                    return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
-                        @Override
-                        public Long execute(Jedis connection) {
-                            return connection.tdel(subkeys);
-                        }
-                    }.runBinaryMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<Long>(connectionHandler, maxAttempts) {
+                            @Override
+                            public Long execute(Jedis connection) {
+                                return connection.tdel(subkeys);
+                            }
+                        }.runBinaryMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
@@ -348,17 +373,23 @@ public class TairCluster extends JedisCluster {
         Map<String, List<String>> map = preTreatKey(keys);
         List<String> ret = new ArrayList<String>();
         Map<String[], FutureTask<List<String>>> retMap = new HashMap<String[], FutureTask<List<String>>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, List<String>> entry : map.entrySet()) {
             final String[] subkeys = new String[entry.getValue().size()];
             entry.getValue().toArray(subkeys);
             FutureTask<List<String>> task = new FutureTask<List<String>>(new Callable<List<String>>() {
                 public List<String> call() throws Exception {
-                    return new JedisClusterCommand<List<String>>(connectionHandler, maxAttempts) {
-                        @Override
-                        public List<String> execute(Jedis connection) {
-                            return connection.tmget(subkeys);
-                        }
-                    }.runMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<List<String>>(connectionHandler, maxAttempts) {
+                            @Override
+                            public List<String> execute(Jedis connection) {
+                                return connection.tmget(subkeys);
+                            }
+                        }.runMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
@@ -402,17 +433,23 @@ public class TairCluster extends JedisCluster {
         Map<String, List<byte[]>> map = preTreatKey(keys);
         List<byte[]> ret = new ArrayList<byte[]>();
         Map<byte[][], FutureTask<List<byte[]>>> retMap = new HashMap<byte[][], FutureTask<List<byte[]>>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, List<byte[]>> entry : map.entrySet()) {
             final byte[][] subkeys = new byte[entry.getValue().size()][];
             entry.getValue().toArray(subkeys);
             FutureTask<List<byte[]>> task = new FutureTask<List<byte[]>>(new Callable<List<byte[]>>() {
                 public List<byte[]> call() throws Exception {
-                    return new JedisClusterCommand<List<byte[]>>(connectionHandler, maxAttempts) {
-                        @Override
-                        public List<byte[]> execute(Jedis connection) {
-                            return connection.tmget(subkeys);
-                        }
-                    }.runBinaryMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<List<byte[]>>(connectionHandler, maxAttempts) {
+                            @Override
+                            public List<byte[]> execute(Jedis connection) {
+                                return connection.tmget(subkeys);
+                            }
+                        }.runBinaryMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
@@ -457,6 +494,7 @@ public class TairCluster extends JedisCluster {
         String ret = null;
         Map<String, Map<String, String>> map = preTreatKeyAndValue(keysvalues);
         List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, Map<String, String>> entry : map.entrySet()) {
             int i = 0, j = 0;
             final String[] subkeysvalues = new String[entry.getValue().size() * 2];
@@ -469,12 +507,17 @@ public class TairCluster extends JedisCluster {
             }
             FutureTask<String> task = new FutureTask<String>(new Callable<String>() {
                 public String call() throws Exception {
-                    return new JedisClusterCommand<String>(connectionHandler, maxAttempts) {
-                        @Override
-                        public String execute(Jedis connection) {
-                            return connection.tmset(subkeysvalues);
-                        }
-                    }.runMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<String>(connectionHandler, maxAttempts) {
+                            @Override
+                            public String execute(Jedis connection) {
+                                return connection.tmset(subkeysvalues);
+                            }
+                        }.runMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
@@ -513,6 +556,7 @@ public class TairCluster extends JedisCluster {
         String ret = null;
         Map<String, Map<byte[], byte[]>> map = preTreatKeyAndValue(keysvalues);
         List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
+        final Object ctx = EagleEye.getRpcContext();
         for (final Map.Entry<String, Map<byte[], byte[]>> entry : map.entrySet()) {
             int i = 0, j = 0;
             final byte[][] subkeysvalues = new byte[entry.getValue().size() * 2][];
@@ -525,12 +569,17 @@ public class TairCluster extends JedisCluster {
             }
             FutureTask<String> task = new FutureTask<String>(new Callable<String>() {
                 public String call() throws Exception {
-                    return new JedisClusterCommand<String>(connectionHandler, maxAttempts) {
-                        @Override
-                        public String execute(Jedis connection) {
-                            return connection.tmset(subkeysvalues);
-                        }
-                    }.runBinaryMcommand(subkeys.length, subkeys);
+                    try {
+                        EagleEye.setRpcContext(ctx);
+                        return new JedisClusterCommand<String>(connectionHandler, maxAttempts) {
+                            @Override
+                            public String execute(Jedis connection) {
+                                return connection.tmset(subkeysvalues);
+                            }
+                        }.runBinaryMcommand(subkeys.length, subkeys);
+                    } finally {
+                        EagleEye.clearRpcContext();
+                    }
                 }
             });
             backend.submit(task);
