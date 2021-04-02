@@ -17,6 +17,7 @@ public class ExsetParams extends Params {
 
     private static final String VER = "ver";
     private static final String ABS = "abs";
+    private static final String GT = "gt";
 
     private static final String MIN = "min";
     private static final String MAX = "max";
@@ -99,6 +100,16 @@ public class ExsetParams extends Params {
         return this;
     }
 
+    /**
+     * Set if version great than old version
+     * @param version
+     * @return SetParams
+     */
+    public ExsetParams gt(long version) {
+        addParam(GT, version);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -126,6 +137,7 @@ public class ExsetParams extends Params {
 
         addParamWithValue(byteParams, VER);
         addParamWithValue(byteParams, ABS);
+        addParamWithValue(byteParams, GT);
 
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);
@@ -153,6 +165,7 @@ public class ExsetParams extends Params {
 
         addParamWithValue(byteParams, VER);
         addParamWithValue(byteParams, ABS);
+        addParamWithValue(byteParams, GT);
 
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);
