@@ -5,7 +5,9 @@ import com.aliyun.tair.tairstring.params.ExincrbyParams;
 import com.aliyun.tair.tairstring.params.ExsetParams;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
+import org.junit.Assert;
 import org.junit.Test;
+import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.Arrays;
@@ -75,6 +77,25 @@ public class TairStringTest extends TairStringTestBase {
         assertEquals("OK", ret_nx);
         ret_xx = tairString.exset(bkey, bvalue, params_xx);
         assertEquals("OK", ret_xx);
+    }
+
+    @Test
+    public void exsetParamsGTTest() {
+        // String
+        String ret = tairString.exset(key, value, new ExsetParams().ver(1));
+        assertEquals("OK", ret);
+
+        ret = tairString.exset(key, value, new ExsetParams().gt(10));
+        assertEquals("OK", ret);
+
+        ExgetResult<String> exgetResult = tairString.exget(key);
+        assertEquals(10, exgetResult.getVersion());
+
+        try {
+            tairString.exset(key, value, new ExsetParams().gt(10));
+        } catch (JedisDataException jde) {
+            Assert.assertTrue(jde.getMessage().contains("ERR update version is stale"));
+        }
     }
 
     @Test
