@@ -33,6 +33,7 @@ public enum ModuleCommand implements ProtocolCommand {
     EXHVER("EXHVER"),
     EXHSETVER("EXHSETVER"),
     EXHINCRBY("EXHINCRBY"),
+    EXHMINCRBYWITHOPTS("EXHMINCRBYWITHOPTS"),
     EXHINCRBYFLOAT("EXHINCRBYFLOAT"),
     EXHGET("EXHGET"),
     EXHGETWITHVER("EXHGETWITHVER"),
@@ -54,6 +55,8 @@ public enum ModuleCommand implements ProtocolCommand {
     // com.kvstore.jedis.TairString command
     EXSET("EXSET"),
     EXGET("EXGET"),
+    EXGETEX("EXGETEX"),
+    EXMGET("EXMGET"),
     EXSETVER("EXSETVER"),
     EXINCRBY("EXINCRBY"),
     EXINCRBYFLOAT("EXINCRBYFLOAT"),

@@ -1,10 +1,7 @@
 package com.aliyun.tair.tairstring;
 
 import com.aliyun.tair.ModuleCommand;
-import com.aliyun.tair.tairstring.params.CasParams;
-import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
-import com.aliyun.tair.tairstring.params.ExincrbyParams;
-import com.aliyun.tair.tairstring.params.ExsetParams;
+import com.aliyun.tair.tairstring.params.*;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
@@ -62,6 +59,26 @@ public class TairStringPipeline extends Pipeline {
     public Response<String> exset(byte[] key, byte[] value, ExsetParams params) {
         getClient("").sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
         return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<ExgetResult<String>> exgetex(String key) {
+        getClient("").sendCommand(ModuleCommand.EXGETEX, key);
+        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
+    }
+
+    public Response<ExgetResult<byte[]>> exgetex(byte[] key) {
+        getClient("").sendCommand(ModuleCommand.EXGETEX, key);
+        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
+    }
+
+    public Response<ExgetResult<String>> exgetex(String key, ExgetexParams params) {
+        getClient("").sendCommand(ModuleCommand.EXGETEX, params.getByteParams(key));
+        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
+    }
+
+    public Response<ExgetResult<byte[]>> exgetex(byte[] key, ExgetexParams params) {
+        getClient("").sendCommand(ModuleCommand.EXGETEX, params.getByteParams(key));
+        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
     }
 
     public Response<ExgetResult<String>> exget(String key) {

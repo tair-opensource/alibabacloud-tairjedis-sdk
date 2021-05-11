@@ -13,6 +13,7 @@ public class ExincrbyFloatParams extends Params {
     private static final String EX = "ex";
     private static final String EXAT = "exat";
     private static final String PXAT = "pxat";
+    private static final String KEEPTTL = "keepttl";
 
     private static final String VER = "ver";
     private static final String ABS = "abs";
@@ -114,6 +115,11 @@ public class ExincrbyFloatParams extends Params {
         return this;
     }
 
+    public ExincrbyFloatParams keepttl() {
+        addParam(KEEPTTL);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -142,6 +148,9 @@ public class ExincrbyFloatParams extends Params {
 
         addParamWithValue(byteParams, VER);
         addParamWithValue(byteParams, ABS);
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
+        }
 
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);

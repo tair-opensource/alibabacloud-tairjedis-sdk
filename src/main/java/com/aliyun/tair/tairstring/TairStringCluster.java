@@ -1,16 +1,16 @@
 package com.aliyun.tair.tairstring;
 
 import com.aliyun.tair.ModuleCommand;
-import com.aliyun.tair.tairstring.params.CasParams;
-import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
-import com.aliyun.tair.tairstring.params.ExincrbyParams;
-import com.aliyun.tair.tairstring.params.ExsetParams;
+import com.aliyun.tair.tairstring.params.*;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
@@ -66,6 +66,26 @@ public class TairStringCluster {
     public String exset(byte[] key, byte[] value, ExsetParams params) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXSET, params.getByteParams(key, value));
         return BuilderFactory.STRING.build(obj);
+    }
+
+    public ExgetResult<String> exgetex(String key) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXGETEX, key);
+        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+    }
+
+    public ExgetResult<byte[]> exgetex(byte[] key) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXGETEX, key);
+        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+    }
+
+    public ExgetResult<String> exgetex(String key, ExgetexParams params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXGETEX, params.getByteParams(key));
+        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+    }
+
+    public ExgetResult<byte[]> exgetex(byte[] key, ExgetexParams params) {
+        Object obj = jc.sendCommand(key, ModuleCommand.EXGETEX, params.getByteParams(key));
+        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
     }
 
     public ExgetResult<String> exget(String key) {

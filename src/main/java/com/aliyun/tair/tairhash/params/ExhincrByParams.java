@@ -16,12 +16,18 @@ public class ExhincrByParams extends Params {
     private static final String MIN = "min";
     private static final String MAX = "max";
     private static final String NOACTIVE = "noactive";
+    private static final String DEF = "def";
 
     public ExhincrByParams() {
     }
 
     public static ExhincrByParams ExhincrByParams() {
         return new ExhincrByParams();
+    }
+
+    public ExhincrByParams def(long defValue) {
+        addParam(DEF, defValue);
+        return this;
     }
 
     public ExhincrByParams ex(int secondsToExpire) {
@@ -98,6 +104,7 @@ public class ExhincrByParams extends Params {
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, VER);
         addParamWithValue(byteParams, ABS);
+        addParamWithValue(byteParams, DEF);
         if(contains(NOACTIVE)){
             byteParams.add(SafeEncoder.encode(NOACTIVE));
         }

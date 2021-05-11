@@ -242,6 +242,34 @@ public class TairHashPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
 
+    /**
+     * incr multiple hash fields with version
+     *
+     * @param key    the key
+     * @return success: OK
+     */
+    public Response<String> exhmincrbywithopts(final String key, final List<ExhmincrbyFields<String>> fields) {
+        ExhmincrbywithoptsParams params = new ExhmincrbywithoptsParams();
+        getClient("").sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> exhmincrbywithopts(final byte[] key, final List<ExhmincrbyFields<byte[]>> fields) {
+        ExhmincrbywithoptsParams params = new ExhmincrbywithoptsParams();
+        getClient("").sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> exhmincrbywithopts(final String key, final List<ExhmincrbyFields<String>> fields, ExhmincrbywithoptsParams params) {
+        getClient("").sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> exhmincrbywithopts(final byte[] key, final List<ExhmincrbyFields<byte[]>> fields, ExhmincrbywithoptsParams params) {
+        getClient("").sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return getResponse(BuilderFactory.STRING);
+    }
+
     public Response<Double> exhincrByFloat(final String key, final String field, final double value) {
         return exhincrByFloat(SafeEncoder.encode(key), SafeEncoder.encode(field), value);
     }

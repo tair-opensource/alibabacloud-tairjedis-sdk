@@ -30,6 +30,9 @@ import static org.junit.Assert.assertNull;
 
 public class TairHashTest extends TairHashTestBase {
     String foo;
+    String field1;
+    String field2;
+    String field3;
     byte[] bfoo = {0x01, 0x02, 0x03, 0x04};
     byte[] bbar = {0x05, 0x06, 0x07, 0x08};
     final byte[] bcar = {0x09, 0x0A, 0x0B, 0x0C};
@@ -47,6 +50,9 @@ public class TairHashTest extends TairHashTestBase {
         randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         foo = "foo" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        field1 = "field1" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        field2 = "field2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        field3 = "field3" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bfoo = ("bfoo" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
 
@@ -382,6 +388,44 @@ public class TairHashTest extends TairHashTestBase {
         assertEquals(0, bvalue);
         bvalue = tairHash.exhincrBy(bfoo, bbar, -10);
         assertEquals(-10, bvalue);
+    }
+
+    @Test
+    public void exhincrByDef() {
+        ExhincrByParams exhincrByParams = new ExhincrByParams();
+        exhincrByParams.def(10);
+        // Binary
+        long bvalue = tairHash.exhincrBy(foo, field1, 1, exhincrByParams);
+        assertEquals(11, bvalue);
+        bvalue = tairHash.exhincrBy(foo, field2, -1, exhincrByParams);
+        assertEquals(9, bvalue);
+        bvalue = tairHash.exhincrBy(foo, field3, -10);
+        assertEquals(-10, bvalue);
+    }
+
+    @Test
+    public void exhmincrbywithopts() {
+        List<ExhmincrbyFields<String>> fields = new ArrayList<>();
+        ExhmincrbyFields<String> f1 = new ExhmincrbyFields<>(field1, 10, 1, 0);
+        ExhmincrbyFields<String> f2 = new ExhmincrbyFields<>(field2, 10, -1, 0);
+        ExhmincrbyFields<String> f3 = new ExhmincrbyFields<>(field3, -10, 0, 0);
+        fields.add(f1);
+        fields.add(f2);
+        fields.add(f3);
+        String ret = tairHash.exhmincrbywithopts(foo, fields);
+        assertEquals("OK", ret);
+        assertEquals("11", tairHash.exhget(foo, field1));
+        assertEquals("9", tairHash.exhget(foo, field2));
+        assertEquals("-10", tairHash.exhget(foo, field3));
+
+        ExhmincrbywithoptsParams params = new ExhmincrbywithoptsParams();
+        params.min(-30);
+        params.max(30);
+
+        ret = tairHash.exhmincrbywithopts(foo, fields, params);
+        assertEquals("21", tairHash.exhget(foo, field1));
+        assertEquals("19", tairHash.exhget(foo, field2));
+        assertEquals("-20", tairHash.exhget(foo, field3));
     }
 
     @Test

@@ -17,9 +17,11 @@ public class ExincrbyParams extends Params {
 
     private static final String VER = "ver";
     private static final String ABS = "abs";
+    private static final String KEEPTTL = "keepttl";
 
     private static final String MAX = "MAX";
     private static final String MIN = "MIN";
+    private static final String DEF = "def";
 
 
     public ExincrbyParams() {
@@ -27,6 +29,11 @@ public class ExincrbyParams extends Params {
 
     public static ExincrbyParams ExincrbyParams() {
         return new ExincrbyParams();
+    }
+
+    public ExincrbyParams def(long defValue) {
+        addParam(DEF, defValue);
+        return this;
     }
 
     public ExincrbyParams max(long max) {
@@ -118,6 +125,11 @@ public class ExincrbyParams extends Params {
         return this;
     }
 
+    public ExincrbyParams keepttl() {
+        addParam(KEEPTTL);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -145,9 +157,13 @@ public class ExincrbyParams extends Params {
 
         addParamWithValue(byteParams, VER);
         addParamWithValue(byteParams, ABS);
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
+        }
 
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);
+        addParamWithValue(byteParams, DEF);
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

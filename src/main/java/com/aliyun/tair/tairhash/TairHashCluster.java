@@ -252,6 +252,34 @@ public class TairHashCluster {
         return BuilderFactory.LONG.build(obj);
     }
 
+    /**
+     * incr multiple hash fields with version
+     *
+     * @param key    the key
+     * @return success: OK
+     */
+    public String exhmincrbywithopts(final String key, final List<ExhmincrbyFields<String>> fields) {
+        ExhmincrbywithoptsParams params = new ExhmincrbywithoptsParams();
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String exhmincrbywithopts(final byte[] key, final List<ExhmincrbyFields<byte[]>> fields) {
+        ExhmincrbywithoptsParams params = new ExhmincrbywithoptsParams();
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String exhmincrbywithopts(final String key, final List<ExhmincrbyFields<String>> fields, ExhmincrbywithoptsParams params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String exhmincrbywithopts(final byte[] key, final List<ExhmincrbyFields<byte[]>> fields, ExhmincrbywithoptsParams params) {
+        Object obj = jc.sendCommand(key ,ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
     public Double exhincrByFloat(final String key, final String field, final double value) {
         return exhincrByFloat(SafeEncoder.encode(key), SafeEncoder.encode(field), value);
     }

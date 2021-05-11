@@ -1,5 +1,6 @@
 package com.aliyun.tair.tests.tairstring;
 
+import com.aliyun.tair.tairstring.params.ExgetexParams;
 import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
 import com.aliyun.tair.tairstring.params.ExincrbyParams;
 import com.aliyun.tair.tairstring.params.ExsetParams;
@@ -10,13 +11,18 @@ import org.junit.Test;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.util.SafeEncoder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 public class TairStringTest extends TairStringTestBase {
     private String key;
+    private String key2;
+    private String key3;
+    private String key4;
     private String value;
     private byte[] bkey;
     private byte[] bvalue;
@@ -27,6 +33,9 @@ public class TairStringTest extends TairStringTestBase {
         randomkey_ = "randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         randomKeyBinary_ = ("randomkey_" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         key = "key" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        key2 = "key2" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        key3 = "key3" + Thread.currentThread().getName() + UUID.randomUUID().toString();
+        key4 = "key4" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         value = "value" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bkey = ("bkey" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bvalue = ("bvalue" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
@@ -54,6 +63,78 @@ public class TairStringTest extends TairStringTestBase {
     }
 
     @Test
+    public void exgetexTest() throws Exception{
+        String ret = "";
+
+        // String
+        ret = tairString.exset(key, value);
+        assertEquals("OK", ret);
+        ExgetResult<String> result = tairString.exgetex(key);
+        assertNotNull(result);
+        assertEquals(true, this.value.equals(result.getValue()));
+        assertEquals((long)1, result.getVersion());
+
+        ExgetexParams params = new ExgetexParams();
+        params.ex(2);
+        result = tairString.exgetex(key, params);
+        assertNotNull(result);
+        assertEquals(true, this.value.equals(result.getValue()));
+        assertEquals((long)1, result.getVersion());
+
+        Thread.sleep(3000);
+
+        result = tairString.exgetex(key, params);
+        assertNull(result);
+
+        //binary
+        ret = tairString.exset(bkey, bvalue);
+        assertEquals("OK", ret);
+        ExgetResult<byte[]> bresult = tairString.exget(bkey);
+        assertNotNull(bresult);
+        assertEquals(true, Arrays.equals(bvalue, bresult.getValue()));
+        assertEquals((long)1, bresult.getVersion());
+
+        bresult = tairString.exgetex(bkey, params);
+        assertNotNull(bresult);
+        assertEquals(true, Arrays.equals(bvalue, bresult.getValue()));
+        assertEquals((long)1, bresult.getVersion());
+
+        Thread.sleep(3000);
+
+        bresult = tairString.exgetex(bkey, params);
+        assertNull(bresult);
+    }
+
+    @Test
+    public void exmgetTest() {
+        String ret = "";
+
+        // String
+        ret = tairString.exset(key, value);
+        ret = tairString.exset(key2, value);
+        ret = tairString.exset(key3, value);
+        assertEquals("OK", ret);
+        ArrayList<String> keys = new ArrayList<>();
+        keys.add(key);
+        keys.add(key2);
+        keys.add(key3);
+        List<ExgetResult<String>> result = tairString.exmget(keys);
+        assertNotNull(result);
+        for (int i = 0; i < result.size(); i++) {
+            assertEquals(true, this.value.equals(result.get(i).getValue()));
+            assertEquals((long)1, result.get(i).getVersion());
+        }
+        keys.add(key4);
+        result = tairString.exmget(keys);
+        assertNotNull(result);
+        for (int i = 0; i < result.size() - 1; i++) {
+            assertEquals(true, this.value.equals(result.get(i).getValue()));
+            assertEquals((long)1, result.get(i).getVersion());
+        }
+        assertNull(result.get(result.size() - 1));
+    }
+
+    @Test
     public void exsetParamsTest() {
         ExsetParams params_nx = new ExsetParams();
         params_nx.nx();
@@ -77,6 +158,37 @@ public class TairStringTest extends TairStringTestBase {
         assertEquals("OK", ret_nx);
         ret_xx = tairString.exset(bkey, bvalue, params_xx);
         assertEquals("OK", ret_xx);
+    }
+
+    @Test
+    public void exsetKeepTTLTest() throws Exception{
+        ExsetParams params = new ExsetParams();
+        params.keepttl();
+        ExsetParams params_ex = new ExsetParams();
+        params_ex.ex(2);
+
+        String ret = "";
+
+        // String
+        ret = tairString.exset(key, value, params_ex);
+        assertEquals("OK", ret);
+        ret = tairString.exset(key, value);
+        assertEquals("OK", ret);
+        Thread.sleep(3000);
+        ExgetResult<String> getRet = tairString.exget(key);
+        assertEquals(value, getRet.getValue());
+        assertEquals(2, getRet.getVersion());
+
+        ret = tairString.exset(key, value, params_ex);
+        assertEquals("OK", ret);
+        ret = tairString.exset(key, value, params);
+        assertEquals("OK", ret);
+        getRet = tairString.exget(key);
+        assertEquals(value, getRet.getValue());
+        assertEquals(4, getRet.getVersion());
+        Thread.sleep(3000);
+        getRet = tairString.exget(key);
+        assertNull(getRet);
     }
 
     @Test
@@ -269,6 +381,26 @@ public class TairStringTest extends TairStringTestBase {
         Thread.sleep(2000);
         bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
+    }
+
+    @Test
+    public void exincrbyDefaultValueTest() throws InterruptedException {
+        String ret = "";
+        long def_value = 100;
+        long incr_value = 100;
+        long ret_var = 0;
+        ExgetResult<String> result = null;
+        ExgetResult<byte[]> bresult = null;
+
+        ExincrbyParams params = new ExincrbyParams();
+        params.def(def_value);
+
+        ret_var = tairString.exincrBy(key, incr_value, params);
+        assertEquals(incr_value + def_value, ret_var);
+
+        //binary
+        ret_var = tairString.exincrBy(bkey, incr_value, params);
+        assertEquals(incr_value + def_value, ret_var);
     }
 
     @Test

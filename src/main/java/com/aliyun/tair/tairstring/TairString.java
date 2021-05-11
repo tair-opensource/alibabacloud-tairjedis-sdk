@@ -1,16 +1,16 @@
 package com.aliyun.tair.tairstring;
 
 import com.aliyun.tair.ModuleCommand;
-import com.aliyun.tair.tairstring.params.CasParams;
-import com.aliyun.tair.tairstring.params.ExincrbyFloatParams;
-import com.aliyun.tair.tairstring.params.ExincrbyParams;
-import com.aliyun.tair.tairstring.params.ExsetParams;
+import com.aliyun.tair.tairstring.params.*;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
@@ -124,6 +124,44 @@ public class TairString {
     }
 
     /**
+     * Get the value of the key and set expire time.
+     *
+     * @param key   the key
+     * @return List, Success: [value, version]; Fail: error.
+     */
+    public ExgetResult<String> exgetex(String key) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXGETEX, key);
+        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+    }
+
+    public ExgetResult<byte[]> exgetex(byte[] key) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXGETEX, key);
+        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+    }
+
+    /**
+     * Set the string value of the key.
+     *
+     * @param key   the key
+     * @param params the params: [EX time] [EXAT time] [PX time] [PXAT time] [NX|XX] [VER version | ABS version]
+     * `EX` - Set expire time (seconds)
+     * `EXAT` - Set expire time as a UNIX timestamp (seconds)
+     * `PX` - Set expire time (milliseconds)
+     * `PXAT` - Set expire time as a UNIX timestamp (milliseconds)
+     * `KEEPTTL` - Remove the time to live associated with the key.
+     * @return Success: OK; Fail: error.
+     */
+    public ExgetResult<String> exgetex(String key, ExgetexParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXGETEX, params.getByteParams(key));
+        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+    }
+
+    public ExgetResult<byte[]> exgetex(byte[] key, ExgetexParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXGETEX, params.getByteParams(key));
+        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+    }
+
+    /**
      * Get the value of the key.
      *
      * @param key   the key
@@ -138,6 +176,32 @@ public class TairString {
         Object obj = getJedis().sendCommand(ModuleCommand.EXGET, key);
         return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
     }
+
+    /**
+     * Get the value of the key.
+     *
+     * @param keys   the keys
+     * @return List, Success: [value, version]; Fail: error.
+     */
+    public List<ExgetResult<String>> exmget(ArrayList<String> keys) {
+        final List<byte[]> params = new ArrayList<byte[]>();
+        for (String key : keys) {
+            params.add(SafeEncoder.encode(key));
+        }
+
+        Object obj = getJedis().sendCommand(ModuleCommand.EXMGET, params.toArray(new byte[params.size()][]));
+        return StringBuilderFactory.EXGET_MULTI_RESULT_STRING.build(obj);
+    }
+
+//    public List<ExgetResult<byte[]>> exmget(ArrayList<byte[]> keys) {
+//        final List<byte[]> params = new ArrayList<byte[]>();
+//
+//        for (byte[] key : keys) {
+//            params.add(key);
+//        }
+//        Object obj = getJedis().sendCommand(ModuleCommand.EXMGET, params.toArray(new byte[params.size()][]));
+//        return StringBuilderFactory.EXGET_MULTI_RESULT_BYTE.build(obj);
+//    }
 
     /**
      * Set the version for the key.
@@ -186,6 +250,7 @@ public class TairString {
      * `ABS` - Set with abs version
      * `MIN` - Set the min value for the value.
      * `MAX` - Set the max value for the value.
+     * `DEF` - Set the default value for the init value.
      * @return Success: value of key; Fail: error.
      */
     public Long exincrBy(String key, long incr, ExincrbyParams params) {

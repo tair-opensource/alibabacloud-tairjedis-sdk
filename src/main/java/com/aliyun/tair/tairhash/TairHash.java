@@ -382,6 +382,34 @@ public class TairHash {
     }
 
     /**
+     * incr multiple hash fields with version
+     *
+     * @param key    the key
+     * @return success: OK
+     */
+    public String exhmincrbywithopts(final String key, final List<ExhmincrbyFields<String>> fields) {
+        ExhmincrbywithoptsParams params = new ExhmincrbywithoptsParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String exhmincrbywithopts(final byte[] key, final List<ExhmincrbyFields<byte[]>> fields) {
+        ExhmincrbywithoptsParams params = new ExhmincrbywithoptsParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String exhmincrbywithopts(final String key, final List<ExhmincrbyFields<String>> fields, ExhmincrbywithoptsParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String exhmincrbywithopts(final byte[] key, final List<ExhmincrbyFields<byte[]>> fields, ExhmincrbywithoptsParams params) {
+        Object obj = getJedis().sendCommand(ModuleCommand.EXHMINCRBYWITHOPTS, params.getByteParams(key, fields));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    /**
      * Increment the float value of a hash field by the given amount.
      *
      * @param key   the key
