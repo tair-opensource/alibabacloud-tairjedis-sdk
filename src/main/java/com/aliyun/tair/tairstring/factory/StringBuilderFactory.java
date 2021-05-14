@@ -80,7 +80,11 @@ public class StringBuilderFactory {
             int num = l.size();
             for (int i = 0; i < num; i++) {
                 List subl = (List) l.get(i);
-                results.add(new ExgetResult<byte[]>((byte[])l.get(0),((Number) l.get(1)).longValue()));
+                if (subl == null || subl.get(0) == null) {
+                    results.add(null);
+                } else {
+                    results.add(new ExgetResult<byte[]>((byte[]) subl.get(0), ((Number) subl.get(1)).longValue()));
+                }
             }
             return results;
         }

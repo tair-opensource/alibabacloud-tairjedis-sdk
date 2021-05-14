@@ -25,6 +25,9 @@ public class TairStringTest extends TairStringTestBase {
     private String key4;
     private String value;
     private byte[] bkey;
+    private byte[] bkey2;
+    private byte[] bkey3;
+    private byte[] bkey4;
     private byte[] bvalue;
     private String randomkey_;
     private byte[] randomKeyBinary_;
@@ -38,6 +41,9 @@ public class TairStringTest extends TairStringTestBase {
         key4 = "key4" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         value = "value" + Thread.currentThread().getName() + UUID.randomUUID().toString();
         bkey = ("bkey" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        bkey2 = ("bkey2" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        bkey3 = ("bkey3" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
+        bkey4 = ("bkey4" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
         bvalue = ("bvalue" + Thread.currentThread().getName() + UUID.randomUUID().toString()).getBytes();
     }
 
@@ -118,20 +124,45 @@ public class TairStringTest extends TairStringTestBase {
         keys.add(key);
         keys.add(key2);
         keys.add(key3);
-        List<ExgetResult<String>> result = tairString.exmget(keys);
+        List<ExgetResult<String>> result = tairString.exmgetString(keys);
         assertNotNull(result);
         for (int i = 0; i < result.size(); i++) {
             assertEquals(true, this.value.equals(result.get(i).getValue()));
             assertEquals((long)1, result.get(i).getVersion());
         }
         keys.add(key4);
-        result = tairString.exmget(keys);
+        result = tairString.exmgetString(keys);
         assertNotNull(result);
         for (int i = 0; i < result.size() - 1; i++) {
             assertEquals(true, this.value.equals(result.get(i).getValue()));
             assertEquals((long)1, result.get(i).getVersion());
         }
         assertNull(result.get(result.size() - 1));
+
+
+        // byte
+        ret = tairString.exset(bkey, bvalue);
+        ret = tairString.exset(bkey2, bvalue);
+        ret = tairString.exset(bkey3, bvalue);
+        assertEquals("OK", ret);
+        ArrayList<byte[]> bkeys = new ArrayList<>();
+        bkeys.add(bkey);
+        bkeys.add(bkey2);
+        bkeys.add(bkey3);
+        List<ExgetResult<byte[]>> bresult = tairString.exmget(bkeys);
+        assertNotNull(result);
+        for (int i = 0; i < bresult.size(); i++) {
+            assertEquals(true, Arrays.equals(bvalue, bresult.get(i).getValue()));
+            assertEquals((long)1, bresult.get(i).getVersion());
+        }
+        bkeys.add(bkey4);
+        bresult = tairString.exmget(bkeys);
+        assertNotNull(bresult);
+        for (int i = 0; i < bresult.size() - 1; i++) {
+            assertEquals(true, Arrays.equals(bvalue, bresult.get(i).getValue()));
+            assertEquals((long)1, bresult.get(i).getVersion());
+        }
+        assertNull(bresult.get(result.size() - 1));
     }
 
     @Test

@@ -183,7 +183,7 @@ public class TairString {
      * @param keys   the keys
      * @return List, Success: [value, version]; Fail: error.
      */
-    public List<ExgetResult<String>> exmget(ArrayList<String> keys) {
+    public List<ExgetResult<String>> exmgetString(ArrayList<String> keys) {
         final List<byte[]> params = new ArrayList<byte[]>();
         for (String key : keys) {
             params.add(SafeEncoder.encode(key));
@@ -193,15 +193,15 @@ public class TairString {
         return StringBuilderFactory.EXGET_MULTI_RESULT_STRING.build(obj);
     }
 
-//    public List<ExgetResult<byte[]>> exmget(ArrayList<byte[]> keys) {
-//        final List<byte[]> params = new ArrayList<byte[]>();
-//
-//        for (byte[] key : keys) {
-//            params.add(key);
-//        }
-//        Object obj = getJedis().sendCommand(ModuleCommand.EXMGET, params.toArray(new byte[params.size()][]));
-//        return StringBuilderFactory.EXGET_MULTI_RESULT_BYTE.build(obj);
-//    }
+    public List<ExgetResult<byte[]>> exmget(ArrayList<byte[]> keys) {
+        final List<byte[]> params = new ArrayList<byte[]>();
+
+        for (byte[] key : keys) {
+            params.add(key);
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXMGET, params.toArray(new byte[params.size()][]));
+        return StringBuilderFactory.EXGET_MULTI_RESULT_BYTE.build(obj);
+    }
 
     /**
      * Set the version for the key.
