@@ -6,7 +6,7 @@
 
     <groupId>com.aliyun.tair</groupId>
     <artifactId>alibabacloud-tairjedis-sdk</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
 
     <name>alibabacloud-tairjedis-sdk</name>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>3.1.0</version>
+            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
