@@ -126,7 +126,7 @@ public enum ModuleCommand implements ProtocolCommand {
     CPCMUPDATE2EST("CPC.M.UPDATE2EST"),
     CPCMUPDATE2JUD("CPC.M.UPDATE2JUD"),
     CPCMUPDATE2ESTWITHKEY("CPC.M.UPDATE2EST.WITHKEY"),
-//    CPCMUPDATE2JUDWITHKEY("CPC.M.UPDATE2JUD.WITHKEY"),
+    //    CPCMUPDATE2JUDWITHKEY("CPC.M.UPDATE2JUD.WITHKEY"),
 
     CPCARRAYUPDATE("CPC.ARRAY.UPDATE"),
     CPCARRAYMERGE("CPC.ARRAY.MERGE"),
@@ -216,9 +216,28 @@ public enum ModuleCommand implements ProtocolCommand {
     STDDEVARRAYGET("STDDEV.ARRAY.GET"),
     STDDEVARRAYGETRANGE("STDDEV.ARRAY.GET.RANGE"),
     STDDEVARRAYGETTIMEMERGE("STDDEV.ARRAY.GET.TIME.MERGE"),
-    STDDEVARRAYGETRANGEMERGE("STDDEV.ARRAY.GET.RANGE.MERGE");
+    STDDEVARRAYGETRANGEMERGE("STDDEV.ARRAY.GET.RANGE.MERGE"),
 
 
+    // TairZset
+    EXZADD("exzadd"),
+    EXZINCRBY("exzincrby"),
+    EXZREM("exzrem"),
+    EXZREMRANGEBYSCORE("exzremrangebyscore"),
+    EXZREMRANGEBYRANK("exzremrangebyrank"),
+    EXZREMRANGEBYLEX("exzremrangebylex"),
+    EXZSCORE("exzscore"),
+    EXZRANGE("exzrange"),
+    EXZREVRANGE("exzrevrange"),
+    EXZRANGEBYSCORE("exzrangebyscore"),
+    EXZREVRANGEBYSCORE("exzrevrangebyscore"),
+    EXZRANGEBYLEX("exzrangebylex"),
+    EXZREVRANGEBYLEX("exzrevrangebylex"),
+    EXZCARD("exzcard"),
+    EXZRANK("exzrank"),
+    EXZREVRANK("exzrevrank"),
+    EXZCOUNT("exzcount"),
+    EXZLEXCOUNT("exzlexcount");
 
     private final byte[] raw;
 
