@@ -12,7 +12,7 @@
 </dependency>
 ```
 
-最新版本查阅：[这里](https://oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)  
+最新版本查阅：[这里](https://mvnrepository.com/artifact/com.aliyun.tair/alibabacloud-tairjedis-sdk)  
 JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
 
 # 代码实例
