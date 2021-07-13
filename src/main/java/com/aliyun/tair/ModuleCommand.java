@@ -216,7 +216,29 @@ public enum ModuleCommand implements ProtocolCommand {
     STDDEVARRAYGET("STDDEV.ARRAY.GET"),
     STDDEVARRAYGETRANGE("STDDEV.ARRAY.GET.RANGE"),
     STDDEVARRAYGETTIMEMERGE("STDDEV.ARRAY.GET.TIME.MERGE"),
-    STDDEVARRAYGETRANGEMERGE("STDDEV.ARRAY.GET.RANGE.MERGE");
+    STDDEVARRAYGETRANGEMERGE("STDDEV.ARRAY.GET.RANGE.MERGE"),
+
+    // TairZset
+    EXZADD("exzadd"),
+    EXZINCRBY("exzincrby"),
+    EXZREM("exzrem"),
+    EXZREMRANGEBYSCORE("exzremrangebyscore"),
+    EXZREMRANGEBYRANK("exzremrangebyrank"),
+    EXZREMRANGEBYLEX("exzremrangebylex"),
+    EXZSCORE("exzscore"),
+    EXZRANGE("exzrange"),
+    EXZREVRANGE("exzrevrange"),
+    EXZRANGEBYSCORE("exzrangebyscore"),
+    EXZREVRANGEBYSCORE("exzrevrangebyscore"),
+    EXZRANGEBYLEX("exzrangebylex"),
+    EXZREVRANGEBYLEX("exzrevrangebylex"),
+    EXZCARD("exzcard"),
+    EXZRANK("exzrank"),
+    EXZREVRANK("exzrevrank"),
+    EXZRANKBYSCORE("exzrankbyscore"),
+    EXZREVRANKBYSCORE("exzrevrankbyscore"),
+    EXZCOUNT("exzcount"),
+    EXZLEXCOUNT("exzlexcount");
 
     private final byte[] raw;
 
