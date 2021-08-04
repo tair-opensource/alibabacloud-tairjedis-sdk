@@ -237,7 +237,16 @@ public enum ModuleCommand implements ProtocolCommand {
     EXZRANK("exzrank"),
     EXZREVRANK("exzrevrank"),
     EXZCOUNT("exzcount"),
-    EXZLEXCOUNT("exzlexcount");
+    EXZLEXCOUNT("exzlexcount"),
+
+    // TairAI
+    TAIHNSWSET("tai.hnsw.set"),
+    TAIHNSWMSET("tai.hnsw.mset"),
+    TAIHNSWWATCH("tai.hnsw.watch"),
+    TAIHNSWGET("tai.hnsw.get"),
+    TAIHNSWKNNGET("tai.hnsw.knnget"),
+    TAIHNSWSTAT("tai.hnsw.stat"),
+    TAIHNSWDEBUG("tai.hnsw.debug");
 
     private final byte[] raw;
 
