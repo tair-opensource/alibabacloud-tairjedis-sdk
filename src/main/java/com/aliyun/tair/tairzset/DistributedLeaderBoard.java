@@ -1,4 +1,4 @@
-package com.aliyun.tair.leaderboard;
+package com.aliyun.tair.tairzset;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.aliyun.tair.ModuleCommand;
-import com.aliyun.tair.leaderboard.params.RankParams;
+import com.aliyun.tair.tairzset.params.RankParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.BuilderFactory;
@@ -17,7 +17,7 @@ import redis.clients.jedis.Protocol.Command;
 import redis.clients.jedis.util.JedisClusterCRC16;
 import redis.clients.jedis.util.SafeEncoder;
 
-import static com.aliyun.tair.leaderboard.LeaderBoard.joinScoresToString;
+import static com.aliyun.tair.tairzset.LeaderBoard.joinScoresToString;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class DistributedLeaderBoard {

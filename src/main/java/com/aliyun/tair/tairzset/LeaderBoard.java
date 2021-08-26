@@ -1,11 +1,11 @@
-package com.aliyun.tair.leaderboard;
+package com.aliyun.tair.tairzset;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.aliyun.tair.ModuleCommand;
-import com.aliyun.tair.leaderboard.params.RankParams;
+import com.aliyun.tair.tairzset.params.RankParams;
 import com.aliyun.tair.util.JoinParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

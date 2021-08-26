@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.aliyun.tair.leaderboard.LeaderBoard;
-import com.aliyun.tair.leaderboard.LeaderData;
+import com.aliyun.tair.tairzset.LeaderBoard;
+import com.aliyun.tair.tairzset.LeaderData;
 import com.aliyun.tair.tests.TestBase;
 import org.junit.Before;
 import org.junit.BeforeClass;
