@@ -165,6 +165,18 @@ public class DistributedLeaderBoard {
     }
 
     /**
+     * Retrieve member by offset from leaderboard. The interval is [startOffset, endOffset]
+     *
+     * @param startOffset
+     * @param endOffset
+     * @return
+     */
+    public List<LeaderData> retrieveMember(final long startOffset, final long endOffset) {
+        List<LeaderData> leaderDataList = top(endOffset + 1);
+        return leaderDataList.subList((int)startOffset, (int)endOffset + 1);
+    }
+
+    /**
      * Total members of the leaderboard.
      *
      * @return total members of the leaderboard, 0 if key does not exist.

@@ -149,6 +149,37 @@ public class LeaderBoard {
     }
 
     /**
+     * Retrieve member by offset from leaderboard. The interval is [startOffset, endOffset]
+     *
+     * @param startOffset
+     * @param endOffset
+     * @return
+     */
+    public List<LeaderData> retrieveMember(final long startOffset, final long endOffset) {
+        List<LeaderData> leaderDataList = new ArrayList<>();
+        Object obj;
+        try (Jedis jedis = jedisPool.getResource()) {
+            if (reverse) {
+                obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, nameBinary, toByteArray(startOffset),
+                    toByteArray(endOffset), SafeEncoder.encode(WITHSCORES));
+            } else {
+                obj = jedis.sendCommand(ModuleCommand.EXZRANGE, nameBinary, toByteArray(startOffset),
+                    toByteArray(endOffset), SafeEncoder.encode(WITHSCORES));
+            }
+            List<String> rangeRets = BuilderFactory.STRING_LIST.build(obj);
+            if (rangeRets != null) {
+                for (int i = 0; i < rangeRets.size(); i += 2) {
+                    String member = rangeRets.get(i);
+                    String score = rangeRets.get(i + 1);
+                    Long rank = rankFor(member);
+                    leaderDataList.add(new LeaderData(member, score, rank));
+                }
+            }
+        }
+        return leaderDataList;
+    }
+
+    /**
      * Total members of the leaderboard.
      *
      * @return total members of the leaderboard, 0 if key does not exist.
@@ -291,8 +322,6 @@ public class LeaderBoard {
      * @return members from the leaderboard that fall within the given rank range.
      */
     public List<LeaderData> top(long number) {
-        Object obj;
-        List<LeaderData> leaderDataList = new ArrayList<>();
 
         if (number < 1) {
             number = 1;
@@ -301,25 +330,7 @@ public class LeaderBoard {
         long startRank = 0;
         long endRank = number > totalMembers ? totalMembers-1 : number-1;
 
-        try (Jedis jedis = jedisPool.getResource()) {
-            if (reverse) {
-                obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, nameBinary, toByteArray(startRank),
-                    toByteArray(endRank), SafeEncoder.encode(WITHSCORES));
-            } else {
-                obj = jedis.sendCommand(ModuleCommand.EXZRANGE, nameBinary, toByteArray(startRank),
-                    toByteArray(endRank), SafeEncoder.encode(WITHSCORES));
-            }
-            List<String> rangeRets = BuilderFactory.STRING_LIST.build(obj);
-            if (rangeRets != null) {
-                for (int i = 0; i < rangeRets.size(); i += 2) {
-                    String member = rangeRets.get(i);
-                    String score = rangeRets.get(i + 1);
-                    Long rank = rankFor(member);
-                    leaderDataList.add(new LeaderData(member, score, rank));
-                }
-            }
-        }
-        return leaderDataList;
+        return retrieveMember(startRank, endRank);
     }
 
     /**
@@ -329,9 +340,6 @@ public class LeaderBoard {
      * @return a page of leaders from the leaderboard.
      */
     public List<LeaderData> leaders(long page) {
-        List<LeaderData> leaderDataList = new ArrayList<>();
-        Object obj;
-
         if (page < 1) {
             page = 1;
         }
@@ -344,56 +352,18 @@ public class LeaderBoard {
         long startOffset = (page - 1) * pageSize;
         long endOffset = startOffset + pageSize - 1;
 
-        try (Jedis jedis = jedisPool.getResource()) {
-            if (reverse) {
-                obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, nameBinary, toByteArray(startOffset),
-                    toByteArray(endOffset), SafeEncoder.encode(WITHSCORES));
-            } else {
-                obj = jedis.sendCommand(ModuleCommand.EXZRANGE, nameBinary, toByteArray(startOffset),
-                    toByteArray(endOffset), SafeEncoder.encode(WITHSCORES));
-            }
-            List<String> rangeRets = BuilderFactory.STRING_LIST.build(obj);
-            if (rangeRets != null) {
-                for (int i = 0; i < rangeRets.size(); i += 2) {
-                    String member = rangeRets.get(i);
-                    String score = rangeRets.get(i + 1);
-                    Long rank = rankFor(member);
-                    leaderDataList.add(new LeaderData(member, score, rank));
-                }
-            }
-        }
-        return leaderDataList;
+        return retrieveMember(startOffset, endOffset);
     }
 
     /**
      * Retrieves all leaders from the named leaderboard.
+     *
      * @return the named leaderboard.
      */
     public List<LeaderData> allLeaders() {
-        List<LeaderData> leaderDataList = new ArrayList<>();
-        Object obj;
         long startOffset = 0;
         long endOffset = -1;
-
-        try (Jedis jedis = jedisPool.getResource()) {
-            if (reverse) {
-                obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, nameBinary, toByteArray(startOffset),
-                    toByteArray(endOffset), SafeEncoder.encode(WITHSCORES));
-            } else {
-                obj = jedis.sendCommand(ModuleCommand.EXZRANGE, nameBinary, toByteArray(startOffset),
-                    toByteArray(endOffset), SafeEncoder.encode(WITHSCORES));
-            }
-            List<String> rangeRets = BuilderFactory.STRING_LIST.build(obj);
-            if (rangeRets != null) {
-                for (int i = 0; i < rangeRets.size(); i += 2) {
-                    String member = rangeRets.get(i);
-                    String score = rangeRets.get(i + 1);
-                    Long rank = rankFor(member);
-                    leaderDataList.add(new LeaderData(member, score, rank));
-                }
-            }
-        }
-        return leaderDataList;
+        return retrieveMember(startOffset, endOffset);
     }
 
     /**
