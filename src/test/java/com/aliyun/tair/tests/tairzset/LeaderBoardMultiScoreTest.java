@@ -1,4 +1,4 @@
-package com.aliyun.tair.tests.leaderboard;
+package com.aliyun.tair.tests.tairzset;
 
 import java.util.ArrayList;
 import java.util.Collections;

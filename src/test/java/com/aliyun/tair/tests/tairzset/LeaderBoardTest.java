@@ -1,10 +1,10 @@
-package com.aliyun.tair.tests.leaderboard;
+package com.aliyun.tair.tests.tairzset;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.aliyun.tair.tairzset.DistributedLeaderBoard;
+import com.aliyun.tair.tairzset.LeaderBoard;
 import com.aliyun.tair.tairzset.LeaderData;
 import com.aliyun.tair.tests.TestBase;
 import org.junit.Before;
@@ -14,21 +14,21 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class DistributedLeaderBoardTest extends TestBase {
-    private static DistributedLeaderBoard dlb;
+public class LeaderBoardTest extends TestBase {
+    private static LeaderBoard lb;
 
     @BeforeClass
     public static void beforeClass() {
-        dlb = new DistributedLeaderBoard("distributed_leaderboard", jedisPool);
+        lb = new LeaderBoard("leaderboard", jedisPool);
     }
 
     @Before
     public void before() {
         // del first
-        dlb.delLeaderBoard();
+        lb.delLeaderBoard();
 
         for (int i = 0; i < 55; i++) {
-            dlb.addMember("member_" + i , i);
+            lb.addMember("member_" + i , i);
         }
     }
 
@@ -39,26 +39,26 @@ public class DistributedLeaderBoardTest extends TestBase {
             put("jonny", "20");
             put("danny", "30");
         }};
-        dlb.addMember(memberScores);
-        assertEquals("10", dlb.scoreFor("tom"));
-        assertEquals(58, (long)dlb.totalMembers());
+        lb.addMember(memberScores);
+        assertEquals("10", lb.scoreFor("tom"));
+        assertEquals(58, (long)lb.totalMembers());
     }
 
     @Test
     public void change_score_for_test() {
-        dlb.incrScoreFor("member_0", "100");
-        assertEquals("100", dlb.scoreFor("member_0"));
+        lb.incrScoreFor("member_0", "100");
+        assertEquals("100", lb.scoreFor("member_0"));
     }
 
     @Test
     public void remove_member_test() {
-        dlb.removeMember("member_0");
-        assertEquals(54, (long)dlb.totalMembers());
+        lb.removeMember("member_0");
+        assertEquals(54, (long)lb.totalMembers());
     }
 
     @Test
     public void retrieve_member_test() {
-        List<LeaderData> retrievedMembers = dlb.retrieveMember(10, 19);
+        List<LeaderData> retrievedMembers = lb.retrieveMember(10, 19);
         assertEquals(10, retrievedMembers.size());
         for (int i = 0; i < retrievedMembers.size(); i++) {
             assertEquals(String.valueOf(i + 10), retrievedMembers.get(i).getScore());
@@ -67,43 +67,43 @@ public class DistributedLeaderBoardTest extends TestBase {
 
     @Test
     public void total_members() {
-        assertEquals(55, (long)dlb.totalMembers());
+        assertEquals(55, (long)lb.totalMembers());
     }
 
     @Test
     public void total_pages() {
-        assertEquals(6, (long)dlb.totalPages());
+        assertEquals(6, (long)lb.totalPages());
     }
 
     @Test
     public void total_members_in_score_range_test() {
-        assertEquals(11, (long)dlb.totalMembersInScoreRange(10, 20));
-        assertEquals(55, (long)dlb.totalMembersInScoreRange(0, 100));
+        assertEquals(11, (long)lb.totalMembersInScoreRange(10, 20));
+        assertEquals(55, (long)lb.totalMembersInScoreRange(0, 100));
     }
 
     @Test
     public void remove_members_in_score_range_test() {
-        assertEquals(11, (long)dlb.removeMembersInScoreRange(10, 20));
-        assertEquals(44, (long)dlb.removeMembersInScoreRange(0, 100));
+        assertEquals(11, (long)lb.removeMembersInScoreRange(10, 20));
+        assertEquals(44, (long)lb.removeMembersInScoreRange(0, 100));
     }
 
     @Test
     public void score_for_test() {
-        assertEquals("0", dlb.scoreFor("member_0"));
-        dlb.removeMember("member_0");
-        assertNull(dlb.scoreFor("member_0"));
+        assertEquals("0", lb.scoreFor("member_0"));
+        lb.removeMember("member_0");
+        assertNull(lb.scoreFor("member_0"));
     }
 
     @Test
     public void rank_for_test() {
-        for (int i = 0; i < 55; i++) {
-            assertEquals(i, (long)dlb.rankFor("member_" + i));
-        }
+        assertEquals(54, (long)lb.rankFor("member_54"));
+        lb.removeMember("member_54");
+        assertNull(lb.scoreFor("member_54"));
     }
 
     @Test
     public void score_and_rank_for_test() {
-        LeaderData leaderData = dlb.scoreAndRankFor("member_0");
+        LeaderData leaderData = lb.scoreAndRankFor("member_0");
         assertEquals(0, (long)leaderData.getRank());
         assertEquals("0", leaderData.getScore());
         assertEquals("member_0", leaderData.getMember());
@@ -111,8 +111,8 @@ public class DistributedLeaderBoardTest extends TestBase {
 
     @Test
     public void top_i_test() {
-        List<LeaderData> tops = dlb.top(55);
-        assertEquals(55, tops.size());
+        List<LeaderData> tops = lb.top(22);
+        assertEquals(22, tops.size());
         for (int i = 0; i < tops.size(); i++) {
             assertEquals(i + "", tops.get(i).getScore());
         }
@@ -120,7 +120,7 @@ public class DistributedLeaderBoardTest extends TestBase {
 
     @Test
     public void leaders_i_test() {
-        List<LeaderData> leaders = dlb.leaders(2);
+        List<LeaderData> leaders = lb.leaders(2);
         assertEquals(10, leaders.size());
         for (int i = 0; i < leaders.size(); i++) {
             assertEquals(String.valueOf(i + 10), leaders.get(i).getScore());
@@ -129,21 +129,9 @@ public class DistributedLeaderBoardTest extends TestBase {
 
     @Test
     public void expire_leaderboard_test() throws Exception {
-        dlb.expireLeaderBoard(1);
+        lb.expireLeaderBoard(1);
         Thread.sleep(2000);
-        assertEquals(0, (long)dlb.delLeaderBoard());
+        assertEquals(0, (long)lb.delLeaderBoard());
     }
 
-    @Test
-    public void rank_reverse_test() {
-        DistributedLeaderBoard idlb =
-            new DistributedLeaderBoard("rank_reverse_test", jedisPool, 10, 10, true);
-        for (int i = 0; i < 55; i++) {
-            idlb.addMember("member_" + i, i);
-        }
-
-        for (int i = 0; i < 55; i++) {
-            assertEquals(55 - i - 1, (long)idlb.rankFor("member_" + i));
-        }
-    }
 }

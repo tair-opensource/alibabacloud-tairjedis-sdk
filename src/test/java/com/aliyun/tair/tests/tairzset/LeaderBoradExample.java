@@ -1,4 +1,4 @@
-package com.aliyun.tair.tests.leaderboard;
+package com.aliyun.tair.tests.tairzset;
 
 import com.aliyun.tair.tairzset.LeaderBoard;
 import redis.clients.jedis.JedisPool;
