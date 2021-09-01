@@ -57,6 +57,15 @@ public class LeaderBoardTest extends TestBase {
     }
 
     @Test
+    public void retrieve_member_test() {
+        List<LeaderData> retrievedMembers = lb.retrieveMember(10, 19);
+        assertEquals(10, retrievedMembers.size());
+        for (int i = 0; i < retrievedMembers.size(); i++) {
+            assertEquals(String.valueOf(i + 10), retrievedMembers.get(i).getScore());
+        }
+    }
+
+    @Test
     public void total_members() {
         assertEquals(55, (long)lb.totalMembers());
     }
