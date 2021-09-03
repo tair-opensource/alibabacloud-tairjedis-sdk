@@ -236,6 +236,8 @@ public enum ModuleCommand implements ProtocolCommand {
     EXZCARD("exzcard"),
     EXZRANK("exzrank"),
     EXZREVRANK("exzrevrank"),
+    EXZRANKBYSCORE("exzrankbyscore"),
+    EXZREVRANKBYSCORE("exzrevrankbyscore"),
     EXZCOUNT("exzcount"),
     EXZLEXCOUNT("exzlexcount"),
 
