@@ -45,11 +45,11 @@ public class TairCluster extends JedisCluster {
         backend.prestartAllCoreThreads();
     }
 
-    public void setThreadPoll(ThreadPoolExecutor threadPoll) {
-        if (backend != threadPoll && backend != null) {
+    public void setThreadPool(ThreadPoolExecutor threadPool) {
+        if (backend != threadPool && backend != null) {
             backend.shutdown();
         }
-        backend = threadPoll;
+        backend = threadPool;
     }
 
     @Override
