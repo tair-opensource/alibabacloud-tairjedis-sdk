@@ -58,16 +58,16 @@ public class TairSearchCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
-    public Long tftdeldoc(String key,  String... docId) {
+    public String tftdeldoc(String key,  String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return BuilderFactory.LONG.build(obj);
+        return BuilderFactory.STRING.build(obj);
     }
 
-    public Long tftdeldoc(byte[] key, byte[]... docId) {
+    public String tftdeldoc(byte[] key, byte[]... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         Object obj = jc.sendCommand(key, ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return BuilderFactory.LONG.build(obj);
+        return BuilderFactory.STRING.build(obj);
     }
 
     public String tftgetindexmappings(String key) {
@@ -94,6 +94,20 @@ public class TairSearchCluster {
 
     public String tftsearch(byte[] key, byte[] request) {
         Object obj = jc.sendCommand(key, ModuleCommand.TFTSEARCH, key, request);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftsearch(String key, String request, boolean use_cache) {
+        return tftsearch(SafeEncoder.encode(key), SafeEncoder.encode(request), use_cache);
+    }
+
+    public String tftsearch(byte[] key, byte[] request, boolean use_cache) {
+        Object obj;
+        if (use_cache) {
+            obj = jc.sendCommand(key, ModuleCommand.TFTSEARCH, key, request, SafeEncoder.encode("use_cache"));
+        } else {
+            obj = jc.sendCommand(key, ModuleCommand.TFTSEARCH, key, request);
+        }
         return BuilderFactory.STRING.build(obj);
     }
 }

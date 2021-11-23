@@ -97,16 +97,16 @@ public class TairSearch {
      * @param docId the document id(s)
      * @return Success: Number of successfully deleted documents; Fail: error
      */
-    public Long tftdeldoc(String key,  String... docId) {
+    public String tftdeldoc(String key,  String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         Object obj = getJedis().sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return BuilderFactory.LONG.build(obj);
+        return BuilderFactory.STRING.build(obj);
     }
 
-    public Long tftdeldoc(byte[] key, byte[]... docId) {
+    public String tftdeldoc(byte[] key, byte[]... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         Object obj = getJedis().sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return BuilderFactory.LONG.build(obj);
+        return BuilderFactory.STRING.build(obj);
     }
 
     /**
@@ -146,6 +146,21 @@ public class TairSearch {
 
     public String tftsearch(byte[] key, byte[] request) {
         Object obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, key, request);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftsearch(String key, String request, boolean use_cache) {
+        return tftsearch(SafeEncoder.encode(key), SafeEncoder.encode(request), use_cache);
+    }
+
+    public String tftsearch(byte[] key, byte[] request, boolean use_cache) {
+        Object obj;
+        if (use_cache) {
+            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, key, request, SafeEncoder.encode("use_cache"));
+        } else {
+            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, key, request);
+        }
+
         return BuilderFactory.STRING.build(obj);
     }
 }

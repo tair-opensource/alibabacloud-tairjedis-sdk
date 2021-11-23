@@ -53,16 +53,16 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<Long> tftdeldoc(String key,  String... docId) {
+    public Response<String> tftdeldoc(String key,  String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return getResponse(BuilderFactory.LONG);
+        return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<Long> tftdeldoc(byte[] key, byte[]... docId) {
+    public Response<String> tftdeldoc(byte[] key, byte[]... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return getResponse(BuilderFactory.LONG);
+        return getResponse(BuilderFactory.STRING);
     }
 
     public Response<String> tftgetindexmappings(String key) {
@@ -89,6 +89,20 @@ public class TairSearchPipeline extends Pipeline {
 
     public Response<String> tftsearch(byte[] key, byte[] request) {
         getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, request);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftsearch(String key, String request, boolean use_cache) {
+        return tftsearch(SafeEncoder.encode(key), SafeEncoder.encode(request), use_cache);
+    }
+
+    public Response<String> tftsearch(byte[] key, byte[] request, boolean use_cache) {
+        if (use_cache) {
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, request, SafeEncoder.encode("use_cache"));
+        } else {
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, request);
+        }
+
         return getResponse(BuilderFactory.STRING);
     }
 }
