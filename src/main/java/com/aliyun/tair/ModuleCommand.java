@@ -248,7 +248,15 @@ public enum ModuleCommand implements ProtocolCommand {
     TAIHNSWGET("tai.hnsw.get"),
     TAIHNSWKNNGET("tai.hnsw.knnget"),
     TAIHNSWSTAT("tai.hnsw.stat"),
-    TAIHNSWDEBUG("tai.hnsw.debug");
+    TAIHNSWDEBUG("tai.hnsw.debug"),
+
+    // TairSearch
+    TFTMAPPINGINDEX("tft.mappingindex"),
+    TFTADDDOC("tft.adddoc"),
+    TFTDELDOC("tft.deldoc"),
+    TFTGETINDEX("tft.getindex"),
+    TFTGETDOC("tft.getdoc"),
+    TFTSEARCH("tft.search");
 
     private final byte[] raw;
 
