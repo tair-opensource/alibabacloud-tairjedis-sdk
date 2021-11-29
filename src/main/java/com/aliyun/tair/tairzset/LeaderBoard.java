@@ -26,6 +26,7 @@ public class LeaderBoard {
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final boolean DEFAULT_REVERSE = false;
     private static final boolean DEFAULT_USE_ZERO_INDEX = true;
+    public static final boolean DEFAULT_QUERY_RANK_FROM_REDIS = false;
 
     private final String name;
     private final byte[] nameBinary;
@@ -33,6 +34,7 @@ public class LeaderBoard {
     private final int pageSize;
     private final boolean reverse;
     private final boolean useZeroIndexForRank;
+    private final boolean queryRankFromRedis;
 
     public LeaderBoard(String name, JedisPool jedisPool) {
         this(name, jedisPool, DEFAULT_PAGE_SIZE);
@@ -47,12 +49,18 @@ public class LeaderBoard {
     }
 
     public LeaderBoard(String name, JedisPool jedisPool, int pageSize, boolean reverse, boolean useZeroIndexForRank) {
+        this(name, jedisPool, pageSize, reverse, useZeroIndexForRank, DEFAULT_QUERY_RANK_FROM_REDIS);
+    }
+
+    public LeaderBoard(String name, JedisPool jedisPool, int pageSize, boolean reverse, boolean useZeroIndexForRank,
+        boolean queryRankFromRedis) {
         this.name = name;
         this.nameBinary = SafeEncoder.encode(name);
         this.jedisPool = jedisPool;
         this.pageSize = pageSize;
         this.reverse = reverse;
         this.useZeroIndexForRank = useZeroIndexForRank;
+        this.queryRankFromRedis = queryRankFromRedis;
     }
 
     public static String joinScoresToString(final double... scores) {
@@ -166,12 +174,17 @@ public class LeaderBoard {
                 obj = jedis.sendCommand(ModuleCommand.EXZRANGE, nameBinary, toByteArray(startOffset),
                     toByteArray(endOffset), SafeEncoder.encode(WITHSCORES));
             }
+            long rank = useZeroIndexForRank ? startOffset - 1 : startOffset;
             List<String> rangeRets = BuilderFactory.STRING_LIST.build(obj);
             if (rangeRets != null) {
                 for (int i = 0; i < rangeRets.size(); i += 2) {
                     String member = rangeRets.get(i);
                     String score = rangeRets.get(i + 1);
-                    Long rank = rankFor(member);
+                    if (queryRankFromRedis) {
+                        rank = rankFor(member);
+                    } else {
+                        rank++;
+                    }
                     leaderDataList.add(new LeaderData(member, score, rank));
                 }
             }

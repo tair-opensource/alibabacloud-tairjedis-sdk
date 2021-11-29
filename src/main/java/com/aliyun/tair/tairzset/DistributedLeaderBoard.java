@@ -29,6 +29,7 @@ public class DistributedLeaderBoard {
     private static final int DEFAULT_SHARDKEY_SIZE = 10;
     private static final boolean DEFAULT_REVERSE = false;
     private static final boolean DEFAULT_USE_ZERO_INDEX = true;
+    public static final boolean DEFAULT_QUERY_RANK_FROM_REDIS = false;
 
     private final String name;
     private final byte[] nameBinary;
@@ -37,6 +38,7 @@ public class DistributedLeaderBoard {
     private final int pageSize;
     private final boolean reverse;
     private final boolean useZeroIndexForRank;
+    private final boolean queryRankFromRedis;
 
     public DistributedLeaderBoard(String name, JedisPool jedisPool) {
         this(name, jedisPool, DEFAULT_SHARDKEY_SIZE);
@@ -56,6 +58,11 @@ public class DistributedLeaderBoard {
 
     public DistributedLeaderBoard(String name, JedisPool jedisPool, int shardKeySize, int pageSize, boolean reverse,
         boolean useZeroIndexForRank) {
+        this(name, jedisPool, shardKeySize, pageSize, reverse, useZeroIndexForRank, DEFAULT_QUERY_RANK_FROM_REDIS);
+    }
+
+    public DistributedLeaderBoard(String name, JedisPool jedisPool, int shardKeySize, int pageSize, boolean reverse,
+        boolean useZeroIndexForRank, boolean queryRankFromRedis) {
         this.name = name;
         this.nameBinary = SafeEncoder.encode(name);
         this.jedisPool = jedisPool;
@@ -63,6 +70,7 @@ public class DistributedLeaderBoard {
         this.pageSize = pageSize;
         this.reverse = reverse;
         this.useZeroIndexForRank = useZeroIndexForRank;
+        this.queryRankFromRedis = queryRankFromRedis;
     }
 
     private String crcKeyByMember(final String member) {
@@ -399,7 +407,10 @@ public class DistributedLeaderBoard {
                     for (int j = 0; j < rangeRets.size(); j += 2) {
                         String member = rangeRets.get(j);
                         String score = rangeRets.get(j + 1);
-                        Long rank = rankFor(member);
+                        Long rank = null;
+                        if (queryRankFromRedis) {
+                             rank = rankFor(member);
+                        }
                         leaderDataList.add(new LeaderData(member, score, rank));
                     }
                 }
@@ -411,7 +422,17 @@ public class DistributedLeaderBoard {
         } else {
             Collections.sort(leaderDataList);
         }
-        return leaderDataList.subList(0, (int)endRank+1);
+
+        if (queryRankFromRedis) {
+            return leaderDataList.subList(0, (int)endRank + 1);
+        }
+
+        List<LeaderData> leaderDatas = leaderDataList.subList(0, (int)endRank + 1);
+        long rank = useZeroIndexForRank ? 0 : 1;
+        for (LeaderData data : leaderDatas) {
+            data.setRank(rank++);
+        }
+        return leaderDatas;
     }
 
     /**
@@ -434,7 +455,7 @@ public class DistributedLeaderBoard {
         long startOffset = (page - 1) * pageSize;
         long endOffset = startOffset + pageSize;
         if (endOffset > totalMembers) {
-            endOffset = totalMembers - 1;
+            endOffset = totalMembers;
         }
 
         List<LeaderData> leaderDataList = top(endOffset);

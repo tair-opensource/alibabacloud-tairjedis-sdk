@@ -21,6 +21,11 @@ public class LeaderData implements Comparable<LeaderData> {
 		this.rank = rank;
 	}
 
+	public LeaderData(String member, String score) {
+		this.member = member;
+		this.score = score;
+	}
+
 	public String getMember() {
 		return member;
 	}
