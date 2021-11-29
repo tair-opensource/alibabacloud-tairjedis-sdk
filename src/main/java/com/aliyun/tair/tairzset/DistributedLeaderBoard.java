@@ -411,7 +411,7 @@ public class DistributedLeaderBoard {
         } else {
             Collections.sort(leaderDataList);
         }
-        return leaderDataList.subList(0, (int)number);
+        return leaderDataList.subList(0, (int)endRank+1);
     }
 
     /**
@@ -425,13 +425,17 @@ public class DistributedLeaderBoard {
             page = 1;
         }
 
-        long totalPage = totalPages();
-        if (page > totalPage) {
-            page = totalPage;
+        long totalMembers = totalMembers();
+        long totalPages = (long)Math.ceil((double)totalMembers / (double)pageSize);
+        if (page > totalPages) {
+            page = totalPages;
         }
 
         long startOffset = (page - 1) * pageSize;
         long endOffset = startOffset + pageSize;
+        if (endOffset > totalMembers) {
+            endOffset = totalMembers - 1;
+        }
 
         List<LeaderData> leaderDataList = top(endOffset);
         return leaderDataList.subList((int)startOffset, (int)endOffset);

@@ -344,13 +344,17 @@ public class LeaderBoard {
             page = 1;
         }
 
-        long totalPage = totalPages();
-        if (page > totalPage) {
-            page = totalPage;
+        long totalMembers = totalMembers();
+        long totalPages = (long)Math.ceil((double)totalMembers / (double)pageSize);
+        if (page > totalPages) {
+            page = totalPages;
         }
 
         long startOffset = (page - 1) * pageSize;
         long endOffset = startOffset + pageSize - 1;
+        if (endOffset > totalMembers) {
+            endOffset = totalMembers - 1;
+        }
 
         return retrieveMember(startOffset, endOffset);
     }
