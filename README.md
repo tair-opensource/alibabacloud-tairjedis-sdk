@@ -1,8 +1,15 @@
 # alibabacloud-tairjedis-sdk
 
-基于 [Jedis](https://github.com/xetorthio/jedis) 封装的，操作 [云数据库Redis企业版](https://help.aliyun.com/document_detail/145957.html) 的客户端，支持企业版多种 [Module](https://help.aliyun.com/document_detail/146579.html) 的操作命令。
+基于 [Jedis](https://github.com/xetorthio/jedis) 封装的，操作 [云数据库Redis企业版](https://help.aliyun.com/document_detail/145957.html) 的客户端，支持企业版多种 [Module](https://help.aliyun.com/document_detail/146579.html) 的操作命令及部分高级特性。
+- [TairHash](https://help.aliyun.com/document_detail/145970.html), 可实现 field 级别的过期。(已[开源](https://github.com/alibaba/TairHash))
+- [TairString](https://help.aliyun.com/document_detail/145902.html), 支持 string 设置 version，增强的`cas`和`cad`命令可轻松实现分布式锁。(已[开源](https://github.com/alibaba/TairString))
+- [TairZset](https://help.aliyun.com/document_detail/292812.html), 支持多维排序。(已[开源](https://github.com/alibaba/TairZset))
+- [TairDoc](https://help.aliyun.com/document_detail/145940.html), 支持存储`JSON`类型。
+- [TairGis](https://help.aliyun.com/document_detail/145971.html), 支持地理位置点、线、面的相交、包含等关系判断。
+- [TairBloom](https://help.aliyun.com/document_detail/145972.html), 支持动态扩容的布隆过滤器。
+- [TairRoaring](https://help.aliyun.com/document_detail/311433.html), Roaring Bitmap, 使用少量的存储空间来实现海量数据的查询优化。（正在支持中）
 
-# 安装方法
+# 快速开始
 
 ```
 <dependency>
@@ -12,62 +19,15 @@
 </dependency>
 ```
 
-最新版本查阅：[这里](https://mvnrepository.com/artifact/com.aliyun.tair/alibabacloud-tairjedis-sdk)  
+最新版本查阅：[这里](https://s01.oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)  
 JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
 
-# 代码实例
-
-## 分布式锁
-
-原理介绍见 [高性能分布式锁](https://help.aliyun.com/document_detail/146758.html) 
-
-加锁：Redis SET with NX and EX，Redis原生命令。  
-解锁：CAD(compare and delete)，阿里云Redis企业版特有命令，替代原生Redis Lua方案。
-
-```
-public static boolean releaseDistributedLock(String lockKey, String requestId) {
-    Jedis jedis = null;
-    try {
-        jedis = jedisPool.getResource();
-        TairString tairString = new TairString(jedis);
-        Long ret = tairString.cad(lockKey, requestId);
-        if (1 == ret) {
-            return true;
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        if (jedis != null) {
-            jedis.close();
-        }
-    }
-    return false;
-}
-```
-
-完整代码见：[这里](https://github.com/aliyun/alibabacloud-tairjedis-sdk/blob/master/src/test/java/com/aliyun/tair/tests/example/DistributeLock.java)
-
-执行结果如下，可以看到10个线程分别对total相加10次之后，得到的结果是100，说明分布式锁成功限制了线程并发的情况。
-
-```
-...
-I am thread: Thread-8, unlock success, total: 98
-I am thread: Thread-5, lock success, total: 98
-I am thread: Thread-5, unlock success, total: 99
-I am thread: Thread-7, lock success, total: 99
-I am thread: Thread-7, unlock success, total: 100
-Final total is: 100
-```
-
-## 通过终端操作TairDoc
-
-1，打开 https://shell.aliyun.com/ ，您将获得一个终端。
-
-2，执行下面命令
-> cloudshell-git-open https://code.aliyun.com/redisuser/tairdoc-tutorial.git;teachme tutorial.md
-
-开始进行演示操作，右边有完整的示例过程，您可以点击`执行命令`，命令将被拷贝到左边的shell上。
-
-3，通过教程，您可以直接执行企业版的TairDoc命令。
-
-![](https://raw.githubusercontent.com/aliyun/alibabacloud-tairjedis-sdk/master/assets/tairdoc.jpg)
+# 最佳实践
+- [Redis客户端重试指南](https://help.aliyun.com/document_detail/303129.html)
+- [JedisPool资源池优化](https://help.aliyun.com/document_detail/98726.html)  
+- [基于TairGIS轻松实现用户轨迹监测](https://help.aliyun.com/document_detail/163537.html)
+- [基于TairString实现高性能分布式锁](https://help.aliyun.com/document_detail/146758.html)
+- [基于TairString实现高效的限流器（Bounded Counter）](https://help.aliyun.com/document_detail/147113.html)
+- [基于TairZset轻松实现多维排行榜](https://help.aliyun.com/document_detail/313857.html)
+- [基于TairZset实现分布式架构排行榜](https://help.aliyun.com/document_detail/356661.html)
+- [基于TairRoaring实现的人群圈选方案](https://help.aliyun.com/document_detail/311920.html)
