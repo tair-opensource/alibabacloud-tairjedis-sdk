@@ -4,10 +4,10 @@
 - [TairHash](https://help.aliyun.com/document_detail/145970.html), 可实现 field 级别的过期。(已[开源](https://github.com/alibaba/TairHash))
 - [TairString](https://help.aliyun.com/document_detail/145902.html), 支持 string 设置 version，增强的`cas`和`cad`命令可轻松实现分布式锁。(已[开源](https://github.com/alibaba/TairString))
 - [TairZset](https://help.aliyun.com/document_detail/292812.html), 支持多维排序。(已[开源](https://github.com/alibaba/TairZset))
-- [TairDoc](https://help.aliyun.com/document_detail/145940.html), 支持存储`JSON`类型。
-- [TairGis](https://help.aliyun.com/document_detail/145971.html), 支持地理位置点、线、面的相交、包含等关系判断。
-- [TairBloom](https://help.aliyun.com/document_detail/145972.html), 支持动态扩容的布隆过滤器。
-- [TairRoaring](https://help.aliyun.com/document_detail/311433.html), Roaring Bitmap, 使用少量的存储空间来实现海量数据的查询优化。（正在支持中）
+- [TairDoc](https://help.aliyun.com/document_detail/145940.html), 支持存储`JSON`类型。（待开源）
+- [TairGis](https://help.aliyun.com/document_detail/145971.html), 支持地理位置点、线、面的相交、包含等关系判断。（待开源）
+- [TairBloom](https://help.aliyun.com/document_detail/145972.html), 支持动态扩容的布隆过滤器。（待开源）
+- [TairRoaring](https://help.aliyun.com/document_detail/311433.html), Roaring Bitmap, 使用少量的存储空间来实现海量数据的查询优化。（待开源）
 
 # 快速开始
 
@@ -31,3 +31,4 @@ JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tai
 - [基于TairZset轻松实现多维排行榜](https://help.aliyun.com/document_detail/313857.html)
 - [基于TairZset实现分布式架构排行榜](https://help.aliyun.com/document_detail/356661.html)
 - [基于TairRoaring实现的人群圈选方案](https://help.aliyun.com/document_detail/311920.html)
+- [TairBloom的原理与最佳实践](https://help.aliyun.com/document_detail/393569.html)
