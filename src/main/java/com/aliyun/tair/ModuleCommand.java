@@ -253,6 +253,7 @@ public enum ModuleCommand implements ProtocolCommand {
     // TairSearch
     TFTMAPPINGINDEX("tft.mappingindex"),
     TFTADDDOC("tft.adddoc"),
+    TFTMADDDOC("tft.madddoc"),
     TFTDELDOC("tft.deldoc"),
     TFTGETINDEX("tft.getindex"),
     TFTGETDOC("tft.getdoc"),

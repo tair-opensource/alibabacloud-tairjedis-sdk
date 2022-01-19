@@ -1,11 +1,14 @@
 package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.Map;
 
 public class TairSearchPipeline extends Pipeline {
     public Response<String> tftmappingindex(String key, String request) {
@@ -32,6 +35,18 @@ public class TairSearchPipeline extends Pipeline {
 
     public Response<String> tftadddoc(byte[] key, byte[] request, byte[] docId) {
         getClient("").sendCommand(ModuleCommand.TFTADDDOC, key, request, SafeEncoder.encode("WITH_ID"), docId);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftmadddoc(String key, Map<String /* docId */, String /* docContent */> docs) {
+        TFTAddDocParams params = new TFTAddDocParams();
+        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftmadddoc(byte[] key, Map<byte[] /* docId */, byte[] /* docContent */> docs) {
+        TFTAddDocParams params = new TFTAddDocParams();
+        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
         return getResponse(BuilderFactory.STRING);
     }
 

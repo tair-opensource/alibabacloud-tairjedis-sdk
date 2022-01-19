@@ -25,7 +25,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
 
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}", tairSearchCluster.tftgetdoc("tftkey", "3"));
-        assertEquals("OK", tairSearchCluster.tftdeldoc("tftkey", "3"));
+        assertEquals("1", tairSearchCluster.tftdeldoc("tftkey", "3"));
         assertEquals(null, tairSearchCluster.tftgetdoc("tftkey", "3"));
 
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"copy_to\":\"\",\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"BM25\",\"store\":false,\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"copy_to\":\"\",\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"BM25\",\"store\":false,\"type\":\"text\"}}}}}", tairSearchCluster.tftgetindexmappings("tftkey"));
