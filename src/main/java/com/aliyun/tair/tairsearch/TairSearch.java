@@ -1,10 +1,19 @@
 package com.aliyun.tair.tairsearch;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.util.SafeEncoder;
+
 
 public class TairSearch {
     private Jedis jedis;
@@ -63,6 +72,21 @@ public class TairSearch {
     }
 
     /**
+     * Add docs in batch.
+     */
+    public String tftmadddoc(String key, Map<String /* docContent */, String /* docId */> docs) {
+        TFTAddDocParams params = new TFTAddDocParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftmadddoc(byte[] key, Map<byte[] /* docContent */, byte[] /* docId */> docs) {
+        TFTAddDocParams params = new TFTAddDocParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    /**
      * Get a document from Index.
      *
      * @param key   the index name
@@ -97,7 +121,7 @@ public class TairSearch {
      * @param docId the document id(s)
      * @return Success: Number of successfully deleted documents; Fail: error
      */
-    public String tftdeldoc(String key,  String... docId) {
+    public String tftdeldoc(String key, String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         Object obj = getJedis().sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
         return BuilderFactory.STRING.build(obj);

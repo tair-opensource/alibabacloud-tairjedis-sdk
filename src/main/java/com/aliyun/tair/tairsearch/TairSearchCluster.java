@@ -1,10 +1,13 @@
 package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.Map;
 
 public class TairSearchCluster {
     private JedisCluster jc;
@@ -37,6 +40,18 @@ public class TairSearchCluster {
 
     public String tftadddoc(byte[] key, byte[] request, byte[] docId) {
         Object obj = jc.sendCommand(key, ModuleCommand.TFTADDDOC, key, request, SafeEncoder.encode("WITH_ID"), docId);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftmadddoc(String key, Map<String /* docId */, String /* docContent */> docs) {
+        TFTAddDocParams params = new TFTAddDocParams();
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftmadddoc(byte[] key, Map<byte[] /* docId */, byte[] /* docContent */> docs) {
+        TFTAddDocParams params = new TFTAddDocParams();
+        Object obj = jc.sendCommand(key, ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
         return BuilderFactory.STRING.build(obj);
     }
 
