@@ -22,6 +22,9 @@
 最新版本查阅：[这里](https://s01.oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)  
 JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
 
+# Example
+参考 `src/test/java/com/aliyun/tair/tests/example/` 下完整示例。
+
 # 最佳实践
 - [Redis客户端重试指南](https://help.aliyun.com/document_detail/303129.html)
 - [JedisPool资源池优化](https://help.aliyun.com/document_detail/98726.html)  

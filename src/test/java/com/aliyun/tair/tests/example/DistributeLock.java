@@ -31,27 +31,19 @@ public class DistributeLock {
     }
 
     public static boolean tryGetDistributedLock(String lockKey, String requestId, int expireTime) {
-        Jedis jedis = null;
-        try {
-            jedis = jedisPool.getResource();
+        try (Jedis jedis = jedisPool.getResource()) {
             String result = jedis.set(lockKey, requestId, SetParams.setParams().nx().ex(expireTime));
             if ("OK".equals(result)) {
                 return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (jedis != null) {
-                jedis.close();  // Just return to pool
-            }
         }
         return false;
     }
 
     public static boolean releaseDistributedLock(String lockKey, String requestId) {
-        Jedis jedis = null;
-        try {
-            jedis = jedisPool.getResource();
+        try (Jedis jedis = jedisPool.getResource()) {
             TairString tairString = new TairString(jedis);
             Long ret = tairString.cad(lockKey, requestId);
             if (1 == ret) {
@@ -59,10 +51,6 @@ public class DistributeLock {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
         }
         return false;
     }
