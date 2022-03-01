@@ -36,14 +36,14 @@ public class TairRoaringClusterTest extends TairRoaringTestBase {
 
     @Test
     public  void trbitoptest() throws Exception {
-        jedisCluster.del("foo");
-        jedisCluster.del("bar");
-        jedisCluster.del("dest");
+        jedisCluster.del("foo{hashtag}");
+        jedisCluster.del("bar{hashtag}");
+        jedisCluster.del("dest{hashtag}");
 
-        assertEquals("OK", tairRoaringCluster.trappendintarray("foo", 1, 3, 5, 7, 9));
-        assertEquals("OK", tairRoaringCluster.trappendintarray("bar", 2, 4, 6, 8, 10));
-        assertEquals(10, tairRoaringCluster.trbitop("dest", "OR", "foo", "bar"));
-        assertEquals(10, tairRoaringCluster.trbitcount("dest"));
+        assertEquals("OK", tairRoaringCluster.trappendintarray("foo{hashtag}", 1, 3, 5, 7, 9));
+        assertEquals("OK", tairRoaringCluster.trappendintarray("bar{hashtag}", 2, 4, 6, 8, 10));
+        assertEquals(10, tairRoaringCluster.trbitop("dest{hashtag}", "OR", "foo{hashtag}", "bar{hashtag}"));
+        assertEquals(10, tairRoaringCluster.trbitcount("dest{hashtag}"));
 
         jedisCluster.del("foo");
         jedisCluster.del("bar");

@@ -12,9 +12,9 @@ import redis.clients.jedis.JedisPool;
 public class TestBase {
     protected static final String HOST = "127.0.0.1";
     protected static final int PORT = 6379;
-    protected static final int CLUSTER_PORT = 6379;
-    protected static final int CLUSTER_PORT2 = 26379;
-    protected static final int CLUSTER_PORT3 = 46379;
+    protected static final int CLUSTER_PORT = 30001;
+    protected static final int CLUSTER_PORT2 = 30002;
+    protected static final int CLUSTER_PORT3 = 30003;
 
     protected static Jedis jedis;
     protected static JedisPool jedisPool;
@@ -24,9 +24,6 @@ public class TestBase {
     static {
         try {
             jedis = new Jedis(HOST, PORT, 2000 * 100);
-            if (!"PONG".equals(jedis.ping())) {
-                System.exit(-1);
-            }
             jedisPool = new JedisPool(HOST, PORT);
             Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
             jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
