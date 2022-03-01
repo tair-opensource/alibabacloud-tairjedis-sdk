@@ -257,7 +257,23 @@ public enum ModuleCommand implements ProtocolCommand {
     TFTDELDOC("tft.deldoc"),
     TFTGETINDEX("tft.getindex"),
     TFTGETDOC("tft.getdoc"),
-    TFTSEARCH("tft.search");
+    TFTSEARCH("tft.search"),
+
+    // TairRoaring
+	TRSETBIT("tr.setbit"),
+	TRGETBIT("tr.getbit"),
+	TRBITCOUNT("tr.bitcount"),
+	TRBITPOS("tr.bitpos"),
+	TRBITOP("tr.bitop"),
+	TRSETINTARRAY("tr.setintarray"),
+	TRRANGEINTARRAY("tr.rangeintarray"),
+	TRAPPENDINTARRAY("tr.appendintarray"),
+	TRDIFF("tr.diff"),
+	TROPTIMIZE("tr.optimize"),
+	TRSTAT("tr.stat"),
+	TRSETBITARRAY("tr.setbitarray"),
+	TRMIN("tr.min"),
+	TRMAX("tr.max");
 
     private final byte[] raw;
 
