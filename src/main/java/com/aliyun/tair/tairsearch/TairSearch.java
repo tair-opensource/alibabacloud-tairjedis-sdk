@@ -92,15 +92,6 @@ public class TairSearch {
         return BuilderFactory.STRING.build(obj);
     }
 
-    public String tftgetindexsettings(String index) {
-        return tftgetindexsettings(SafeEncoder.encode(index));
-    }
-
-    public String tftgetindexsettings(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETINDEX, index, SafeEncoder.encode("settings"));
-        return BuilderFactory.STRING.build(obj);
-    }
-
     /**
      * Add a document to Index.
      *

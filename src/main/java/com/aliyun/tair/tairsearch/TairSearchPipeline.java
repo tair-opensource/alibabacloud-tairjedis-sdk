@@ -51,15 +51,6 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> tftgetindexsettings(String key) {
-        return tftgetindexsettings(SafeEncoder.encode(key));
-    }
-
-    public Response<String> tftgetindexsettings(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("settings"));
-        return getResponse(BuilderFactory.STRING);
-    }
-
     public Response<String> tftadddoc(String key, String request) {
         return tftadddoc(SafeEncoder.encode(key), SafeEncoder.encode(request));
     }

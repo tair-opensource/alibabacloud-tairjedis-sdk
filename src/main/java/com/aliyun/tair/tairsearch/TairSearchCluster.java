@@ -56,15 +56,6 @@ public class TairSearchCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
-    public String tftgetindexsettings(String key) {
-        return tftgetindexsettings(SafeEncoder.encode(key));
-    }
-
-    public String tftgetindexsettings(byte[] key) {
-        Object obj = jc.sendCommand(key, ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("settings"));
-        return BuilderFactory.STRING.build(obj);
-    }
-
     public String tftadddoc(String key, String request) {
         return tftadddoc(SafeEncoder.encode(key), SafeEncoder.encode(request));
     }
