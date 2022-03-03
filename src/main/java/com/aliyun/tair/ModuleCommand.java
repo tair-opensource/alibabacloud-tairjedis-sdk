@@ -252,12 +252,19 @@ public enum ModuleCommand implements ProtocolCommand {
 
     // TairSearch
     TFTMAPPINGINDEX("tft.mappingindex"),
+    TFTCREATEINDEX("tft.createindex"),
+    TFTUPDATEINDEX("tft.updateindex"),
     TFTADDDOC("tft.adddoc"),
     TFTMADDDOC("tft.madddoc"),
+    TFTUPDATEDOC("tft.updatedoc"),
     TFTDELDOC("tft.deldoc"),
+    TFTDELALL("tft.delall"),
     TFTGETINDEX("tft.getindex"),
     TFTGETDOC("tft.getdoc"),
     TFTSEARCH("tft.search"),
+    TFTEXISTS("tft.exists"),
+    TFTSCANDOCID("tft.scandocid"),
+    TFTDOCNUM("tft.docnum"),
 
     // TairRoaring
 	TRSETBIT("tr.setbit"),

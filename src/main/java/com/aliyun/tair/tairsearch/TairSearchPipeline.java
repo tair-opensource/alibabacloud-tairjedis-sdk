@@ -3,11 +3,15 @@ package com.aliyun.tair.tairsearch;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
+import com.aliyun.tair.tairsearch.params.TFTScanParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
+import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class TairSearchPipeline extends Pipeline {
@@ -17,6 +21,42 @@ public class TairSearchPipeline extends Pipeline {
 
     public Response<String> tftmappingindex(byte[] key, byte[] request) {
         getClient("").sendCommand(ModuleCommand.TFTMAPPINGINDEX, key, request);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftcreateindex(String key, String request) {
+        return tftcreateindex(SafeEncoder.encode(key), SafeEncoder.encode(request));
+    }
+
+    public Response<String> tftcreateindex(byte[] key, byte[] request) {
+        getClient("").sendCommand(ModuleCommand.TFTCREATEINDEX, key, request);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftupdateindex(String index, String request) {
+        return tftupdateindex(SafeEncoder.encode(index), SafeEncoder.encode(request));
+    }
+
+    public Response<String> tftupdateindex(byte[] index, byte[] request) {
+        getClient("").sendCommand(ModuleCommand.TFTUPDATEINDEX, index, request);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftgetindexmappings(String key) {
+        return tftgetindexmappings(SafeEncoder.encode(key));
+    }
+
+    public Response<String> tftgetindexmappings(byte[] key) {
+        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("mappings"));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftgetindexsettings(String key) {
+        return tftgetindexsettings(SafeEncoder.encode(key));
+    }
+
+    public Response<String> tftgetindexsettings(byte[] key) {
+        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("settings"));
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -50,6 +90,15 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
+    public Response<String> tftupdatedoc(String index, String docId, String docContent) {
+        return tftupdatedoc(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(docContent));
+    }
+
+    public Response<String> tftupdatedoc(byte[] index, byte[] docId, byte[] docContent) {
+        getClient("").sendCommand(ModuleCommand.TFTUPDATEDOC, index, docId, docContent);
+        return getResponse(BuilderFactory.STRING);
+    }
+
     public Response<String> tftgetdoc(String key, String docId) {
         return tftgetdoc(SafeEncoder.encode(key), SafeEncoder.encode(docId));
     }
@@ -80,21 +129,12 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> tftgetindexmappings(String key) {
-        return tftgetindexmappings(SafeEncoder.encode(key));
+    public Response<String> tftdelall(String index) {
+        return tftdelall(SafeEncoder.encode(index));
     }
 
-    public Response<String> tftgetindexmappings(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("mappings"));
-        return getResponse(BuilderFactory.STRING);
-    }
-
-    public Response<String> tftgetindexsettings(String key) {
-        return tftgetindexsettings(SafeEncoder.encode(key));
-    }
-
-    public Response<String> tftgetindexsettings(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("settings"));
+    public Response<String> tftdelall(byte[] index) {
+        getClient("").sendCommand(ModuleCommand.TFTDELALL, index);
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -119,5 +159,23 @@ public class TairSearchPipeline extends Pipeline {
         }
 
         return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<Long> tftexists(String index, String docId) {
+        return tftexists(SafeEncoder.encode(index), SafeEncoder.encode(docId));
+    }
+
+    public Response<Long> tftexists(byte[] index, byte[] docId) {
+        getClient("").sendCommand(ModuleCommand.TFTEXISTS, index, docId);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> tftdocnum(String index) {
+        return tftdocnum(SafeEncoder.encode(index));
+    }
+
+    public Response<Long> tftdocnum(byte[] index) {
+        getClient("").sendCommand(ModuleCommand.TFTDOCNUM, index);
+        return getResponse(BuilderFactory.LONG);
     }
 }

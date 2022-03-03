@@ -40,7 +40,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals("1", objs.get(9));
         assertEquals(null, objs.get(10));
 
-        assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"copy_to\":\"\",\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"BM25\",\"store\":false,\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"copy_to\":\"\",\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"BM25\",\"store\":false,\"type\":\"text\"}}}}}", objs.get(11));
+        assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", objs.get(11));
     }
 
     @Test
@@ -76,6 +76,6 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals("1", objs.get(5));
         assertEquals(null, objs.get(6));
 
-        assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"copy_to\":\"\",\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"BM25\",\"store\":false,\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"copy_to\":\"\",\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"BM25\",\"store\":false,\"type\":\"text\"}}}}}", objs.get(7));
+        assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", objs.get(7));
     }
 }
