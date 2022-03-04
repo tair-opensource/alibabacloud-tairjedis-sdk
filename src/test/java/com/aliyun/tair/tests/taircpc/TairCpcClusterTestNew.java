@@ -923,66 +923,6 @@ public void sumTest() throws Exception {
     }
 
     @Test
-    public void avgTest() throws Exception {
-
-        Double addRet = tairCpcClusterNew.avgAdd(key, count1, 150);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.avgAdd(key, count2, 100);
-        assertEquals(112.5, addRet, 0.001);
-
-        Double getRet = tairCpcClusterNew.avgGet(key);
-        assertEquals(112.5, getRet, 0.001);
-
-        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
-        cpcUpdateParams2.ex(2);
-
-        addRet = tairCpcClusterNew.avgAdd(key2, count1, 100, cpcUpdateParams2);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.avgAdd(key2, count2, 150, cpcUpdateParams2);
-        assertEquals(112.5, addRet, 0.001);
-
-        Thread.sleep(3000);
-
-        getRet = tairCpcClusterNew.avgGet(key2);
-        assertEquals(0.00, getRet, 0.001);
-
-        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
-
-        addRet = tairCpcClusterNew.avgAdd(key3, count1, 100, cpcUpdateParams3);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.avgAdd(key3, count2, 150, cpcUpdateParams3);
-        assertEquals(112.5, addRet, 0.001);
-
-        Thread.sleep(3000);
-
-        getRet = tairCpcClusterNew.avgGet(key3);
-        assertEquals(0.00, getRet, 0.001);
-
-        Double setRet = tairCpcClusterNew.avgSet(key, count1, 100);
-        assertEquals(150, setRet, 0.001);
-
-
-        addRet = tairCpcClusterNew.avgAdd(bkey, count1, 150);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.avgAdd(bkey, count2, 100);
-        assertEquals(112.5, addRet, 0.001);
-
-        getRet = tairCpcClusterNew.avgGet(bkey);
-        assertEquals(112.5, getRet, 0.001);
-
-        addRet = tairCpcClusterNew.avgAdd(bkey2, count1, 100, cpcUpdateParams2);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcClusterNew.avgAdd(bkey2, count2, 150, cpcUpdateParams2);
-        assertEquals(112.5, addRet, 0.001);
-    }
-
-    @Test
     public void avgArrayTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.avgArrayAdd(key, timestamp, count1, 100);

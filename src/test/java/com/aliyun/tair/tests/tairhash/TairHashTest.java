@@ -62,7 +62,7 @@ public class TairHashTest extends TairHashTestBase {
         exhsetParams.noactive();
         assertEquals(1, (long)tairHash.exhset(bfoo, bbar, bcar, exhsetParams));
         Thread.sleep(2000);
-        assertEquals(1, (long)tairHash.exhlen(bfoo));
+        assertEquals(0, (long)tairHash.exhlen(bfoo));
         assertEquals(0, (long)tairHash.exhlen(bfoo, true));
         assertEquals(false, tairHash.exhexists(bfoo, bbar));
         assertEquals(0, (long)tairHash.exhlen(bfoo));
@@ -183,7 +183,7 @@ public class TairHashTest extends TairHashTestBase {
         tairHash.exhset(foo, "bar", "car");
         assertTrue(tairHash.exhpexpire(foo, "bar", 100));
         Thread.sleep(1000);
-        assertEquals(0, (long)tairHash.exhlen(foo));
+        assertEquals(1, (long)tairHash.exhlen(foo));
 
         // Binary
         tairHash.exhset(bfoo, bbar, bbar);
@@ -221,7 +221,7 @@ public class TairHashTest extends TairHashTestBase {
         tairHash.exhset(bfoo, bbar, bbar);
         assertEquals(true, tairHash.exhpexpireAt(bfoo, bbar, unixTime));
         Thread.sleep(1000);
-        assertEquals(0, (long)tairHash.exhlen(bfoo));
+        assertEquals(1, (long)tairHash.exhlen(bfoo));
 
         unixTime = (System.currentTimeMillis() / 1000L) + 100;
         tairHash.exhset(bfoo, bbar, bbar);

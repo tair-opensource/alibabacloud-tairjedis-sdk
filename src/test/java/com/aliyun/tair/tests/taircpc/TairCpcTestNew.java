@@ -826,66 +826,6 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
-    public void avgTest() throws Exception {
-
-        Double addRet = tairCpcNew.avgAdd(key, count1, 150);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcNew.avgAdd(key, count2, 100);
-        assertEquals(112.5, addRet, 0.001);
-
-        Double getRet = tairCpcNew.avgGet(key);
-        assertEquals(112.5, getRet, 0.001);
-
-        CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
-        cpcUpdateParams2.ex(2);
-
-        addRet = tairCpcNew.avgAdd(key2, count1, 100, cpcUpdateParams2);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcNew.avgAdd(key2, count2, 150, cpcUpdateParams2);
-        assertEquals(112.5, addRet, 0.001);
-
-        Thread.sleep(3000);
-
-        getRet = tairCpcNew.avgGet(key2);
-        assertEquals(0.00, getRet, 0.001);
-
-        CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
-        cpcUpdateParams3.px(2000);
-
-        addRet = tairCpcNew.avgAdd(key3, count1, 100, cpcUpdateParams3);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcNew.avgAdd(key3, count2, 150, cpcUpdateParams3);
-        assertEquals(112.5, addRet, 0.001);
-
-        Thread.sleep(3000);
-
-        getRet = tairCpcNew.avgGet(key3);
-        assertEquals(0.00, getRet, 0.001);
-
-        Double setRet = tairCpcNew.avgSet(key, count1, 100);
-        assertEquals(150, setRet, 0.001);
-
-
-        addRet = tairCpcNew.avgAdd(bkey, count1, 150);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcNew.avgAdd(bkey, count2, 100);
-        assertEquals(112.5, addRet, 0.001);
-
-        getRet = tairCpcNew.avgGet(bkey);
-        assertEquals(112.5, getRet, 0.001);
-
-        addRet = tairCpcNew.avgAdd(bkey2, count1, 100, cpcUpdateParams2);
-        assertEquals(150, addRet, 0.001);
-
-        addRet = tairCpcNew.avgAdd(bkey2, count2, 150, cpcUpdateParams2);
-        assertEquals(112.5, addRet, 0.001);
-    }
-
-    @Test
     public void avgArrayTest() throws Exception {
 
         Double addRet = tairCpcNew.avgArrayAdd(key, timestamp, count1, 100);
@@ -1049,15 +989,15 @@ public class TairCpcTestNew extends TairCpcTestBase {
         getRet = tairCpcNew.stddevArrayGet(key2, timestamp);
         assertEquals(100.00, getRet, 0.001);
 
-        Object sketGetRet = tairCpcNew.sketchesGet(key, timestamp);
-        String getValueStr = new String((byte[]) sketGetRet);
-        Double value= Double.parseDouble(getValueStr);
-        assertEquals(200.00, value, 0.001);
-
-        Object sketMergeRet = tairCpcNew.sketchesGetRangeMerge(key, timestamp-winsize, timestamp);
-        getValueStr = new String((byte[]) sketMergeRet);
-        value= Double.parseDouble(getValueStr);
-        assertEquals(200.00, value, 0.001);
+        //Object sketGetRet = tairCpcNew.sketchesGet(key, timestamp);
+        //String getValueStr = new String((byte[]) sketGetRet);
+        //Double value= Double.parseDouble(getValueStr);
+        //assertEquals(200.00, value, 0.001);
+        //
+        //Object sketMergeRet = tairCpcNew.sketchesGetRangeMerge(key, timestamp-winsize, timestamp);
+        //getValueStr = new String((byte[]) sketMergeRet);
+        //value= Double.parseDouble(getValueStr);
+        //assertEquals(200.00, value, 0.001);
 
 //        List<Object> sketRangeRet = tairCpcNew.sketchesGetRange(key, timestamp-winsize, timestamp);
 //        getValueStr = new String((byte[]) sketRangeRet.get(0));
@@ -1098,8 +1038,8 @@ public class TairCpcTestNew extends TairCpcTestBase {
         List<Double> rangeRet = tairCpcNew.sketchesGetRange(key2, timestamp-winsize, timestamp);
         assertEquals(2, rangeRet.get(0), 0.001);
 
-        rangeRet = tairCpcNew.sketchesGetRange(key3, timestamp-winsize, timestamp);
-        assertEquals(2, rangeRet.get(0), 0.001);
+        //rangeRet = tairCpcNew.sketchesGetRange(key3, timestamp-winsize, timestamp);
+        //assertEquals(2, rangeRet.get(0), 0.001);
 
 //        List<Object> rangeRet = tairCpcNew.sketchesRange(key, timestamp-winsize, timestamp);
 //        assertEquals(1, rangeRet.get(0));
