@@ -20,9 +20,6 @@ public class TestBase {
     static {
         try {
             jedis = new Jedis(HOST, PORT, 60 * 1000); // timeout 60s
-            if (!"PONG".equals(jedis.ping())) {
-                System.exit(-1);
-            }
             jedisPool = new JedisPool(HOST, PORT);
             Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
             jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
