@@ -257,6 +257,7 @@ public enum ModuleCommand implements ProtocolCommand {
     TFTADDDOC("tft.adddoc"),
     TFTMADDDOC("tft.madddoc"),
     TFTUPDATEDOC("tft.updatedoc"),
+    TFTUPDATEDOCFIELD("tft.updatedocfield"),
     TFTDELDOC("tft.deldoc"),
     TFTDELALL("tft.delall"),
     TFTGETINDEX("tft.getindex"),
@@ -265,6 +266,9 @@ public enum ModuleCommand implements ProtocolCommand {
     TFTEXISTS("tft.exists"),
     TFTSCANDOCID("tft.scandocid"),
     TFTDOCNUM("tft.docnum"),
+    TFTINCRLONGDOCFIELD("tft.incrlongdocfield"),
+    TFTINCRFLOATDOCFIELD("tft.incrfloatdocfield"),
+    TFTDELDOCFIELD("tft.deldocfield"),
 
     // TairRoaring
 	TRSETBIT("tr.setbit"),
