@@ -8,10 +8,13 @@ import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
 import com.aliyun.tair.tairsearch.params.TFTScanParams;
+import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
+
+import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairSearchCluster {
     private JedisCluster jc;
@@ -86,13 +89,51 @@ public class TairSearchCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+    @Deprecated
     public String tftupdatedoc(String key, String docId, String docContent) {
         return tftupdatedoc(SafeEncoder.encode(key), SafeEncoder.encode(docId), SafeEncoder.encode(docContent));
     }
 
+    @Deprecated
     public String tftupdatedoc(byte[] key, byte[] docId, byte[] docContent) {
         Object obj = jc.sendCommand(key, ModuleCommand.TFTUPDATEDOC, key, docId, docContent);
         return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftupdatedocfield(String index, String docId, String docContent) {
+        return tftupdatedoc(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(docContent));
+    }
+
+    public String tftupdatedocfield(byte[] index, byte[] docId, byte[] docContent) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TFTUPDATEDOCFIELD, index, docId, docContent);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public Long tftincrlongdocfield(String index, String docId, final String field, final long value) {
+        return tftincrlongdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field), value);
+    }
+
+    public Long tftincrlongdocfield(byte[] index, byte[] docId, byte[] field, long value) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TFTINCRLONGDOCFIELD, index, docId, field, toByteArray(value));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Double tftincrfloatdocfield(String index, String docId, final String field, final double value) {
+        return tftincrfloatdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field), value);
+    }
+
+    public Double tftincrfloatdocfield(byte[] index, byte[] docId, byte[] field, double value) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TFTINCRFLOATDOCFIELD, index, docId, field, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Long tftdeldocfield(String index, String docId, final String... field) {
+        return tftdeldocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encodeMany(field));
+    }
+
+    public Long tftdeldocfield(byte[] index, byte[] docId, byte[]... field) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TFTDELDOCFIELD, JoinParameters.joinParameters(index, docId, field));
+        return BuilderFactory.LONG.build(obj);
     }
 
     public String tftgetdoc(String key, String docId) {

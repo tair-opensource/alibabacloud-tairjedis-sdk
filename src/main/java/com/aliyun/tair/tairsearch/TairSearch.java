@@ -8,10 +8,13 @@ import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
 import com.aliyun.tair.tairsearch.params.TFTScanParams;
+import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
+
+import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairSearch {
     private Jedis jedis;
@@ -146,13 +149,86 @@ public class TairSearch {
      * @param docContent the content of the document
      * @return Success: OK ; Fail: error.
      */
+    @Deprecated
     public String tftupdatedoc(String index, String docId, String docContent) {
         return tftupdatedoc(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(docContent));
     }
 
+    @Deprecated
     public String tftupdatedoc(byte[] index, byte[] docId, byte[] docContent) {
         Object obj = getJedis().sendCommand(ModuleCommand.TFTUPDATEDOC, index, docId, docContent);
         return BuilderFactory.STRING.build(obj);
+    }
+
+    /**
+     * Update doc fields. You can add new fields to the document, or update an existing field.
+     * The document is automatically created if it does not exist.
+     *
+     * @param index   the index name
+     * @param docId the id of the document
+     * @param docContent the content of the document
+     * @return Success: OK ; Fail: error.
+     */
+    public String tftupdatedocfield(String index, String docId, String docContent) {
+        return tftupdatedoc(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(docContent));
+    }
+
+    public String tftupdatedocfield(byte[] index, byte[] docId, byte[] docContent) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTUPDATEDOCFIELD, index, docId, docContent);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    /**
+     * Increment the integer value of a document field by the given number.
+     *
+     * @param index the index name
+     * @param docId the document id
+     * @param field The fields of the document that will be incremented
+     * @param value the value to be incremented
+     * @return Long integer-reply the value after the increment operation.
+     */
+    public Long tftincrlongdocfield(String index, String docId, final String field, final long value) {
+        return tftincrlongdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field), value);
+    }
+
+    public Long tftincrlongdocfield(byte[] index, byte[] docId, byte[] field, long value) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTINCRLONGDOCFIELD, index, docId, field, toByteArray(value));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    /**
+     * Increment the double value of a document field by the given number.
+     *
+     * @param index the index name
+     * @param docId the document id
+     * @param field The fields of the document that will be incremented
+     * @param value the value to be incremented
+     * @return Long double-reply the value after the increment operation.
+     */
+    public Double tftincrfloatdocfield(String index, String docId, final String field, final double value) {
+        return tftincrfloatdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field), value);
+    }
+
+    public Double tftincrfloatdocfield(byte[] index, byte[] docId, byte[] field, double value) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTINCRFLOATDOCFIELD, index, docId, field, toByteArray(value));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * Delete fields in the document.
+     *
+     * @param index the index name
+     * @param docId the document id
+     * @param field The fields of the document that will be deleted
+     * @return Long integer-reply the number of fields that were removed from the document.
+     */
+    public Long tftdeldocfield(String index, String docId, final String... field) {
+        return tftdeldocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encodeMany(field));
+    }
+
+    public Long tftdeldocfield(byte[] index, byte[] docId, byte[]... field) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTDELDOCFIELD, JoinParameters.joinParameters(index, docId, field));
+        return BuilderFactory.LONG.build(obj);
     }
 
     /**

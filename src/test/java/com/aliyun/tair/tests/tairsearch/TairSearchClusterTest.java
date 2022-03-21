@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.aliyun.tair.tairsearch.params.TFTScanParams;
+import junit.framework.TestCase;
 import org.junit.Test;
 import redis.clients.jedis.ScanResult;
 
@@ -60,7 +61,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
     }
 
     @Test
-    public void tfupdatedoc() {
+    public void tfupdatedocfield() {
         jedisCluster.del("tftkey");
         String ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
@@ -72,9 +73,66 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         ret = tairSearchCluster.tftupdateindex("tftkey", "{\"mappings\":{\"properties\":{\"f1\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
-        tairSearchCluster.tftupdatedoc("tftkey", "1", "{\"f1\":\"mysql is a dbms\"}");
+        tairSearchCluster.tftupdatedocfield("tftkey", "1", "{\"f1\":\"mysql is a dbms\"}");
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.191783,\"_source\":{\"f0\":\"redis is a nosql database\",\"f1\":\"mysql is a dbms\"}}],\"max_score\":0.191783,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearchCluster.tftsearch("tftkey", "{\"query\":{\"term\":{\"f1\":\"mysql\"}}}"));
+    }
+
+    @Test
+    public void tfincrlongdocfield() {
+        jedisCluster.del("tftkey");
+        try {
+            tairSearchCluster.tftincrlongdocfield("tftkey", "1", "f0", 1);
+        } catch (Exception e) {
+            TestCase.assertTrue(e.getMessage().contains("not exists"));
+        }
+        String ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
+        assertEquals(ret, "OK");
+        try {
+            tairSearchCluster.tftincrlongdocfield("tftkey", "1", "f0", 1);
+        } catch (Exception e) {
+            TestCase.assertTrue(e.getMessage().contains("failed to parse field"));
+        }
+        jedisCluster.del("tftkey");
+        ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
+        assertEquals(ret, "OK");
+        assertEquals(1, tairSearchCluster.tftincrlongdocfield("tftkey", "1", "f0", 1).intValue());
+        assertEquals(0, tairSearchCluster.tftincrlongdocfield("tftkey", "1", "f0", -1).intValue());
+        assertEquals(1, tairSearchCluster.tftexists("tftkey", "1").intValue());
+    }
+    @Test
+    public void tfincrfloatdocfield() {
+        jedisCluster.del("tftkey");
+        try {
+            tairSearchCluster.tftincrfloatdocfield("tftkey", "1", "f0", 1.1);
+        } catch (Exception e) {
+            TestCase.assertTrue(e.getMessage().contains("not exists"));
+        }
+        String ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
+        assertEquals(ret, "OK");
+        try {
+            tairSearchCluster.tftincrfloatdocfield("tftkey", "1", "f0", 1.1);
+        } catch (Exception e) {
+            TestCase.assertTrue(e.getMessage().contains("failed to parse field"));
+        }
+        jedisCluster.del("tftkey");
+        ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"double\"}}}}");
+        assertEquals(ret, "OK");
+        double value = tairSearchCluster.tftincrfloatdocfield("tftkey", "1", "f0", 1.1);
+        assertEquals(Double.compare(1.1, value), 0);
+        value = tairSearchCluster.tftincrfloatdocfield("tftkey", "1", "f0", -1.1);
+        assertEquals(Double.compare(0, value), 0);
+        assertEquals(1, tairSearchCluster.tftexists("tftkey", "1").intValue());
+    }
+    @Test
+    public void tftdeldocfield() {
+        jedisCluster.del("tftkey");
+        assertEquals(0, tairSearchCluster.tftdeldocfield("tftkey", "1", "f0").intValue());
+        String ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
+        assertEquals(ret, "OK");
+        tairSearchCluster.tftincrlongdocfield("tftkey", "1", "f0", 1);
+        tairSearchCluster.tftincrfloatdocfield("tftkey", "1", "f1", 1.1) ;
+        assertEquals(2, tairSearchCluster.tftdeldocfield("tftkey", "1", "f0", "f1", "f2").intValue());
     }
 
     @Test
