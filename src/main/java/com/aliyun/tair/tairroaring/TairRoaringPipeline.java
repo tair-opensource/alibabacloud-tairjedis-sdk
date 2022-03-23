@@ -2,7 +2,7 @@ package com.aliyun.tair.tairroaring;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.util.JoinParameters;
-import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.getResponse(BuilderFactory.
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
@@ -23,19 +23,45 @@ public class TairRoaringPipeline extends Pipeline {
      * @param value the bit value
      * @return Success: long; Fail: error
      */
-    public Response<Long> trsetbit(final String key, long offset, final String value) {
-        getClient("").sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(value));
+    public long trsetbit(final String key, long offset, final String value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(value));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trsetbit(byte[] key, long offset, byte[] value) {
-        getClient("").sendCommand(ModuleCommand.TRSETBIT, key, toByteArray(offset), value);
+    public long trsetbit(final String key, long offset, long value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), toByteArray(value));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trsetbit(final String key, long offset, long value) {
-        getClient("").sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), toByteArray(value));
+    public long trsetbit(byte[] key, long offset, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETBIT, key, toByteArray(offset), value);
         return getResponse(BuilderFactory.LONG);
     }
 
+    /**
+     * TR.SETBITS    TR.SETBITS <key> <offset> [<offset2> <offset3> ... <offsetn>]
+     * setting the value at the offset in roaringbitmap
+     *
+     * @param key roaring key
+     * @param offset the bit offset
+     * @return Success: long; Fail: error
+     */
+    public long trsetbits(final String key, long... fields) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        for (long value : fields) {
+            args.add(toByteArray(value));
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETBITS,
+                JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
+        return getResponse(BuilderFactory.STRING);
+    }
+    public long trsetbits(byte[] key, long... fields) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        for (long value : fields) {
+            args.add(toByteArray(value));
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETBITS,
+                JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
+        return getResponse(BuilderFactory.STRING);
+    }
 
     /**
      * TR.GETBIT    TR.GETBIT <key> <offset>
@@ -45,33 +71,191 @@ public class TairRoaringPipeline extends Pipeline {
      * @param offset the bit offset
      * @return Success: long; Fail: error
      */
-    public Response<Long> trgetbit(final String key, long offset) {
-        getClient("").sendCommand(ModuleCommand.TRGETBIT, SafeEncoder.encode(key), toByteArray(offset));
+    public long trgetbit(final String key, long offset) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRGETBIT, SafeEncoder.encode(key), toByteArray(offset));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trgetbit(final String key, final String offset) {
-        getClient("").sendCommand(ModuleCommand.TRGETBIT, SafeEncoder.encode(key), SafeEncoder.encode(offset));
+    public long trgetbit(byte[] key, long offset) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRGETBIT, key, toByteArray(offset));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trgetbit(byte[] key, long offset) {
-        getClient("").sendCommand(ModuleCommand.TRGETBIT, key, toByteArray(offset));
+
+    /**
+     * TR.GETBITS    TR.GETBITS <key> <offset> [<offset2> <offset3> ... <offsetn>]
+     * get the value at the offset in roaringbitmap
+     *
+     * @param key roaring key
+     * @param fields the bit offset
+     * @return Success: array long; Fail: error
+     */
+    public List<Long> trgetbits(final String key, long... fields) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        for (long value : fields) {
+            args.add(toByteArray(value));
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRGETBITS,
+                JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
+        return getResponse(BuilderFactory.LONG_LIST);
+    }
+    public List<Long> trgetbits(byte[] key, long... fields) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        for (long value : fields) {
+            args.add(toByteArray(value));
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRGETBITS,
+                JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
+        return getResponse(BuilderFactory.LONG_LIST);
+    }
+
+
+    /**
+     * TR.CLEARBITS    TR.CLEARBITS <key> <offset> [<offset2> <offset3> ... <offsetn>]
+     * remove the value at the offset in roaringbitmap
+     *
+     * @param key roaring key
+     * @param offset the bit offset
+     * @return Success: long; Fail: error
+     */
+    public long trclearbits(final String key, long... fields) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        for (long value : fields) {
+            args.add(toByteArray(value));
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRCLEARBITS,
+                JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
+        return getResponse(BuilderFactory.Long);
+    }
+    public long trclearbits(byte[] key, long... fields) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        for (long value : fields) {
+            args.add(toByteArray(value));
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRCLEARBITS,
+                JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
+        return getResponse(BuilderFactory.Long);
+    }
+
+
+    /**
+     * TR.RANGE TR.RANGE <key> <start> <end>
+     * retrive the setted bit between the closed range, return them with int array
+     *
+     * @param key roaring bitmap key
+     * @param start range start
+     * @param end range end
+     * @return Success: array long; Fail: error
+     */
+    public List<Long> trrange(final String key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.LONG_LIST);
+    }
+    public List<Long> trrange(byte[] key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRRANGE, key, toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.LONG_LIST);
+    }
+
+    /**
+     * TR.RANGEBITARRAY TR.RANGEBITARRAY <key> <start> <end>
+     * retrive the setted bit between the closed range, return them by the string bit-array
+     *
+     * @param key roaring bitmap key
+     * @param start range start
+     * @param end range end
+     * @return Success: string; Fail: error
+     */
+    public String trrangebitarray(final String key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRRANGEBITARRAY, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.STRING);
+    }
+    public String trrange(byte[] key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRRANGE, key, toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+
+    /**
+     * TR.APPENDBITARRAY TR.APPENDBITARRAY <key> <offset> <value>
+     * append the bit array after the offset in roaringbitmap
+     *
+     * @param key roaring key
+     * @param offset the bit offset
+     * @param value the bit value
+     * @return Success: long; Fail: error
+     */
+    public long trappendbitarray(final String key, long offset, final String value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRAPPENDBITARRAY, SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(value));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trappendbitarray(final String key, long offset, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRAPPENDBITARRAY, SafeEncoder.encode(key), toByteArray(offset), value);
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trappendbitarray(byte[] key, long offset, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRAPPENDBITARRAY, key, toByteArray(offset), value);
         return getResponse(BuilderFactory.LONG);
     }
 
 
     /**
-     * TR.BITCOUNT	TR.BITCOUNT <key>
-     * counting bit set as 1 in the roaringbitmap
+     * TR.SETRANGE TR.SETRANGE <key> <start> <end>
+     * 设置 Roaring bitmap中range 区间内元素为1-bit, 返回设置成功的 bit 数
      *
-     * @param key roaring key
-     * @return Success: long; Fail: error
+     * @param key roaring bitmap key
+     * @param start range start
+     * @param end range end
+     * @return Success: array long; Fail: error
      */
-    public Response<Long> trbitcount(final String key) {
-        getClient("").sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
+    public long trsetrange(final String key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trbitcount(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TRBITCOUNT, key);
+    public long trsetrange(byte[] key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETRANGE, key, toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * TR.FLIPRANGE TR.FLIPRANGE <key> <start> <end>
+     *  翻转 Roaring bitmap 中range 区间内所有bit, 返回设置成功的 bit 数
+     *
+     * @param key roaring bitmap key
+     * @param start range start
+     * @param end range end
+     * @return Success: array long; Fail: error
+     */
+    public long trfliprange(final String key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRFLIPRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trfliprange(byte[] key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRFLIPRANGE, key, toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * TR.BITCOUNT	TR.BITCOUNT <key> [<start> <end>]
+     * counting bit set as 1 in the roaringbitmap
+     * start and end are optional, you can count 1-bit in range by passing start and end
+     *
+     * @param key roaring key
+     * @param start range start
+     * @param end range end
+     * @return Success: long; Fail: error
+     */
+    public long trbitcount(final String key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trbitcount(byte[] key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITCOUNT, key);
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trbitcount(final String key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trbitcount(byte[] key, long start, long end) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITCOUNT, key, toByteArray(start), toByteArray(end));
         return getResponse(BuilderFactory.LONG);
     }
 
@@ -82,12 +266,13 @@ public class TairRoaringPipeline extends Pipeline {
      * @param key roaring key
      * @return Success: long; Fail: error
      */
-    public Response<Long> trmin(final String key) {
-        getClient("").sendCommand(ModuleCommand.TRMIN, SafeEncoder.encode(key));
+    public long trmin(final String key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRMIN, SafeEncoder.encode(key));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trmin(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TRMIN, key);
+
+    public long trmin(byte[] key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRMIN, key);
         return getResponse(BuilderFactory.LONG);
     }
 
@@ -98,15 +283,15 @@ public class TairRoaringPipeline extends Pipeline {
      * @param key roaring key
      * @return Success: long; Fail: error
      */
-    public Response<Long> trmax(final String key) {
-        getClient("").sendCommand(ModuleCommand.TRMAX, SafeEncoder.encode(key));
-        return getResponse(BuilderFactory.LONG);
-    }
-    public Response<Long> trmax(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TRMAX, key);
+    public long trmax(final String key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRMAX, SafeEncoder.encode(key));
         return getResponse(BuilderFactory.LONG);
     }
 
+    public long trmax(byte[] key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRMAX, key);
+        return getResponse(BuilderFactory.LONG);
+    }
 
     /**
      * TR.OPTIMIZE	TR.OPTIMIZE <key>
@@ -115,12 +300,13 @@ public class TairRoaringPipeline extends Pipeline {
      * @param key roaring key
      * @return Success: +OK; Fail: error
      */
-    public Response<String> troptimize(final String key) {
-        getClient("").sendCommand(ModuleCommand.TROPTIMIZE, SafeEncoder.encode(key));
+    public String troptimize(final String key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TROPTIMIZE, SafeEncoder.encode(key));
         return getResponse(BuilderFactory.STRING);
     }
-    public Response<String> troptimize(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TROPTIMIZE, key);
+
+    public String troptimize(byte[] key) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TROPTIMIZE, key);
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -132,34 +318,56 @@ public class TairRoaringPipeline extends Pipeline {
      * @param key roaring key
      * @return Success: string; Fail: error
      */
-    public Response<String> trstat(final String key) {
-        getClient("").sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key));
+    public String trstat(final String key, boolean json = false) {
+        if json {
+            Object obj = getClient("").sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key), SafeEncoder.encode("JSON"));
+            return getResponse(BuilderFactory.STRING);
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key));
         return getResponse(BuilderFactory.STRING);
     }
-    public Response<String> trstat(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TRSTAT, key);
+    public String trstat(byte[] key, boolean json = false) {
+        if json {
+            Object obj = getClient("").sendCommand(ModuleCommand.TRSTAT, key, SafeEncoder.encode("JSON"));
+            return getResponse(BuilderFactory.STRING);
+        }
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSTAT, key);
         return getResponse(BuilderFactory.STRING);
     }
 
 
     /**
-     * TR.BITPOS	TR.BITPOS <key> <value>
+     * TR.BITPOS	TR.BITPOS <key> <value> [counting]
      * 传入一个value值（1或者0），在目标Key（TairRoaring数据结构）中查找首个被设置为指定值的bit位，并返回该bit位的偏移量（offset），偏移量（offset）从0开始。
+     *  通过传入额外参数 counting 可以控制查找第 counting 个元素，如果 counting 为负则表示从后先前查找.
      *
      * @param key roaring key
      * @param value bit value
+     * @param count count of the bit, negetive count indecate the reverse iteration
      * @return Success: long; Fail: error
      */
-    public Response<Long> trbitpos(final String key, final String value) {
-        getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
+    public long trbitpos(final String key, final String value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trbitpos(final String key, long value) {
-        getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value));
+    public long trbitpos(final String key, final String value, long count) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value), toByteArray(count));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trbitpos(byte[] key, byte[] value) {
-        getClient("").sendCommand(ModuleCommand.TRBITPOS, key, value);
+    public long trbitpos(final String key, long value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trbitpos(final String key, long value, long count) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value), toByteArray(count));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trbitpos(byte[] key, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITPOS, key, value);
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trbitpos(byte[] key, byte[] value, byte[] count) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITPOS, key, value, count);
         return getResponse(BuilderFactory.LONG);
     }
 
@@ -169,37 +377,133 @@ public class TairRoaringPipeline extends Pipeline {
      * 对Roaring bitmap执行集合运算操作，计算结果存储在destkey中。
      * 说明 集群架构暂不支持该命令。
      *
-     * @param key   result store int destkey
+     * @param destkey   result store int destkey
      * @param operation operation type: AND OR NOT XOR DIFF
-     * @param key   operation joining keys
+     * @param keys   operation joining keys
      * @return Success: long; Fail: error
      */
-    public Response<Long> trbitop(final String key, final String operation, final String... fields) {
-        getClient("").sendCommand(ModuleCommand.TRBITOP,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encode(operation), SafeEncoder.encodeMany(fields)));
+    public long trbitop(final String destkey, final String operation, final String... keys) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITOP,
+            JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
         return getResponse(BuilderFactory.LONG);
     }
-    public Response<Long> trbitop(byte[] key, byte[] operation, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.TRBITOP, JoinParameters.joinParameters(key, operation, fields));
+
+    public long trbitop(byte[] destkey, byte[] operation, byte[]... keys) {
+        Object obj = getClient("").sendCommand(destkey, ModuleCommand.TRBITOP, JoinParameters.joinParameters(operation, keys));
         return getResponse(BuilderFactory.LONG);
     }
+
+
+    /**
+     * TR.BITOPCARD	TR.BITOPCARD <operation> <key> [<key2> <key3>...]
+     * 对Roaring bitmap执行集合运算操作，返回结算结果中 1-bit 数
+     * 说明 集群架构暂不支持该命令。
+     *
+     * @param operation operation type: AND OR NOT XOR DIFF
+     * @param keys   operation joining keys
+     * @return Success: long; Fail: error
+     */
+    public long trbitopcard(final String operation , final String... keys) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITOPCARD,
+            JoinParameters.joinParameters(SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public long trbitopcard(byte[] operation, byte[]... keys) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRBITOPCARD, JoinParameters.joinParameters(operation, keys));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+
+    /**
+     * TR.SCAN TR.SCAN <key> <cursor> [COUNT <count>]
+     * iterating element from cursor, COUNT indecate the max elements count per request
+     *
+     * @param key roaring bitmap key
+     * @param cursor scan cursor, 0 stand for the very first value
+     * @param count iteration counting by scan
+     * @return Success: cursor and array long; Fail: error
+     */
+    public ScanResult<Entry<Long, Long>> trscan(final String key, long cursor) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor));
+        return RoaringgetResponse(BuilderFactory.TRSCAN_RESULT_LONG);
+    }
+    public ScanResult<Entry<Long, Long>> trscan(final String  key, long cursor, long count) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor), SafeEncoder.encode("COUNT"), toByteArray(count));
+        return RoaringgetResponse(BuilderFactory.TRSCAN_RESULT_LONG);
+    }
+    public ScanResult<Entry<byte[], byte[]>> trscan(byte[] key, byte[] cursor) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSCAN, key, cursor);
+        return RoaringgetResponse(BuilderFactory.TRSCAN_RESULT_BYTE);
+    }
+    public ScanResult<Entry<byte[], byte[]>> trscan(byte[] key, byte[] cursor, byte[] count) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSCAN, key, cursor, SafeEncoder.encode("COUNT"), count);
+        return RoaringgetResponse(BuilderFactory.TRSCAN_RESULT_BYTE);
+    }
+
+
+    /**
+     * TR.LOAD TR.LOAD <key> <value>
+     * Loading CRoaring serilizing style data into a empty key
+     *
+     * @param key   result store int key
+     * @param value data
+     * @return Success: long; Fail: error
+     */
+    public long trload(final String key, final String value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRLOAD,
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encode(value)));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trload(final String key, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRLOAD,
+            JoinParameters.joinParameters(SafeEncoder.encode(key), value));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public long trload(byte[] key, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRLOAD, key, value);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+
+    /**
+     * TR.LOADSTRING TR.LOAD <key> <stringkey>
+     * Loading string into into a empty roaringbitmap
+     *
+     * @param key   result store int key
+     * @param stringkey string, aka origional bitmap
+     * @return Success: long; Fail: error
+     */
+    public long trloadstring(final String key, final String value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRLOADSTRING,
+            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encode(value)));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public long trloadstring(byte[] key, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRLOADSTRING, key, value);
+        return getResponse(BuilderFactory.LONG);
+    }
+
 
     /**
      * TR.DIFF	TR.DIFF <destkey> <key1> <key2>
      * 计算key1与key2对应Roaring Bitmap的差集，并将结果储到destkey所指的键中。
      * 说明 集群架构暂不支持该命令。
      *
-     * @param key   result store int key
-     * @param fields   operation joining keys
+     * @param destkey   result store int key
+     * @param key1 operation diff key
+     * @param key2 operation diff key
      * @return Success: OK; Fail: error
      */
-    public Response<String> trdiff(final String key, final String... fields) {
-        getClient("").sendCommand(ModuleCommand.TRDIFF,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+    public String trdiff(final String destkey, final String key1, final String key2) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRDIFF,
+            JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(key1), SafeEncoder.encode(key2)));
         return getResponse(BuilderFactory.STRING);
     }
-    public Response<String> trdiff(byte[] key, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.TRDIFF, JoinParameters.joinParameters(key, fields));
+
+    public String trdiff(byte[] destkey, byte[] key1, byte[] key2) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRDIFF, JoinParameters.joinParameters(destkey, key1, key2));
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -212,25 +516,25 @@ public class TairRoaringPipeline extends Pipeline {
      * @param fields bit offset value
      * @return Success: +OK; Fail: error
      */
-    public Response<String> trsetintarray(final String key, long... fields) {
+    public String trsetintarray(final String key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        getClient("").sendCommand(ModuleCommand.TRSETINTARRAY,
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETINTARRAY,
             JoinParameters.joinParameters(SafeEncoder.encode(key), args.toArray(new byte[args.size()][])));
         return getResponse(BuilderFactory.STRING);
     }
-    public Response<String> trsetintarray(byte[] key, long... fields) {
+
+    public String trsetintarray(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        getClient("").sendCommand(ModuleCommand.TRSETINTARRAY,
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETINTARRAY,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
         return getResponse(BuilderFactory.STRING);
     }
-
 
     /**
      * TR.APPENDINTARRAY	TR.APPENDINTARRAY <key> <value1> [<value2> <value3> ... <valueN>]
@@ -240,21 +544,21 @@ public class TairRoaringPipeline extends Pipeline {
      * @param fields bit offset value
      * @return Success: +OK; Fail: error
      */
-    public Response<String> trappendintarray(final String key, long... fields) {
+    public String trappendintarray(final String key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        getClient("").sendCommand(ModuleCommand.TRAPPENDINTARRAY,
+        Object obj = getClient("").sendCommand(ModuleCommand.TRAPPENDINTARRAY,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
         return getResponse(BuilderFactory.STRING);
     }
-    public Response<String> trappendintarray(byte[] key, long... fields) {
+    public String trappendintarray(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        getClient("").sendCommand(ModuleCommand.TRAPPENDINTARRAY,
+        Object obj = getClient("").sendCommand(ModuleCommand.TRAPPENDINTARRAY,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
         return getResponse(BuilderFactory.STRING);
     }
@@ -268,31 +572,12 @@ public class TairRoaringPipeline extends Pipeline {
      * @param value bit offset value
      * @return Success: +OK; Fail: error
      */
-    public Response<String> trsetbitarray(final String key, long value) {
-        getClient("").sendCommand(ModuleCommand.TRSETBITARRAY, SafeEncoder.encode(key), toByteArray(value));
+    public String trsetbitarray(final String key, final String value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETBITARRAY, SafeEncoder.encode(key), SafeEncoder.encode(value));
         return getResponse(BuilderFactory.STRING);
     }
-    public Response<String> trsetbitarray(byte[] key, byte[] value) {
-        getClient("").sendCommand(ModuleCommand.TRSETBITARRAY, key, value);
+    public String trsetbitarray(byte[] key, byte[] value) {
+        Object obj = getClient("").sendCommand(ModuleCommand.TRSETBITARRAY, key, value);
         return getResponse(BuilderFactory.STRING);
-    }
-
-
-    /**
-     * TR.RANGEINTARRAY	TR.RANGEINTARRAY <key> <start> <end>
-     * 获取Roaring bitmap中bit值为1所对应的int数组的元素范围，下标为元素范围的元素，如果下标超过对应int数组长度则用0补齐。
-     *
-     * @param key roaring bitmap key
-     * @param start range start
-     * @param end range end
-     * @return Success: array long; Fail: error
-     */
-    public Response<List<Long>> trrangeintarray(final String key, long start, long end) {
-        getClient("").sendCommand(ModuleCommand.TRRANGEINTARRAY, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
-        return getResponse(BuilderFactory.LONG_LIST);
-    }
-    public Response<List<Long>> trrangeintarray(byte[] key, long start, long end) {
-        getClient("").sendCommand(ModuleCommand.TRRANGEINTARRAY, key, toByteArray(start), toByteArray(end));
-        return getResponse(BuilderFactory.LONG_LIST);
     }
 }
