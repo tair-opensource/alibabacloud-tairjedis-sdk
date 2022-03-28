@@ -45,23 +45,23 @@ public class TairRoaringPipeline extends Pipeline {
      * @param key roaring key
      * @return Success: long; Fail: error
      */
-    public Response<String> trsetbits(final String key, long... fields) {
+    public Response<Long> trsetbits(final String key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-         getClient("").sendCommand(ModuleCommand.TRSETBITS,
+        getClient("").sendCommand(ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return getResponse(BuilderFactory.STRING);
+        return getResponse(BuilderFactory.LONG);
     }
-    public Response<String> trsetbits(byte[] key, long... fields) {
+    public Response<Long> trsetbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
          getClient("").sendCommand(ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return getResponse(BuilderFactory.STRING);
+        return getResponse(BuilderFactory.LONG);
     }
 
     /**

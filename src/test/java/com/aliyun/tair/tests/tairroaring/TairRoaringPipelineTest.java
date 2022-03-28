@@ -43,16 +43,20 @@ public class TairRoaringPipelineTest extends TairRoaringTestBase {
     }
 
     @Test
-    public void trbitsrangemixedtest() throws Exception {
+    public void trbitsrange_mixedtest() throws Exception {
         jedis.del("foo");
 
         tairRoaringPipeline.trsetbits("foo", 1, 3, 5, 7, 9);
         tairRoaringPipeline.trbitcount("foo", 0, 3);
         tairRoaringPipeline.trclearbits("foo", 2, 3, 4); // 1, 5, 7, 9
+
         tairRoaringPipeline.trgetbits("foo", 1, 2, 3, 4, 5);
+
         tairRoaringPipeline.trrange("foo", 0, 10);
+
         tairRoaringPipeline.trmin("foo");
         tairRoaringPipeline.trmax("foo");
+
         tairRoaringPipeline.trscan("foo", 5, 10);
         tairRoaringPipeline.trappendbitarray("foo", 3, "1010101"); // 1, 4, 6, 8, 10
         tairRoaringPipeline.trrangebitarray("foo", 0, 10);
@@ -83,10 +87,10 @@ public class TairRoaringPipelineTest extends TairRoaringTestBase {
         assertEquals((long)9, objs.get(i++));
 
         expect = new ArrayList<Long>();
-        expect.add((long) 6);
-        expect.add((long) 8);
-        expect.add((long) 10);
-        assertLongListEquals(expect, (List<Long>)objs.get(i++));
+        expect.add((long) 5);
+        expect.add((long) 7);
+        expect.add((long) 9);
+        assertLongListEquals(expect, ((ScanResult<Long>)objs.get(i++)).getResult());
 
         assertEquals((long)5, (long)objs.get(i++));
         assertEquals("01001010101", objs.get(i++).toString());
