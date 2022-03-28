@@ -1,16 +1,17 @@
 package com.aliyun.tair.tairroaring;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class TairRoaringCluster {
     private JedisCluster jc;
@@ -46,7 +47,7 @@ public class TairRoaringCluster {
      * setting the value at the offset in roaringbitmap
      *
      * @param key roaring key
-     * @param offset the bit offset
+     * @param fields the bit offset
      * @return Success: long; Fail: error
      */
     public long trsetbits(final String key, long... fields) {
@@ -56,7 +57,7 @@ public class TairRoaringCluster {
         }
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
     public long trsetbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
@@ -65,7 +66,7 @@ public class TairRoaringCluster {
         }
         Object obj = jc.sendCommand(key,ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
 
     /**
@@ -118,7 +119,7 @@ public class TairRoaringCluster {
      * remove the value at the offset in roaringbitmap
      *
      * @param key roaring key
-     * @param offset the bit offset
+     * @param fields the bit offset
      * @return Success: long; Fail: error
      */
     public long trclearbits(final String key, long... fields) {
@@ -128,7 +129,7 @@ public class TairRoaringCluster {
         }
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRCLEARBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.Long.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
     public long trclearbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
@@ -137,7 +138,7 @@ public class TairRoaringCluster {
         }
         Object obj = jc.sendCommand(key,ModuleCommand.TRCLEARBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.Long.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
 
 
@@ -172,8 +173,8 @@ public class TairRoaringCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRRANGEBITARRAY, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
         return BuilderFactory.STRING.build(obj);
     }
-    public String trrange(byte[] key, long start, long end) {
-        Object obj = jc.sendCommand(key,ModuleCommand.TRRANGE, key, toByteArray(start), toByteArray(end));
+    public String trrangebitarray(byte[] key, long start, long end) {
+        Object obj = jc.sendCommand(key,ModuleCommand.TRRANGEBITARRAY, key, toByteArray(start), toByteArray(end));
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -247,12 +248,12 @@ public class TairRoaringCluster {
      * @param end range end
      * @return Success: long; Fail: error
      */
-    public long trbitcount(final String key) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
-        return BuilderFactory.LONG.build(obj);
-    }
     public long trbitcount(final String key, long start, long end) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+        return BuilderFactory.LONG.build(obj);
+    }
+    public long trbitcount(final String key) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
         return BuilderFactory.LONG.build(obj);
     }
     public long trbitcount(byte[] key) {
@@ -277,7 +278,7 @@ public class TairRoaringCluster {
     }
 
     public long trmin(byte[] key) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRMIN, key);
+        Object obj = jc.sendCommand(key,ModuleCommand.TRMIN, key);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -309,7 +310,6 @@ public class TairRoaringCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TROPTIMIZE, SafeEncoder.encode(key));
         return BuilderFactory.STRING.build(obj);
     }
-
     public String troptimize(byte[] key) {
         Object obj = jc.sendCommand(key,ModuleCommand.TROPTIMIZE, key);
         return BuilderFactory.STRING.build(obj);
@@ -323,16 +323,16 @@ public class TairRoaringCluster {
      * @param key roaring key
      * @return Success: string; Fail: error
      */
-    public String trstat(final String key, boolean json = false) {
-        if json {
+    public String trstat(final String key, boolean json) {
+        if (json == true) {
             Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRSTAT, SafeEncoder.encode(key), SafeEncoder.encode("JSON"));
             return BuilderFactory.STRING.build(obj);
         }
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRSTAT, SafeEncoder.encode(key));
         return BuilderFactory.STRING.build(obj);
     }
-    public String trstat(byte[] key, boolean json = false) {
-        if json {
+    public String trstat(byte[] key, boolean json) {
+        if (json == true) {
             Object obj = jc.sendCommand(key,ModuleCommand.TRSTAT, key, SafeEncoder.encode("JSON"));
             return BuilderFactory.STRING.build(obj);
         }
@@ -351,12 +351,12 @@ public class TairRoaringCluster {
      * @param count count of the bit, negetive count indecate the reverse iteration
      * @return Success: long; Fail: error
      */
-    public long trbitpos(final String key, final String value) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
-        return BuilderFactory.LONG.build(obj);
-    }
     public long trbitpos(final String key, final String value, long count) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value), toByteArray(count));
+        return BuilderFactory.LONG.build(obj);
+    }
+    public long trbitpos(final String key, final String value) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
         return BuilderFactory.LONG.build(obj);
     }
     public long trbitpos(final String key, long value) {
@@ -388,11 +388,10 @@ public class TairRoaringCluster {
      * @return Success: long; Fail: error
      */
     public long trbitop(final String destkey, final String operation, final String... keys) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRBITOP,
+        Object obj = jc.sendCommand(SafeEncoder.encode(destkey),ModuleCommand.TRBITOP,
             JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
         return BuilderFactory.LONG.build(obj);
     }
-
     public long trbitop(byte[] destkey, byte[] operation, byte[]... keys) {
         Object obj = jc.sendCommand(destkey,ModuleCommand.TRBITOP, JoinParameters.joinParameters(operation, keys));
         return BuilderFactory.LONG.build(obj);
@@ -408,14 +407,13 @@ public class TairRoaringCluster {
      * @param keys   operation joining keys
      * @return Success: long; Fail: error
      */
-    public long trbitopcard(final String sampleKey, final String operation , final String... keys) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(sampleKey),ModuleCommand.TRBITOPCARD,
+    public long trbitopcard(final String operation , final String... keys) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(keys[0]), ModuleCommand.TRBITOPCARD,
             JoinParameters.joinParameters(SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
         return BuilderFactory.LONG.build(obj);
     }
-
-    public long trbitopcard(byte[] sampleKey, byte[] operation, byte[]... keys) {
-        Object obj = jc.sendCommand(sampleKey,ModuleCommand.TRBITOPCARD, JoinParameters.joinParameters(operation, keys));
+    public long trbitopcard(byte[] operation, byte[]... keys) {
+        Object obj = jc.sendCommand(keys[0], ModuleCommand.TRBITOPCARD, JoinParameters.joinParameters(operation, keys));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -429,19 +427,19 @@ public class TairRoaringCluster {
      * @param count iteration counting by scan
      * @return Success: cursor and array long; Fail: error
      */
-    public ScanResult<Entry<Long, Long>> trscan(final String key, long cursor) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor));
-        return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
-    }
-    public ScanResult<Entry<Long, Long>> trscan(final String  key, long cursor, long count) {
+    public ScanResult<Long> trscan(final String  key, long cursor, long count) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor), SafeEncoder.encode("COUNT"), toByteArray(count));
         return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
     }
-    public ScanResult<Entry<byte[], byte[]>> trscan(byte[] key, byte[] cursor) {
+    public ScanResult<Long> trscan(final String key, long cursor) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor));
+        return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
+    }
+    public ScanResult<byte[]> trscan(byte[] key, byte[] cursor) {
         Object obj = jc.sendCommand(key,ModuleCommand.TRSCAN, key, cursor);
         return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
     }
-    public ScanResult<Entry<byte[], byte[]>> trscan(byte[] key, byte[] cursor, byte[] count) {
+    public ScanResult<byte[]> trscan(byte[] key, byte[] cursor, byte[] count) {
         Object obj = jc.sendCommand(key,ModuleCommand.TRSCAN, key, cursor, SafeEncoder.encode("COUNT"), count);
         return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
     }
@@ -455,14 +453,8 @@ public class TairRoaringCluster {
      * @param value data
      * @return Success: long; Fail: error
      */
-    public long trload(final String key, final String value) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRLOAD,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encode(value)));
-        return BuilderFactory.LONG.build(obj);
-    }
     public long trload(final String key, byte[] value) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRLOAD,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), value));
+        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRLOAD, SafeEncoder.encode(key), value);
         return BuilderFactory.LONG.build(obj);
     }
     public long trload(byte[] key, byte[] value) {
@@ -479,14 +471,12 @@ public class TairRoaringCluster {
      * @param stringkey string, aka origional bitmap
      * @return Success: long; Fail: error
      */
-    public long trloadstring(final String key, final String value) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRLOADSTRING,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encode(value)));
+    public long trloadstring(final String key, final String stringkey) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRLOADSTRING, SafeEncoder.encode(key), SafeEncoder.encode(stringkey));
         return BuilderFactory.LONG.build(obj);
     }
-
-    public long trloadstring(byte[] key, byte[] value) {
-        Object obj = jc.sendCommand(key,ModuleCommand.TRLOADSTRING, key, value);
+    public long trloadstring(byte[] key, byte[] stringkey) {
+        Object obj = jc.sendCommand(key,ModuleCommand.TRLOADSTRING, key, stringkey);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -502,13 +492,13 @@ public class TairRoaringCluster {
      * @return Success: OK; Fail: error
      */
     public String trdiff(final String destkey, final String key1, final String key2) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRDIFF,
-            JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(key1), SafeEncoder.encode(key2)));
+        Object obj = jc.sendCommand(SafeEncoder.encode(destkey),ModuleCommand.TRDIFF,
+            SafeEncoder.encode(destkey), SafeEncoder.encode(key1), SafeEncoder.encode(key2));
         return BuilderFactory.STRING.build(obj);
     }
 
     public String trdiff(byte[] destkey, byte[] key1, byte[] key2) {
-        Object obj = jc.sendCommand(key,ModuleCommand.TRDIFF, JoinParameters.joinParameters(destkey, key1, key2));
+        Object obj = jc.sendCommand(destkey, ModuleCommand.TRDIFF, destkey, key1, key2);
         return BuilderFactory.STRING.build(obj);
     }
 

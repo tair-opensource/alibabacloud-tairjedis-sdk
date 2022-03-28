@@ -1,16 +1,14 @@
 package com.aliyun.tair.tairroaring;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 import static redis.clients.jedis.Protocol.toByteArray;
 
@@ -52,7 +50,7 @@ public class TairRoaring {
      * setting the value at the offset in roaringbitmap
      *
      * @param key roaring key
-     * @param offset the bit offset
+     * @param fields the bit offset
      * @return Success: long; Fail: error
      */
     public long trsetbits(final String key, long... fields) {
@@ -62,7 +60,7 @@ public class TairRoaring {
         }
         Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
     public long trsetbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
@@ -71,7 +69,7 @@ public class TairRoaring {
         }
         Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
 
     /**
@@ -124,7 +122,7 @@ public class TairRoaring {
      * remove the value at the offset in roaringbitmap
      *
      * @param key roaring key
-     * @param offset the bit offset
+     * @param fields the bit offset
      * @return Success: long; Fail: error
      */
     public long trclearbits(final String key, long... fields) {
@@ -134,7 +132,7 @@ public class TairRoaring {
         }
         Object obj = getJedis().sendCommand(ModuleCommand.TRCLEARBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.Long.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
     public long trclearbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
@@ -143,7 +141,7 @@ public class TairRoaring {
         }
         Object obj = getJedis().sendCommand(ModuleCommand.TRCLEARBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.Long.build(obj);
+        return BuilderFactory.LONG.build(obj);
     }
 
 
@@ -178,8 +176,8 @@ public class TairRoaring {
         Object obj = getJedis().sendCommand(ModuleCommand.TRRANGEBITARRAY, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
         return BuilderFactory.STRING.build(obj);
     }
-    public String trrange(byte[] key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRRANGE, key, toByteArray(start), toByteArray(end));
+    public String trrangebitarray(byte[] key, long start, long end) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRRANGEBITARRAY, key, toByteArray(start), toByteArray(end));
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -253,20 +251,20 @@ public class TairRoaring {
      * @param end range end
      * @return Success: long; Fail: error
      */
-    public long trbitcount(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
-        return BuilderFactory.LONG.build(obj);
-    }
-    public long trbitcount(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, key);
-        return BuilderFactory.LONG.build(obj);
-    }
     public long trbitcount(final String key, long start, long end) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
         return BuilderFactory.LONG.build(obj);
     }
     public long trbitcount(byte[] key, long start, long end) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, key, toByteArray(start), toByteArray(end));
+        return BuilderFactory.LONG.build(obj);
+    }
+    public long trbitcount(final String key) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
+        return BuilderFactory.LONG.build(obj);
+    }
+    public long trbitcount(byte[] key) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, key);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -329,16 +327,16 @@ public class TairRoaring {
      * @param key roaring key
      * @return Success: string; Fail: error
      */
-    public String trstat(final String key, boolean json = false) {
-        if json {
+    public String trstat(final String key, boolean json) {
+        if (json == true) {
             Object obj = getJedis().sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key), SafeEncoder.encode("JSON"));
             return BuilderFactory.STRING.build(obj);
         }
         Object obj = getJedis().sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key));
         return BuilderFactory.STRING.build(obj);
     }
-    public String trstat(byte[] key, boolean json = false) {
-        if json {
+    public String trstat(byte[] key, boolean json) {
+        if (json == true) {
             Object obj = getJedis().sendCommand(ModuleCommand.TRSTAT, key, SafeEncoder.encode("JSON"));
             return BuilderFactory.STRING.build(obj);
         }
@@ -357,12 +355,12 @@ public class TairRoaring {
      * @param count count of the bit, negetive count indecate the reverse iteration
      * @return Success: long; Fail: error
      */
-    public long trbitpos(final String key, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
-        return BuilderFactory.LONG.build(obj);
-    }
     public long trbitpos(final String key, final String value, long count) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value), toByteArray(count));
+        return BuilderFactory.LONG.build(obj);
+    }
+    public long trbitpos(final String key, final String value) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
         return BuilderFactory.LONG.build(obj);
     }
     public long trbitpos(final String key, long value) {
@@ -395,12 +393,12 @@ public class TairRoaring {
      */
     public long trbitop(final String destkey, final String operation, final String... keys) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRBITOP,
-            JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
+                JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
         return BuilderFactory.LONG.build(obj);
     }
 
     public long trbitop(byte[] destkey, byte[] operation, byte[]... keys) {
-        Object obj = getJedis().sendCommand(destkey, ModuleCommand.TRBITOP, JoinParameters.joinParameters(operation, keys));
+        Object obj = getJedis().sendCommand(ModuleCommand.TRBITOP, JoinParameters.joinParameters(destkey, operation, keys));
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -435,19 +433,19 @@ public class TairRoaring {
      * @param count iteration counting by scan
      * @return Success: cursor and array long; Fail: error
      */
-    public ScanResult<Entry<Long, Long>> trscan(final String key, long cursor) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor));
-        return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
-    }
-    public ScanResult<Entry<Long, Long>> trscan(final String  key, long cursor, long count) {
+    public ScanResult<Long> trscan(final String  key, long cursor, long count) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor), SafeEncoder.encode("COUNT"), toByteArray(count));
         return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
     }
-    public ScanResult<Entry<byte[], byte[]>> trscan(byte[] key, byte[] cursor) {
+    public ScanResult<Long> trscan(final String key, long cursor) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor));
+        return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
+    }
+    public ScanResult<byte[]> trscan(byte[] key, byte[] cursor) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, key, cursor);
         return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
     }
-    public ScanResult<Entry<byte[], byte[]>> trscan(byte[] key, byte[] cursor, byte[] count) {
+    public ScanResult<byte[]> trscan(byte[] key, byte[] cursor, byte[] count) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, key, cursor, SafeEncoder.encode("COUNT"), count);
         return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
     }
@@ -461,14 +459,8 @@ public class TairRoaring {
      * @param value data
      * @return Success: long; Fail: error
      */
-    public long trload(final String key, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRLOAD,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encode(value)));
-        return BuilderFactory.LONG.build(obj);
-    }
     public long trload(final String key, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRLOAD,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), value));
+        Object obj = getJedis().sendCommand(ModuleCommand.TRLOAD, SafeEncoder.encode(key), value);
         return BuilderFactory.LONG.build(obj);
     }
     public long trload(byte[] key, byte[] value) {
@@ -485,14 +477,12 @@ public class TairRoaring {
      * @param stringkey string, aka origional bitmap
      * @return Success: long; Fail: error
      */
-    public long trloadstring(final String key, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRLOADSTRING,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encode(value)));
+    public long trloadstring(final String key, final String stringkey) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRLOADSTRING, SafeEncoder.encode(key), SafeEncoder.encode(stringkey));
         return BuilderFactory.LONG.build(obj);
     }
-
-    public long trloadstring(byte[] key, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRLOADSTRING, key, value);
+    public long trloadstring(byte[] key, byte[] stringkey) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRLOADSTRING, key, stringkey);
         return BuilderFactory.LONG.build(obj);
     }
 
@@ -509,12 +499,12 @@ public class TairRoaring {
      */
     public String trdiff(final String destkey, final String key1, final String key2) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRDIFF,
-            JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(key1), SafeEncoder.encode(key2)));
+            SafeEncoder.encode(destkey), SafeEncoder.encode(key1), SafeEncoder.encode(key2));
         return BuilderFactory.STRING.build(obj);
     }
 
     public String trdiff(byte[] destkey, byte[] key1, byte[] key2) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRDIFF, JoinParameters.joinParameters(destkey, key1, key2));
+        Object obj = getJedis().sendCommand(ModuleCommand.TRDIFF, destkey, key1, key2);
         return BuilderFactory.STRING.build(obj);
     }
 
@@ -574,10 +564,9 @@ public class TairRoaring {
         return BuilderFactory.STRING.build(obj);
     }
 
-
     /**
      * TR.SETBITARRAY	TR.SETBITARRAY <key> <value>
-     * 根据传入的bit（由0和1组成的字符串），来创建一个位图（bitmap）。执行该命令时，Redis会逐个字符判断，只操作bit为1的字符，如果目标Key已存在则会覆盖已有数据。
+     * 根据传入的bit（由0和1组成的字符串），来创建一个位图（bitmap）。执行该命令时，Redis 会逐个字符判断，只操作bit为1的字符，如果目标Key已存在则会覆盖已有数据。
      *
      * @param key roaring bitmap key
      * @param value bit offset value
@@ -591,5 +580,4 @@ public class TairRoaring {
         Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITARRAY, key, value);
         return BuilderFactory.STRING.build(obj);
     }
-
 }
