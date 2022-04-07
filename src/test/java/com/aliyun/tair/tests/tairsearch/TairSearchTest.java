@@ -1,7 +1,6 @@
 package com.aliyun.tair.tests.tairsearch;
 
 import com.aliyun.tair.tairsearch.params.TFTScanParams;
-import com.sun.tools.internal.xjc.model.SymbolSpace;
 import org.junit.Test;
 import redis.clients.jedis.ScanResult;
 
@@ -9,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static redis.clients.jedis.ScanParams.SCAN_POINTER_START;
 
