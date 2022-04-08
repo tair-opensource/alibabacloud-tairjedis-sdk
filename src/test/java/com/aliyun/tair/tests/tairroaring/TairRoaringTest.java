@@ -108,13 +108,19 @@ public class TairRoaringTest extends TairRoaringTestBase {
 
     @Test
     public void trscantest() {
-        jedis.del("foo");
-        assertEquals(5, tairRoaring.trsetbits("foo", 1, 3, 5, 7, 9));
-
-        ScanResult<Long> rawresult = tairRoaring.trscan("foo", 0);
+        ScanResult<Long> rawresult = tairRoaring.trscan("no-key", 0);
         assertEquals("0", rawresult.getCursor());
         List<Long> result = rawresult.getResult();
         List<Long> expect = new ArrayList<Long>();
+        assertLongListEquals(expect, result);
+
+        jedis.del("foo");
+        assertEquals(5, tairRoaring.trsetbits("foo", 1, 3, 5, 7, 9));
+
+        rawresult = tairRoaring.trscan("foo", 0);
+        assertEquals("0", rawresult.getCursor());
+        result = rawresult.getResult();
+        expect = new ArrayList<Long>();
         expect.add((long) 1);
         expect.add((long) 3);
         expect.add((long) 5);
@@ -228,6 +234,26 @@ public class TairRoaringTest extends TairRoaringTestBase {
         jedis.del("foo");
     }
 
+    @Test
+    public  void tremptytest() throws Exception {
+        jedis.del("foo");
+        List<Long> expect = new ArrayList<Long>();
+
+        List<Long> result = tairRoaring.trrange("foo", 0, 4);
+        assertLongListEquals(expect, result);
+
+        result = tairRoaring.trgetbits("foo", 0, 4);
+        assertLongListEquals(expect, result);
+
+        assertEquals(-1, tairRoaring.trmin("foo"));
+        assertEquals(-1, tairRoaring.trmax("foo"));
+        assertEquals(-1, tairRoaring.trbitpos("foo", "1", 1));
+        assertEquals(-1, tairRoaring.trrank("foo", 1));
+        assertEquals(null, tairRoaring.trstat("foo", false));
+        assertEquals(null, tairRoaring.troptimize("foo"));
+        assertEquals(0, tairRoaring.trbitcount("foo"));
+        assertEquals(0, tairRoaring.trclearbits("foo", 1, 3, 5));
+    }
 
     @Test
     public  void trbitoptest() throws Exception {
@@ -258,4 +284,27 @@ public class TairRoaringTest extends TairRoaringTestBase {
         assertLongListEquals(expect, result);
         jedis.del("foo");
     }
+
+    @Test
+    public  void trmultikeytest() throws Exception {
+        jedis.del("foo");
+        jedis.del("bar");
+        jedis.del("baz");
+
+        assertEquals(5, tairRoaring.trsetbits("foo", 1, 3, 5, 7, 9));
+        assertEquals(5, tairRoaring.trsetbits("bar", 2, 4, 6, 8, 10));
+        assertEquals(10, tairRoaring.trsetrange("baz", 1, 10));
+
+        assertEquals(false, tairRoaring.trcontains("foo", "bar"));
+        assertEquals(true, tairRoaring.trcontains("foo", "baz"));
+
+        assertEquals(new Double(0.5), tairRoaring.trjaccard("foo", "baz"));
+
+        assertEquals("OK", tairRoaring.trdiff("result","foo", "bar"));
+
+        jedis.del("foo");
+        jedis.del("bar");
+        jedis.del("baz");
+    }
+
 }

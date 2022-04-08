@@ -382,6 +382,24 @@ public class TairRoaring {
 
 
     /**
+     * TR.RANK TR.RANK <key> <offset>
+     * 计算给定 key 对应的 roaringbitmap 对象中小于等于 offset 元素的个数
+     *
+     * @param key roaring key
+     * @param offset bit ranking offset
+     * @return Success: long; Fail: error
+     */
+    public long trrank(final String key, long offset) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRRANK, SafeEncoder.encode(key), toByteArray(offset));
+        return BuilderFactory.LONG.build(obj);
+    }
+    public long trrank(byte[] key, byte[] offset) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRRANK, key, offset);
+        return BuilderFactory.LONG.build(obj);
+    }
+
+
+    /**
      * TR.BITOP	TR.BITOP <destkey> <operation> <key> [<key2> <key3>...]
      * 对Roaring bitmap执行集合运算操作，计算结果存储在destkey中。
      * 说明 集群架构暂不支持该命令。
@@ -579,5 +597,43 @@ public class TairRoaring {
     public String trsetbitarray(byte[] key, byte[] value) {
         Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITARRAY, key, value);
         return BuilderFactory.STRING.build(obj);
+    }
+
+    /**
+     * TR.JACCARD TR.JACCARD <key1> <key2>
+     * 计算key1与key2对应Roaring Bitmap的jaccard index, 返回对应的值.
+     * 说明 集群架构暂不支持该命令。
+     *
+     * @param key1 operation key
+     * @param key2 operation key
+     * @return Success: double; Fail: error
+     */
+    public Double trjaccard(final String key1, final String key2) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRJACCARD, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    public Double trjaccard(byte[] key1, byte[] key2) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRJACCARD, key1, key2);
+        return BuilderFactory.DOUBLE.build(obj);
+    }
+
+    /**
+     * TR.CONTAINS TR.CONTAINS <key1> <key2>
+     * 计算 key1 对应的 roaringbitmap 是否是 key2 对应 roaringbitmap 的子集，返回 1 是子集 0 不是子集
+     * 说明 集群架构暂不支持该命令。
+     *
+     * @param key1 operation key
+     * @param key2 operation key
+     * @return Success: double; Fail: error
+     */
+    public Boolean trcontains(final String key1, final String key2) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRCONTAINS, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
+        return BuilderFactory.BOOLEAN.build(obj);
+    }
+
+    public Boolean trcontains(byte[] key1, byte[] key2) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TRCONTAINS, key1, key2);
+        return BuilderFactory.BOOLEAN.build(obj);
     }
 }

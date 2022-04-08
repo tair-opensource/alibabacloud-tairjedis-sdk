@@ -117,4 +117,27 @@ public class TairRoaringClusterTest extends TairRoaringTestBase {
         jedisCluster.del("bar{hashtag}");
         jedisCluster.del("dest{hashtag}");
     }
+
+
+    @Test
+    public  void trmultikeytest() throws Exception {
+        jedis.del("foo{tairroaring}");
+        jedis.del("bar{tairroaring}");
+        jedis.del("baz{tairroaring}");
+
+        assertEquals(5, tairRoaring.trsetbits("foo{tairroaring}", 1, 3, 5, 7, 9));
+        assertEquals(5, tairRoaring.trsetbits("bar{tairroaring}", 2, 4, 6, 8, 10));
+        assertEquals(10, tairRoaring.trsetrange("baz{tairroaring}", 1, 10));
+
+        assertEquals(false, tairRoaring.trcontains("foo{tairroaring}", "bar{tairroaring}"));
+        assertEquals(true, tairRoaring.trcontains("foo{tairroaring}", "baz{tairroaring}"));
+
+        assertEquals(new Double(0.5), tairRoaring.trjaccard("foo{tairroaring}", "baz{tairroaring}"));
+
+        assertEquals("OK", tairRoaring.trdiff("result{tairroaring","foo{tairroaring}", "bar{tairroaring}"));
+
+        jedis.del("foo{tairroaring}");
+        jedis.del("bar{tairroaring}");
+        jedis.del("baz{tairroaring}");
+    }
 }

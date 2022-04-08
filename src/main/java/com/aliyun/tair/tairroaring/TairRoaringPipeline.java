@@ -2,6 +2,7 @@ package com.aliyun.tair.tairroaring;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.util.JoinParameters;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import redis.clients.jedis.BuilderFactory;
 import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import redis.clients.jedis.Pipeline;
@@ -349,7 +350,7 @@ public class TairRoaringPipeline extends Pipeline {
      * @return Success: long; Fail: error
      */
     public Response<Long> trbitpos(final String key, final String value, long count) {
-         getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value), toByteArray(count));
+        getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value), toByteArray(count));
         return getResponse(BuilderFactory.LONG);
     }
     public Response<Long> trbitpos(final String key, final String value) {
@@ -357,19 +358,37 @@ public class TairRoaringPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
     public Response<Long> trbitpos(final String key, long value) {
-         getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value));
+        getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value));
         return getResponse(BuilderFactory.LONG);
     }
     public Response<Long> trbitpos(final String key, long value, long count) {
-         getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value), toByteArray(count));
+        getClient("").sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value), toByteArray(count));
         return getResponse(BuilderFactory.LONG);
     }
     public Response<Long> trbitpos(byte[] key, byte[] value) {
-         getClient("").sendCommand(ModuleCommand.TRBITPOS, key, value);
+        getClient("").sendCommand(ModuleCommand.TRBITPOS, key, value);
         return getResponse(BuilderFactory.LONG);
     }
     public Response<Long> trbitpos(byte[] key, byte[] value, byte[] count) {
-         getClient("").sendCommand(ModuleCommand.TRBITPOS, key, value, count);
+        getClient("").sendCommand(ModuleCommand.TRBITPOS, key, value, count);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+
+    /**
+     * TR.RANK TR.RANK <key> <offset>
+     * 计算给定 key 对应的 roaringbitmap 对象中小于等于 offset 元素的个数
+     *
+     * @param key roaring key
+     * @param offset bit ranking offset
+     * @return Success: long; Fail: error
+     */
+    public Response<Long> trrank(final String key, long offset) {
+        getClient("").sendCommand(ModuleCommand.TRRANK, SafeEncoder.encode(key), toByteArray(offset));
+        return getResponse(BuilderFactory.LONG);
+    }
+    public Response<Long> trrank(byte[] key, byte[] offset) {
+        getClient("").sendCommand(ModuleCommand.TRRANK, key, offset);
         return getResponse(BuilderFactory.LONG);
     }
 
@@ -391,7 +410,7 @@ public class TairRoaringPipeline extends Pipeline {
     }
 
     public Response<Long> trbitop(byte[] destkey, byte[] operation, byte[]... keys) {
-         getClient("").sendCommand(ModuleCommand.TRBITOP, JoinParameters.joinParameters(destkey, operation, keys));
+        getClient("").sendCommand(ModuleCommand.TRBITOP, JoinParameters.joinParameters(destkey, operation, keys));
         return getResponse(BuilderFactory.LONG);
     }
 
@@ -573,5 +592,42 @@ public class TairRoaringPipeline extends Pipeline {
     public Response<String> trsetbitarray(byte[] key, byte[] value) {
          getClient("").sendCommand(ModuleCommand.TRSETBITARRAY, key, value);
         return getResponse(BuilderFactory.STRING);
+    }
+
+    /**
+     * TR.JACCARD TR.JACCARD <key1> <key2>
+     * 计算key1与key2对应Roaring Bitmap的jaccard index, 返回对应的值.
+     * 说明 集群架构暂不支持该命令。
+     *
+     * @param key1 operation key
+     * @param key2 operation key
+     * @return Success: double; Fail: error
+     */
+    public Response<Double> trjaccard(final String key1, final String key2) {
+        getClient("").sendCommand(ModuleCommand.TRJACCARD, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+    public Response<Double> trjaccard(byte[] key1, byte[] key2) {
+        getClient("").sendCommand(ModuleCommand.TRJACCARD, key1, key2);
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    /**
+     * TR.CONTAINS TR.CONTAINS <key1> <key2>
+     * 计算 key1 对应的 roaringbitmap 是否是 key2 对应 roaringbitmap 的子集，返回 1 是子集 0 不是子集
+     * 说明 集群架构暂不支持该命令。
+     *
+     * @param key1 operation key
+     * @param key2 operation key
+     * @return Success: double; Fail: error
+     */
+    public Response<Boolean> trcontains(final String key1, final String key2) {
+        getClient("").sendCommand(ModuleCommand.TRCONTAINS, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
+        return getResponse(BuilderFactory.BOOLEAN);
+    }
+
+    public Response<Boolean> trcontains(byte[] key1, byte[] key2) {
+        getClient("").sendCommand(ModuleCommand.TRCONTAINS, key1, key2);
+        return getResponse(BuilderFactory.BOOLEAN);
     }
 }
