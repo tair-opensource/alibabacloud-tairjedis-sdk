@@ -204,12 +204,12 @@ public class TairRoaringCluster {
 
     /**
      * TR.SETRANGE TR.SETRANGE <key> <start> <end>
-     * 设置 Roaring bitmap中range 区间内元素为1-bit, 返回设置成功的 bit 数
+     * set all the elements between min (included) and max (included).
      *
      * @param key roaring bitmap key
      * @param start range start
      * @param end range end
-     * @return Success: array long; Fail: error
+     * @return Success: long; Fail: error
      */
     public long trsetrange(final String key, long start, long end) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRSETRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
@@ -222,7 +222,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.FLIPRANGE TR.FLIPRANGE <key> <start> <end>
-     *  翻转 Roaring bitmap 中range 区间内所有bit, 返回设置成功的 bit 数
+     * flip all elements in the roaring bitmap within a specified interval: [range_start, range_end].
      *
      * @param key roaring bitmap key
      * @param start range start
@@ -267,7 +267,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.MIN	TR.MIN <key>
-     * 返回key对应的bitmap集合中首个bit值为1的偏移量，不存在时返回-1。
+     * return the minimum element's offset set in the roaring bitmap
      *
      * @param key roaring key
      * @return Success: long; Fail: error
@@ -284,7 +284,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.MAX	TR.MAX <key>
-     * 返回key对应的bitmap集合中bit值为1的最大偏移量，不存在时返回-1。
+     * return the maximum element's offset set in the roaring bitmap
      *
      * @param key roaring key
      * @return Success: long; Fail: error
@@ -301,7 +301,9 @@ public class TairRoaringCluster {
 
     /**
      * TR.OPTIMIZE	TR.OPTIMIZE <key>
-     * 优化Roaring bitmap的存储空间。如果目标对象相对较大，且创建后以只读操作为主，可以主动执行此命令。
+     * optimize memory usage by trying to use RLE container instead of int array or bitset.
+     * it will also run shrink_to_fit on bitmap, this may cause memory reallocation.
+     * optimize will try this function but did not make a guarantee that any change would happen
      *
      * @param key roaring key
      * @return Success: +OK; Fail: error
@@ -318,7 +320,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.STAT	TR.STAT <key>
-     * 返回当前bitmap的统计信息, 包括各种 roaringbitmap 容器的数量以及内存使用状况等信息。
+     * return roaring bitmap statistic information, you can get JSON formatted result by passing json = true.
      *
      * @param key roaring key
      * @return Success: string; Fail: error
@@ -343,8 +345,9 @@ public class TairRoaringCluster {
 
     /**
      * TR.BITPOS	TR.BITPOS <key> <value> [counting]
-     * 传入一个value值（1或者0），在目标Key（TairRoaring数据结构）中查找首个被设置为指定值的bit位，并返回该bit位的偏移量（offset），偏移量（offset）从0开始。
-     *  通过传入额外参数 counting 可以控制查找第 counting 个元素，如果 counting 为负则表示从后先前查找.
+     * return the first element set as value at index, where the smallest element is at index 0.
+     * counting is an optional argument, you can pass positive Counting to indicate the command count for the n-th element from the top
+     * or pass an negative Counting to count from the n-th element form the bottom.
      *
      * @param key roaring key
      * @param value bit value
@@ -379,8 +382,9 @@ public class TairRoaringCluster {
 
     /**
      * TR.BITOP	TR.BITOP <destkey> <operation> <key> [<key2> <key3>...]
-     * 对Roaring bitmap执行集合运算操作，计算结果存储在destkey中。
-     * 说明 集群架构暂不支持该命令。
+     * call bitset computation on given roaring bitmaps, store the result into destkey
+     * return the cardinality of result.
+     * operation can be passed to AND OR XOR NOT DIFF.
      *
      * @param destkey   result store int destkey
      * @param operation operation type: AND OR NOT XOR DIFF
@@ -400,7 +404,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.RANK TR.RANK <key> <offset>
-     * 计算给定 key 对应的 roaringbitmap 对象中小于等于 offset 元素的个数
+     * rank returns the number of elements that are smaller or equal to offset.
      *
      * @param key roaring key
      * @param offset bit ranking offset
@@ -418,8 +422,8 @@ public class TairRoaringCluster {
 
     /**
      * TR.BITOPCARD	TR.BITOPCARD <operation> <key> [<key2> <key3>...]
-     * 对Roaring bitmap执行集合运算操作，返回结算结果中 1-bit 数
-     * 说明 集群架构暂不支持该命令。
+     * call bitset computation on given roaring bitmaps, return the cardinality of result.
+     * operation can be passed to AND OR XOR NOT DIFF.
      *
      * @param operation operation type: AND OR NOT XOR DIFF
      * @param keys   operation joining keys
@@ -464,24 +468,6 @@ public class TairRoaringCluster {
 
 
     /**
-     * TR.LOAD TR.LOAD <key> <value>
-     * Loading CRoaring serilizing style data into a empty key
-     *
-     * @param key   result store int key
-     * @param value data
-     * @return Success: long; Fail: error
-     */
-    public long trload(final String key, byte[] value) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(key),ModuleCommand.TRLOAD, SafeEncoder.encode(key), value);
-        return BuilderFactory.LONG.build(obj);
-    }
-    public long trload(byte[] key, byte[] value) {
-        Object obj = jc.sendCommand(key,ModuleCommand.TRLOAD, key, value);
-        return BuilderFactory.LONG.build(obj);
-    }
-
-
-    /**
      * TR.LOADSTRING TR.LOAD <key> <stringkey>
      * Loading string into into a empty roaringbitmap
      *
@@ -501,8 +487,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.DIFF	TR.DIFF <destkey> <key1> <key2>
-     * 计算key1与key2对应Roaring Bitmap的差集，并将结果储到destkey所指的键中。
-     * 说明 集群架构暂不支持该命令。
+     * caculate the difference (andnot) by key1 and key2, store the result into destkey
      *
      * @param destkey   result store int key
      * @param key1 operation diff key
@@ -523,7 +508,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.SETINTARRAY	TR.SETINTARRAY <key> <value1> [<value2> <value3> ... <valueN>]
-     * 根据传入的整形数组来设置对应的Roaring bitmap, 该命令会覆盖已存在的Roaring bitmap对象。
+     * reset the bitmap by given integer array.
      *
      * @param key roaring bitmap key
      * @param fields bit offset value
@@ -551,7 +536,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.APPENDINTARRAY	TR.APPENDINTARRAY <key> <value1> [<value2> <value3> ... <valueN>]
-     * 将bitmap中指定bit位的值（value）设置为1，支持传入多个值。
+     * add elements to the roaring bitmap.
      *
      * @param key roaring bitmap key
      * @param fields bit offset value
@@ -579,7 +564,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.SETBITARRAY	TR.SETBITARRAY <key> <value>
-     * 根据传入的bit（由0和1组成的字符串），来创建一个位图（bitmap）。执行该命令时，Redis会逐个字符判断，只操作bit为1的字符，如果目标Key已存在则会覆盖已有数据。
+     * reset the roaring bitmap by given 01-bit string bitset.
      *
      * @param key roaring bitmap key
      * @param value bit offset value
@@ -596,8 +581,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.JACCARD TR.JACCARD <key1> <key2>
-     * 计算key1与key2对应Roaring Bitmap的jaccard index, 返回对应的值.
-     * 说明 集群架构暂不支持该命令。
+     * caculate roaringbitmap Jaccard index on key1 and key2.
      *
      * @param key1 operation key
      * @param key2 operation key
@@ -615,8 +599,7 @@ public class TairRoaringCluster {
 
     /**
      * TR.CONTAINS TR.CONTAINS <key1> <key2>
-     * 计算 key1 对应的 roaringbitmap 是否是 key2 对应 roaringbitmap 的子集，返回 1 是子集 0 不是子集
-     * 说明 集群架构暂不支持该命令。
+     * return wether roaring bitmap key1 is a sub-set of key2
      *
      * @param key1 operation key
      * @param key2 operation key
