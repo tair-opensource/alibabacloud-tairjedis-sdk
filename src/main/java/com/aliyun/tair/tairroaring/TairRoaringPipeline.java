@@ -2,7 +2,6 @@ package com.aliyun.tair.tairroaring;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.util.JoinParameters;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import redis.clients.jedis.BuilderFactory;
 import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import redis.clients.jedis.Pipeline;
