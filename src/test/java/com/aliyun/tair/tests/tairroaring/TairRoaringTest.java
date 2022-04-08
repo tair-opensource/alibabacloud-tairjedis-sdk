@@ -207,25 +207,6 @@ public class TairRoaringTest extends TairRoaringTestBase {
     }
 
     @Test
-    public  void trloadtest() throws Exception {
-        jedis.del("foo");
-        byte[] data = new byte[] {0x01,0x05,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x05,0x00,0x00,0x00,
-                0x07,0x00,0x00,0x00,0x09,0x00,0x00,0x00};
-        assertEquals(5, tairRoaring.trload("foo", data));
-
-        List<Long> result = tairRoaring.trrange("foo", 0, 10);
-        List<Long> expect = new ArrayList<Long>();
-        expect.add((long) 1);
-        expect.add((long) 3);
-        expect.add((long) 5);
-        expect.add((long) 7);
-        expect.add((long) 9);
-        assertLongListEquals(expect, result);
-
-        jedis.del("foo");
-    }
-
-    @Test
     public  void trloadstringtest() throws Exception {
         jedis.del("foo");
         jedis.set("strkey", "101010101");
