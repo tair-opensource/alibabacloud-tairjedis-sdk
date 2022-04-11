@@ -295,7 +295,10 @@ public enum ModuleCommand implements ProtocolCommand {
     TRAPPENDINTARRAY("tr.appendintarray"),
     TRSETINTARRAY("tr.setintarray"),
     TRSETBITARRAY("tr.setbitarray"),
-    TRDIFF("tr.diff");
+    TRDIFF("tr.diff"),
+    TRJACCARD("tr.jaccard"),
+    TRCONTAINS("tr.contains"),
+    TRRANK("tr.rank");
 
     private final byte[] raw;
 
