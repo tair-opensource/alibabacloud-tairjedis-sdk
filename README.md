@@ -36,4 +36,4 @@ JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tai
 - [基于TairZset轻松实现多维排行榜](https://help.aliyun.com/document_detail/313857.html)
 - [基于TairZset实现分布式架构排行榜](https://help.aliyun.com/document_detail/356661.html)
 - [基于TairRoaring实现的人群圈选方案](https://help.aliyun.com/document_detail/311920.html)
-- [TairBloom的原理与最佳实践](https://help.aliyun.com/document_detail/393569.html)
+- [TairBloom的原理与最佳实践](https://help.aliyun.com/document_detail/145972.html)
