@@ -13,8 +13,8 @@ import redis.clients.jedis.exceptions.JedisException;
 public class JedisRetryCommandTest extends TestBase {
     @Test
     public void retrySuccess() {
-        int maxRetries = 5; // 最大重试次数
-        Duration maxTotalRetriesDuration = Duration.ofSeconds(10); // 最大的重试时间
+        int maxRetries = 5;
+        Duration maxTotalRetriesDuration = Duration.ofSeconds(10);
         try {
             String ret = new JedisRetryCommand<String>(jedisPool, maxRetries, maxTotalRetriesDuration) {
                 @Override
@@ -38,8 +38,8 @@ public class JedisRetryCommandTest extends TestBase {
             }
         }).start();
 
-        int maxRetries = 5; // 最大重试次数
-        Duration maxTotalRetriesDuration = Duration.ofSeconds(10); // 最大的重试时间
+        int maxRetries = 5;
+        Duration maxTotalRetriesDuration = Duration.ofSeconds(10);
         try {
             String ret = new JedisRetryCommand<String>(jedisPool, maxRetries, maxTotalRetriesDuration) {
                 @Override
@@ -63,8 +63,8 @@ public class JedisRetryCommandTest extends TestBase {
             }
         }).start();
 
-        int maxRetries = 5; // 最大重试次数
-        Duration maxTotalRetriesDuration = Duration.ofSeconds(10); // 最大的重试时间
+        int maxRetries = 5;
+        Duration maxTotalRetriesDuration = Duration.ofSeconds(10);
         try {
             String ret = new JedisRetryCommand<String>(jedisPool, maxRetries, maxTotalRetriesDuration) {
                 @Override
