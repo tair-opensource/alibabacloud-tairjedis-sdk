@@ -268,7 +268,7 @@ public enum ModuleCommand implements ProtocolCommand {
     TRDIFF("tr.diff"),
     TRJACCARD("tr.jaccard"),
     TRCONTAINS("tr.contains"),
-    TRRANK("tr.rank");
+    TRRANK("tr.rank"),
 
     // TairSearch
     TFTMAPPINGINDEX("tft.mappingindex"),
