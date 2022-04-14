@@ -10,9 +10,9 @@ import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.params.SetParams;
 
 public class DistributeLock {
-    // 初始化连接超时时间
+    // init timeout
     private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
-    // 查询超时时间
+    // api timeout
     private static final int DEFAULT_SO_TIMEOUT = 2000;
     private static final String HOST = "r-xxx.redis.rds.aliyuncs.com";
     private static final int PORT = 6379;
