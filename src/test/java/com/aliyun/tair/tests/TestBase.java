@@ -25,7 +25,7 @@ public class TestBase {
             jedisClusterNodes.add(new HostAndPort(HOST, CLUSTER_PORT));
             jedisCluster = new JedisCluster(jedisClusterNodes);
         } catch (Exception e) {
-
+            System.out.println(e.getCause().getMessage());
         }
     }
 }
