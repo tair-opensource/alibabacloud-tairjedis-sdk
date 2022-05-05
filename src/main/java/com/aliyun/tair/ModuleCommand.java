@@ -298,7 +298,14 @@ public enum ModuleCommand implements ProtocolCommand {
     TRDIFF("tr.diff"),
     TRJACCARD("tr.jaccard"),
     TRCONTAINS("tr.contains"),
-    TRRANK("tr.rank");
+    TRRANK("tr.rank"),
+
+    // Aliyun Commands
+    IINFO("iinfo"),
+    RIINFO("riinfo"),
+    ISCAN("iscan"),
+    IMONITOR("imonitor"),
+    RIMONITOR("rimonitor");
 
     private final byte[] raw;
 
