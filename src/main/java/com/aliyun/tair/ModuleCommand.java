@@ -288,7 +288,14 @@ public enum ModuleCommand implements ProtocolCommand {
     TFTDOCNUM("tft.docnum"),
     TFTINCRLONGDOCFIELD("tft.incrlongdocfield"),
     TFTINCRFLOATDOCFIELD("tft.incrfloatdocfield"),
-    TFTDELDOCFIELD("tft.deldocfield");
+    TFTDELDOCFIELD("tft.deldocfield"),
+
+    // Aliyun Commands
+    IINFO("iinfo"),
+    RIINFO("riinfo"),
+    ISCAN("iscan"),
+    IMONITOR("imonitor"),
+    RIMONITOR("rimonitor");
 
     private final byte[] raw;
 
