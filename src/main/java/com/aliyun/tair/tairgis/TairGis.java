@@ -175,6 +175,51 @@ public class TairGis {
         }
     }
 
+    public Map<String, String> giswithin(final String key, final String pointWktText) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISWITHIN, key, pointWktText);
+        List<Object> result = (List<Object>) obj;
+        if (null == result || 0 == result.size()) {
+            return new HashMap<String, String>();
+        } else {
+            List<byte[]> rawResults = (List) result.get(1);
+            return (Map) BuilderFactory.STRING_MAP.build(rawResults);
+        }
+    }
+
+    public List<String> giswithin(final String key, final String pointWktText, final GisParams gisParams) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISWITHIN,
+            gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(pointWktText)));
+        List<Object> result = (List<Object>) obj;
+        if (null == result || 0 == result.size()) {
+            return new ArrayList<String>();
+        } else {
+            List<byte[]> rawResults = (List) result.get(1);
+            return BuilderFactory.STRING_LIST.build(rawResults);
+        }
+    }
+
+    public Map<byte[], byte[]> giswithin(final byte[] key, final byte[] pointWktText) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISWITHIN, key, pointWktText);
+        List<Object> result = (List<Object>) obj;
+        if (null == result || 0 == result.size()) {
+            return new HashMap<byte[], byte[]>();
+        } else {
+            List<byte[]> rawResults = (List) result.get(1);
+            return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+        }
+    }
+
+    public List<byte[]> giswithin(final byte[] key, final byte[] pointWktText, final GisParams gisParams) {
+        Object obj = getJedis().sendCommand(ModuleCommand.GISWITHIN, gisParams.getByteParams(key, pointWktText));
+        List<Object> result = (List<Object>) obj;
+        if (null == result || 0 == result.size()) {
+            return new ArrayList<byte[]>();
+        } else {
+            List<byte[]> rawResults = (List) result.get(1);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
+        }
+    }
+
     /**
      * Judge the intersect relationship for the pointWktText (point or linestring or polygonname) and the key.
      * @param key          the key
