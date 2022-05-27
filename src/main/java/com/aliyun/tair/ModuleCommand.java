@@ -69,6 +69,7 @@ public enum ModuleCommand implements ProtocolCommand {
     GISDEL("GIS.DEL"),
     GISSEARCH("GIS.SEARCH"),
     GISCONTAINS("GIS.CONTAINS"),
+    GISWITHIN("GIS.WITHIN"),
     GISINTERSECTS("GIS.INTERSECTS"),
     GISGETALL("GIS.GETALL"),
 
