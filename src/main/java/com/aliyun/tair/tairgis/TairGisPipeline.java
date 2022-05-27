@@ -103,6 +103,27 @@ public class TairGisPipeline extends Pipeline {
         return getResponse(GisBuilderFactory.GISSEARCH_RESULT_BYTE_ARRAY_LIST);
     }
 
+    public Response<Map<String, String>> giswithin(final String key, final String pointWktText) {
+        getClient("").sendCommand(ModuleCommand.GISWITHIN, key, pointWktText);
+        return getResponse(GisBuilderFactory.GISSEARCH_RESULT_MAP_STRING);
+    }
+
+    public Response<List<String>> giswithin(final String key, final String pointWktText, final GisParams gisParams) {
+        getClient("").sendCommand(ModuleCommand.GISWITHIN,
+            gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(pointWktText)));
+        return getResponse(GisBuilderFactory.GISSEARCH_RESULT_LIST_STRING);
+    }
+
+    public Response<Map<byte[], byte[]>> giswithin(final byte[] key, final byte[] pointWktText) {
+        getClient("").sendCommand(ModuleCommand.GISWITHIN, key, pointWktText);
+        return getResponse(GisBuilderFactory.GISSEARCH_RESULT_MAP_BYTE);
+    }
+
+    public Response<List<byte[]>> giswithin(final byte[] key, final byte[] pointWktText, final GisParams gisParams) {
+        getClient("").sendCommand(ModuleCommand.GISWITHIN, gisParams.getByteParams(key, pointWktText));
+        return getResponse(GisBuilderFactory.GISSEARCH_RESULT_BYTE_ARRAY_LIST);
+    }
+
     public Response<Map<String, String>> gisintersects(final String key, final String pointWktText) {
         getClient("").sendCommand(ModuleCommand.GISINTERSECTS, key, pointWktText);
         return getResponse(GisBuilderFactory.GISSEARCH_RESULT_MAP_STRING);

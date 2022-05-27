@@ -238,6 +238,41 @@ public class TairGisTest extends TairGisTestBase {
     }
 
     @Test
+    public void gisWithinTest() {
+        String uuid = UUID.randomUUID().toString();
+        String key = "hangzhou" + uuid;
+        String polygonName = "alibaba-xixi-campus";
+        String polygonWktText = "POLYGON((30 10,40 40,20 40,10 20,30 10))";
+        String polygonWkt = "POLYGON ((30 5, 50 50, 20 50, 5 20, 30 5))";
+
+        long l = tairGis.gisadd(key, polygonName, polygonWktText);
+        AssertUtil.assertEquals(l, 1);
+
+        // giswithin
+        Map<String, String> retMap = tairGis.giswithin(key, polygonWkt);
+        AssertUtil.assertEquals(1, retMap.size());
+        assertTrue(retMap.containsKey(polygonName));
+        AssertUtil.assertEquals(polygonWktText, retMap.get(polygonName));
+
+        // giswithin withoutwkt
+        List<String> retList = tairGis.giswithin(key, polygonWkt, GisParams.gisParams().withoutWkt());
+        AssertUtil.assertEquals(1, retList.size());
+        AssertUtil.assertEquals(polygonName, retList.get(0));
+
+        // giswithin binary
+        Map<byte[], byte[]> bretMap = tairGis.giswithin(key.getBytes(), polygonWkt.getBytes());
+        AssertUtil.assertEquals(1, bretMap.size());
+        assertTrue(bretMap.containsKey(polygonName.getBytes()));
+        assertTrue(Arrays.equals(polygonWktText.getBytes(), bretMap.get(polygonName.getBytes())));
+
+        // giswithin withoutwkt binary
+        List<byte[]> bretList = tairGis.giswithin(key.getBytes(), polygonWkt.getBytes(),
+            GisParams.gisParams().withoutWkt());
+        AssertUtil.assertEquals(1, bretList.size());
+        assertTrue(Arrays.equals(polygonName.getBytes(), bretList.get(0)));
+    }
+
+    @Test
     public void gisGetallTest() {
         String uuid = UUID.randomUUID().toString();
         String key = "hangzhou" + uuid;
