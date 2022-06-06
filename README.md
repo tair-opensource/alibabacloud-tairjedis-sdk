@@ -1,5 +1,7 @@
 # alibabacloud-tairjedis-sdk
 
+![](tair-logo.png)
+
 English | [简体中文](README-CN.md)
 
 A client packaged based on [Jedis](https://github.com/xetorthio/jedis) that operates [Tair](https://www.alibabacloud.com/help/en/apsaradb-for-redis/latest/apsaradb-for-redis-enhanced-edition-overview) For Redis Modules.

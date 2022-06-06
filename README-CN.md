@@ -1,5 +1,7 @@
 # alibabacloud-tairjedis-sdk
 
+![](tair-logo.png)
+
 基于 [Jedis](https://github.com/xetorthio/jedis) 封装的，操作 [Tair](https://help.aliyun.com/document_detail/145957.html) 的客户端，支持 Tair For Redis 多种 [Module](https://help.aliyun.com/document_detail/146579.html) 的操作命令及部分高级特性。
 - [TairHash](https://help.aliyun.com/document_detail/145970.html), 可实现 field 级别的过期。(已[开源](https://github.com/alibaba/TairHash))
 - [TairString](https://help.aliyun.com/document_detail/145902.html), 支持 string 设置 version，增强的`cas`和`cad`命令可轻松实现分布式锁。(已[开源](https://github.com/alibaba/TairString))
