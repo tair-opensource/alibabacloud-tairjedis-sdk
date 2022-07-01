@@ -9,7 +9,7 @@ import java.util.*;
 
 
 public class ExhscanParams {
-    private final static String MATCH = "MATACH";
+    private final static String MATCH = "MATCH";
     private final static String COUNT = "COUNT";
     private final static String NOVAL = "NOVAL";
 
