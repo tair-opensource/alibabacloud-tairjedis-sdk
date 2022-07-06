@@ -52,6 +52,7 @@ public class TairZsetPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
 
+    @Deprecated
     public Response<Long> exzadd(final String key, final Map<String, String> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(SafeEncoder.encode(key));
@@ -64,6 +65,19 @@ public class TairZsetPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
 
+    public Response<Long> exzaddMembers(final String key, final Map<String, String> members) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        bparams.add(SafeEncoder.encode(key));
+
+        for (final Entry<String, String> entry : members.entrySet()) {
+            bparams.add(SafeEncoder.encode(entry.getValue()));
+            bparams.add(SafeEncoder.encode(entry.getKey()));
+        }
+        getClient("").sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    @Deprecated
     public Response<Long> exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(key);
@@ -76,6 +90,19 @@ public class TairZsetPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
 
+    public Response<Long> exzaddMembers(final byte[] key, final Map<byte[], byte[]> members) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        bparams.add(key);
+
+        for (final Entry<byte[], byte[]> entry : members.entrySet()) {
+            bparams.add(entry.getValue());
+            bparams.add(entry.getKey());
+        }
+        getClient("").sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    @Deprecated
     public Response<Long> exzadd(final String key, final Map<String, String> scoreMembers, final ExzaddParams params) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         for (final Entry<String, String> entry : scoreMembers.entrySet()) {
@@ -87,11 +114,34 @@ public class TairZsetPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
 
+    public Response<Long> exzaddMembers(final String key, final Map<String, String> members, final ExzaddParams params) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        for (final Entry<String, String> entry : members.entrySet()) {
+            bparams.add(SafeEncoder.encode(entry.getValue()));
+            bparams.add(SafeEncoder.encode(entry.getKey()));
+        }
+        getClient("").sendCommand(ModuleCommand.EXZADD,
+            params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    @Deprecated
     public Response<Long> exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers, final ExzaddParams params) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         for (final Entry<byte[], byte[]> entry : scoreMembers.entrySet()) {
             bparams.add(entry.getKey());
             bparams.add(entry.getValue());
+        }
+        getClient("").sendCommand(ModuleCommand.EXZADD,
+            params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> exzaddMembers(final byte[] key, final Map<byte[], byte[]> members, final ExzaddParams params) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        for (final Entry<byte[], byte[]> entry : members.entrySet()) {
+            bparams.add(entry.getValue());
+            bparams.add(entry.getKey());
         }
         getClient("").sendCommand(ModuleCommand.EXZADD,
             params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));

@@ -57,6 +57,8 @@ public class TairZsetCluster {
         return BuilderFactory.LONG.build(obj);
     }
 
+    /** see {@link TairZsetCluster#exzaddMembers(String, Map)} */
+    @Deprecated
     public Long exzadd(final String key, final Map<String, String> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(SafeEncoder.encode(key));
@@ -70,6 +72,21 @@ public class TairZsetCluster {
         return BuilderFactory.LONG.build(obj);
     }
 
+    public Long exzaddMembers(final String key, final Map<String, String> members) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        bparams.add(SafeEncoder.encode(key));
+
+        for (final Entry<String, String> entry : members.entrySet()) {
+            bparams.add(SafeEncoder.encode(entry.getValue()));
+            bparams.add(SafeEncoder.encode(entry.getKey()));
+        }
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXZADD,
+            bparams.toArray(new byte[bparams.size()][]));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    /** see {@link TairZsetCluster#exzaddMembers(byte[], Map)} */
+    @Deprecated
     public Long exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(key);
@@ -82,6 +99,20 @@ public class TairZsetCluster {
         return BuilderFactory.LONG.build(obj);
     }
 
+    public Long exzaddMembers(final byte[] key, final Map<byte[], byte[]> members) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        bparams.add(key);
+
+        for (final Entry<byte[], byte[]> entry : members.entrySet()) {
+            bparams.add(entry.getValue());
+            bparams.add(entry.getKey());
+        }
+        Object obj = jc.sendCommand(key, ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    /** see {@link TairZsetCluster#exzaddMembers(String, Map, ExzaddParams)} */
+    @Deprecated
     public Long exzadd(final String key, final Map<String, String> scoreMembers, final ExzaddParams params) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         for (final Entry<String, String> entry : scoreMembers.entrySet()) {
@@ -93,11 +124,35 @@ public class TairZsetCluster {
         return BuilderFactory.LONG.build(obj);
     }
 
+    public Long exzaddMembers(final String key, final Map<String, String> members, final ExzaddParams params) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        for (final Entry<String, String> entry : members.entrySet()) {
+            bparams.add(SafeEncoder.encode(entry.getValue()));
+            bparams.add(SafeEncoder.encode(entry.getKey()));
+        }
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXZADD,
+            params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
+        return BuilderFactory.LONG.build(obj);
+    }
+    
+    /** see {@link TairZsetCluster#exzaddMembers(byte[], Map, ExzaddParams)} */
+    @Deprecated
     public Long exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers, final ExzaddParams params) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         for (final Entry<byte[], byte[]> entry : scoreMembers.entrySet()) {
             bparams.add(entry.getKey());
             bparams.add(entry.getValue());
+        }
+        Object obj = jc.sendCommand(key, ModuleCommand.EXZADD,
+            params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long exzaddMembers(final byte[] key, final Map<byte[], byte[]> members, final ExzaddParams params) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        for (final Entry<byte[], byte[]> entry : members.entrySet()) {
+            bparams.add(entry.getValue());
+            bparams.add(entry.getKey());
         }
         Object obj = jc.sendCommand(key, ModuleCommand.EXZADD,
             params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
