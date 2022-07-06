@@ -61,6 +61,12 @@ public class TairZset {
         return BuilderFactory.LONG.build(obj);
     }
 
+    /**
+     * There is a bug in this method: the order of scoreMembers is score first and member last,
+     * which makes it impossible to store members with the same score.
+     * see {@link TairZset#exzaddMembers(String, Map)}
+     */
+    @Deprecated
     public Long exzadd(final String key, final Map<String, String> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(SafeEncoder.encode(key));
@@ -73,6 +79,30 @@ public class TairZset {
         return BuilderFactory.LONG.build(obj);
     }
 
+    /**
+     * Add multiple scores and members to zset.
+     * @param key the key
+     * @param members a map, key is member, value is score.
+     * @return When used without ExzaddParams, the number of elements added to the sorted set (excluding score updates).
+     * If the CH option is specified, the number of elements that were changed (added or updated).
+     * If the INCR option is specified, the return value will be Bulk string reply:
+     * The new score of member (a double precision floating point number) represented as string, or nil if the
+     * operation was aborted (when called with either the XX or the NX option).
+     */
+    public Long exzaddMembers(final String key, final Map<String, String> members) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        bparams.add(SafeEncoder.encode(key));
+
+        for (final Entry<String, String> entry : members.entrySet()) {
+            bparams.add(SafeEncoder.encode(entry.getValue()));
+            bparams.add(SafeEncoder.encode(entry.getKey()));
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    /** see {@link TairZset#exzaddMembers(byte[], Map)} */
+    @Deprecated
     public Long exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(key);
@@ -85,6 +115,20 @@ public class TairZset {
         return BuilderFactory.LONG.build(obj);
     }
 
+    public Long exzaddMembers(final byte[] key, final Map<byte[], byte[]> members) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        bparams.add(key);
+
+        for (final Entry<byte[], byte[]> entry : members.entrySet()) {
+            bparams.add(entry.getValue());
+            bparams.add(entry.getKey());
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    /** see {@link TairZset#exzaddMembers(String, Map, ExzaddParams)} */
+    @Deprecated
     public Long exzadd(final String key, final Map<String, String> scoreMembers, final ExzaddParams params) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         for (final Entry<String, String> entry : scoreMembers.entrySet()) {
@@ -96,11 +140,35 @@ public class TairZset {
         return BuilderFactory.LONG.build(obj);
     }
 
+    public Long exzaddMembers(final String key, final Map<String, String> members, final ExzaddParams params) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        for (final Entry<String, String> entry : members.entrySet()) {
+            bparams.add(SafeEncoder.encode(entry.getValue()));
+            bparams.add(SafeEncoder.encode(entry.getKey()));
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD,
+            params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
+        return BuilderFactory.LONG.build(obj);
+    }
+    
+    /** see {@link TairZsetCluster#exzaddMembers(byte[], Map, ExzaddParams)} */
+    @Deprecated
     public Long exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers, final ExzaddParams params) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         for (final Entry<byte[], byte[]> entry : scoreMembers.entrySet()) {
             bparams.add(entry.getKey());
             bparams.add(entry.getValue());
+        }
+        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD,
+            params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long exzaddMembers(final byte[] key, final Map<byte[], byte[]> members, final ExzaddParams params) {
+        final List<byte[]> bparams = new ArrayList<byte[]>();
+        for (final Entry<byte[], byte[]> entry : members.entrySet()) {
+            bparams.add(entry.getValue());
+            bparams.add(entry.getKey());
         }
         Object obj = getJedis().sendCommand(ModuleCommand.EXZADD,
             params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
