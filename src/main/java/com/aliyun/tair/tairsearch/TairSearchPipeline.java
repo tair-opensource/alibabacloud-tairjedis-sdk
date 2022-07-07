@@ -2,13 +2,13 @@ package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
+import com.aliyun.tair.tairsearch.params.TFTAddSugParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
-import com.aliyun.tair.tairsearch.params.TFTScanParams;
+import com.aliyun.tair.tairsearch.params.TFTGetSugParams;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -149,7 +149,7 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> tftdeldoc(String key,  String... docId) {
+    public Response<String> tftdeldoc(String key, String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
         return getResponse(BuilderFactory.STRING);
@@ -210,4 +210,119 @@ public class TairSearchPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.TFTDOCNUM, index);
         return getResponse(BuilderFactory.LONG);
     }
+
+    /**
+     * Add suggestions in index.
+     *
+     * @param index the index name
+     * @param texts the suggestions and their weight
+     * @return Success:  Number of successfully added suggestions; Fail: error.
+     */
+    public Response<Long> tftaddsug(String index, Map<String /* docContent */, String /* docId */> texts) {
+        TFTAddSugParams params = new TFTAddSugParams();
+        getClient("").sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> tftaddsug(byte[] index, Map<byte[] /* docContent */, byte[] /* docId */> texts) {
+        TFTAddSugParams params = new TFTAddSugParams();
+        getClient("").sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Delete the specified suggestions from the index.
+     *
+     * @param index the index name
+     * @param text  the suggestions
+     * @return Success: Number of successfully deleted suggestions; Fail: error
+     */
+    public Response<Long> tftdelsug(String index, String... text) {
+        //TFTDelSugParams params = new TFTDelSugParams();
+        //Object obj = getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
+        //return BuilderFactory.LONG.build(obj);
+        return tftdelsug(SafeEncoder.encode(index), SafeEncoder.encodeMany(text));
+    }
+
+    public Response<Long> tftdelsug(byte[] index, byte[]... text) {
+        //TFTDelSugParams params = new TFTDelSugParams();
+        //Object obj = getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
+        getClient("").sendCommand(ModuleCommand.TFTDELSUG, JoinParameters.joinParameters(index, text));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Gets the number of suggestions in index.
+     *
+     * @param index the index name
+     * @return the number of autocomplete texts.
+     */
+    public Response<Long> tftsugnum(String index) {
+        return tftsugnum(SafeEncoder.encode(index));
+    }
+
+    public Response<Long> tftsugnum(byte[] index) {
+        getClient("").sendCommand(ModuleCommand.TFTSUGNUM, index);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Get suggestions in index according to prefix query.
+     *
+     * @param index  the index name
+     * @param prefix the prefix
+     * @return List of the suggestions in index.
+     */
+    public Response<List<String>> tftgetsug(String index, String prefix) {
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
+        return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<List<byte[]>> tftgetsug(byte[] index, byte[] prefix) {
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
+        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    }
+
+    /**
+     * Get suggestions in index according to prefix query.
+     *
+     * @param index  the index name
+     * @param prefix the prefix
+     * @param params the get parameters. For example the max number of suggestions returned and use fuzzy query
+     * @return List of the suggestions in index.
+     */
+    public Response<List<String>> tftgetsug(String index, String prefix, final TFTGetSugParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(SafeEncoder.encode(index));
+        args.add(SafeEncoder.encode(prefix));
+        args.addAll(params.getParams());
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
+        return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<List<byte[]>> tftgetsug(byte[] index, byte[] prefix, final TFTGetSugParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(index);
+        args.add(prefix);
+        args.addAll(params.getParams());
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
+        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    }
+
+    /**
+     * Get all suggestions in index.
+     *
+     * @param index the index name
+     * @return List of the all suggestions in index.
+     */
+    public Response<List<String>> tftgetallsugs(String index) {
+        getClient("").sendCommand(ModuleCommand.TFTGETALLSUGS, SafeEncoder.encode(index));
+        return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<List<byte[]>> tftgetallsugs(byte[] index) {
+        getClient("").sendCommand(ModuleCommand.TFTGETALLSUGS, index);
+        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    }
+
 }
