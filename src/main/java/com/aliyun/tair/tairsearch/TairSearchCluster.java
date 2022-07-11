@@ -290,15 +290,10 @@ public class TairSearchCluster {
      * @return Success: Number of successfully deleted suggestions; Fail: error
      */
     public Long tftdelsug(String index, String... text) {
-        //TFTDelSugParams params = new TFTDelSugParams();
-        //Object obj = jc.sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
-        //return BuilderFactory.LONG.build(obj);
         return tftdelsug(SafeEncoder.encode(index), SafeEncoder.encodeMany(text));
     }
 
     public Long tftdelsug(byte[] index, byte[]... text) {
-        //TFTDelSugParams params = new TFTDelSugParams();
-        //Object obj = jc.sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
         Object obj = jc.sendCommand(index, ModuleCommand.TFTDELSUG, JoinParameters.joinParameters(index, text));
         return BuilderFactory.LONG.build(obj);
     }

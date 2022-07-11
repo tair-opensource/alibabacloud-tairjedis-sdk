@@ -238,15 +238,10 @@ public class TairSearchPipeline extends Pipeline {
      * @return Success: Number of successfully deleted suggestions; Fail: error
      */
     public Response<Long> tftdelsug(String index, String... text) {
-        //TFTDelSugParams params = new TFTDelSugParams();
-        //Object obj = getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
-        //return BuilderFactory.LONG.build(obj);
         return tftdelsug(SafeEncoder.encode(index), SafeEncoder.encodeMany(text));
     }
 
     public Response<Long> tftdelsug(byte[] index, byte[]... text) {
-        //TFTDelSugParams params = new TFTDelSugParams();
-        //Object obj = getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
         getClient("").sendCommand(ModuleCommand.TFTDELSUG, JoinParameters.joinParameters(index, text));
         return getResponse(BuilderFactory.LONG);
     }

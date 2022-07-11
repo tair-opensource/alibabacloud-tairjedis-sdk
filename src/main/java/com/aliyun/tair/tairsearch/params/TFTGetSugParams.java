@@ -22,7 +22,6 @@ public class TFTGetSugParams {
 
     public TFTGetSugParams maxCount(final Integer count) {
         paramsList.add(SafeEncoder.encode("MAX_COUNT"));
-        //paramsList.add(ByteBuffer.allocate(4).putInt(count).array());
         paramsList.add(SafeEncoder.encode(count.toString()));
         maxCount = count;
         return this;

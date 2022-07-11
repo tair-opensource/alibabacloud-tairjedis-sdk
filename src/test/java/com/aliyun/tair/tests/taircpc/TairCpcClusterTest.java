@@ -5,6 +5,7 @@ import com.aliyun.tair.taircpc.params.CpcData;
 import com.aliyun.tair.taircpc.params.CpcUpdateParams;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisDataException;
@@ -79,7 +80,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         Double estimateRet = tairCpcCluster.cpcEstimate(key);
         assertEquals(2.00, estimateRet, 0.001);
 
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         estimateRet = tairCpcCluster.cpcEstimate(key);
         assertNull(estimateRet);
@@ -113,7 +114,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         estimateRet = tairCpcCluster.cpcEstimate(bkey);
         assertEquals(2.00, estimateRet, 0.01);
 
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         estimateRet = tairCpcCluster.cpcEstimate(bkey);
         assertNull(estimateRet);
@@ -339,6 +340,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
 //        Assert.assertEquals(1.0, addRet.get(key).getDiffValue(), 0.1);
 //    }
 
+    @Ignore
     @Test
     public void cpcArrayUpdateTest() throws Exception {
 
@@ -359,6 +361,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         assertEquals(1.00, estimateRet, 0.001);
     }
 
+    @Ignore
     @Test
     public void cpcArrayUpdate2EstTest() throws Exception {
 
@@ -382,6 +385,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         assertEquals(1.00, estimateRet, 0.001);
     }
 
+    @Ignore
     @Test
     public void cpcArrayUpdate2JudTest() throws Exception {
 
@@ -430,6 +434,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
 //        Assert.assertEquals(2.0, addRet.get(key).getDiffValue(), 0.1);
 //    }
 
+    @Ignore
     @Test
     public void cpcArrayEstimateRangeTest() throws Exception {
 
@@ -506,6 +511,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         assertEquals(100.00, setRet, 0.001);
     }
 
+    @Ignore
     @Test
     public void sumArrayTest() throws Exception {
 
@@ -600,6 +606,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         assertEquals(100.00, setRet, 0.001);
     }
 
+    @Ignore
     @Test
     public void maxArrayTest() throws Exception {
 
@@ -694,6 +701,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         assertEquals(100.00, setRet, 0.001);
     }
 
+    @Ignore
     @Test
     public void minArrayTest() throws Exception {
 
@@ -788,6 +796,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         Assert.assertEquals(content1, setRet);
     }
 
+    @Ignore
     @Test
     public void firstArrayTest() throws Exception {
 
@@ -880,6 +889,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         Assert.assertEquals(content1, setRet);
     }
 
+    @Ignore
     @Test
     public void lastArrayTest() throws Exception {
 
@@ -969,7 +979,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         assertEquals(0.00, getRet, 0.001);
 
         Double setRet = tairCpcCluster.avgSet(key, count1, 100);
-        assertEquals(150, setRet, 0.001);
+        assertEquals(100, setRet, 0.001);
 
 
         addRet = tairCpcCluster.avgAdd(bkey, count1, 150);
@@ -988,6 +998,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
         assertEquals(137.5, addRet, 0.001);
     }
 
+    @Ignore
     @Test
     public void avgArrayTest() throws Exception {
 
@@ -1082,6 +1093,7 @@ public class TairCpcClusterTest extends TairCpcTestBase {
 //        assertEquals(0.00, setRet, 0.001);
     }
 
+    @Ignore
     @Test
     public void stddevArrayTest() throws Exception {
 

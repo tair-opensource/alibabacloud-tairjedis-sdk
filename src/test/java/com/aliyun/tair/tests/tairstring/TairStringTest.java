@@ -348,7 +348,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long)1, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         result = tairString.exget(key);
         assertEquals(null, result);
 
@@ -360,7 +360,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         result = tairString.exget(key);
         assertEquals(null, result);
 
@@ -373,7 +373,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         result = tairString.exget(key);
         assertEquals(null, result);
 
@@ -396,7 +396,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long)2, bresult.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
 
@@ -505,7 +505,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long)1, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         result = tairString.exget(key);
         assertEquals(null, result);
 
@@ -517,7 +517,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         result = tairString.exget(key);
         assertEquals(null, result);
 
@@ -530,7 +530,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         result = tairString.exget(key);
         assertEquals(null, result);
 
@@ -541,7 +541,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long)1, bresult.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
 
@@ -553,7 +553,7 @@ public class TairStringTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long)2, bresult.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         bresult = tairString.exget(bkey);
         assertEquals(null, bresult);
 
