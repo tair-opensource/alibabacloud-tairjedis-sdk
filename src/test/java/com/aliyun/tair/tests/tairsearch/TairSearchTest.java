@@ -1,11 +1,11 @@
 package com.aliyun.tair.tests.tairsearch;
 
+import com.aliyun.tair.tairsearch.params.TFTGetSugParams;
 import com.aliyun.tair.tairsearch.params.TFTScanParams;
 import org.junit.Test;
 import redis.clients.jedis.ScanResult;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -100,7 +100,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
         ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
         assertEquals(ret, "OK");
-        
+
         assertEquals(1, tairSearch.tftincrlongdocfield("tftkey", "1", "f0", 1).intValue());
         assertEquals(0, tairSearch.tftincrlongdocfield("tftkey", "1", "f0", -1).intValue());
 
@@ -149,7 +149,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftincrlongdocfield("tftkey", "1", "f0", 1);
-        tairSearch.tftincrfloatdocfield("tftkey", "1", "f1", 1.1) ;
+        tairSearch.tftincrfloatdocfield("tftkey", "1", "f1", 1.1);
 
         assertEquals(2, tairSearch.tftdeldocfield("tftkey", "1", "f0", "f1", "f2").intValue());
     }
@@ -281,7 +281,7 @@ public class TairSearchTest extends TairSearchTestBase {
     }
 
     @Test
-    public  void searchcachetest() throws Exception {
+    public void searchcachetest() throws Exception {
         jedis.del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
@@ -351,5 +351,112 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(null, tairSearch.tftgetdoc("tftkey", "3"));
 
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", tairSearch.tftgetindexmappings("tftkey"));
+    }
+
+    @Test
+    public void tftgetsugtest() {
+        jedis.del("tftkey");
+        Set<String> visited = new HashSet<>();
+        Map<String, String> docs = new HashMap();
+        docs.put("redis is a memory database", "1");
+        docs.put("redis cluster", "2");
+        docs.put("redis", "3");
+
+        assertEquals(docs.size(), tairSearch.tftaddsug("tftkey", docs).intValue());
+
+        assertEquals(docs.size(), tairSearch.tftsugnum("tftkey").intValue());
+
+        List<String> result = tairSearch.tftgetsug("tftkey", "redis");
+
+        assertEquals(3, result.size());
+        for (int i = 0; i < result.size(); i++) {
+            if (!docs.containsKey(result.get(i)) || visited.contains(result.get(i))) {
+                assertTrue(false);
+            }
+            visited.add(result.get(i));
+        }
+        visited.clear();
+        TFTGetSugParams params = new TFTGetSugParams();
+        params.maxCount(2);
+        params.fuzzy();
+        List<String> maxCountResult = tairSearch.tftgetsug("tftkey", "redis", params);
+        assertEquals(2, maxCountResult.size());
+        Collections.sort(maxCountResult);
+        for (int i = 0; i < maxCountResult.size(); i++) {
+            if (!docs.containsKey(maxCountResult.get(i)) || visited.contains(maxCountResult.get(i))) {
+                assertTrue(false);
+            }
+            visited.add(result.get(i));
+        }
+        visited.clear();
+        List<String> allResult = tairSearch.tftgetallsugs("tftkey");
+        assertEquals(docs.size(), allResult.size());
+        for (int i = 0; i < docs.size(); i++) {
+            if (!docs.containsKey(allResult.get(i)) || visited.contains(allResult.get(i))) {
+                assertTrue(false);
+            }
+        }
+
+        assertEquals(2, tairSearch.tftdelsug("tftkey", "redis cluster", "redis").intValue());
+        assertEquals(docs.size() - 2, tairSearch.tftsugnum("tftkey").intValue());
+    }
+
+    @Test
+    public void tftgetsugtestbyte() {
+        jedis.del("tftkey");
+
+        Set<String> visited = new HashSet<>();
+        Map<String, String> cmpDocs = new HashMap();
+        cmpDocs.put("redis is a memory database", "1");
+        cmpDocs.put("redis cluster", "2");
+        cmpDocs.put("redis", "3");
+
+        Map<byte[], byte[]> docs = new HashMap();
+        docs.put("redis is a memory database".getBytes(), "1".getBytes());
+        docs.put("redis cluster".getBytes(), "2".getBytes());
+        docs.put("redis".getBytes(), "3".getBytes());
+
+        assertEquals(docs.size(), tairSearch.tftaddsug("tftkey".getBytes(), docs).intValue());
+
+        assertEquals(docs.size(), tairSearch.tftsugnum("tftkey".getBytes()).intValue());
+
+        List<byte[]> result = tairSearch.tftgetsug("tftkey".getBytes(), "redis".getBytes());
+
+        assertEquals(3, result.size());
+        for (int i = 0; i < result.size(); i++) {
+            String tmpString = new String(result.get(i));
+            if (!cmpDocs.containsKey(tmpString) || visited.contains(tmpString)) {
+                assertTrue(false);
+            }
+            visited.add(tmpString);
+        }
+        visited.clear();
+
+        TFTGetSugParams params = new TFTGetSugParams();
+        params.maxCount(2);
+        params.fuzzy();
+        List<byte[]> maxCountResult = tairSearch.tftgetsug("tftkey".getBytes(), "redis".getBytes(), params);
+        assertEquals(2, maxCountResult.size());
+        for (int i = 0; i < maxCountResult.size(); i++) {
+            String tmpString = new String(maxCountResult.get(i));
+            if (!cmpDocs.containsKey(tmpString) || visited.contains(tmpString)) {
+                assertTrue(false);
+            }
+            visited.add(tmpString);
+        }
+        visited.clear();
+        List<byte[]> allResult = tairSearch.tftgetallsugs("tftkey".getBytes());
+        assertEquals(docs.size(), allResult.size());
+        for (int i = 0; i < docs.size(); i++) {
+            String tmpString = new String(allResult.get(i));
+            if (!cmpDocs.containsKey(tmpString) || visited.contains(tmpString)) {
+                System.out.println(tmpString);
+                assertTrue(false);
+            }
+        }
+
+        assertEquals(2, tairSearch.tftdelsug("tftkey".getBytes(), "redis cluster".getBytes(), "redis".getBytes()).intValue());
+        assertEquals(docs.size() - 2, tairSearch.tftsugnum("tftkey".getBytes()).intValue());
+        jedis.del("tftkey".getBytes());
     }
 }

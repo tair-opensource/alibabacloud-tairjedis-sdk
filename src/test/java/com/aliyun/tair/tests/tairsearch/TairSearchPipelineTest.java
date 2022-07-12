@@ -1,12 +1,11 @@
 package com.aliyun.tair.tests.tairsearch;
 
-import com.aliyun.tair.tests.tairhash.TairHashTestBase;
+import com.aliyun.tair.tairsearch.params.TFTGetSugParams;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 public class TairSearchPipelineTest extends TairSearchTestBase {
@@ -77,5 +76,126 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals(null, objs.get(6));
 
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", objs.get(7));
+    }
+
+    @Test
+    public void tftgetsugtest() {
+        jedis.del("tftkey");
+        Set<String> visited = new HashSet<>();
+        Map<String, String> docs = new HashMap();
+        docs.put("redis is a memory database", "1");
+        docs.put("redis cluster", "2");
+        docs.put("redis", "3");
+
+        tairSearchPipeline.tftaddsug("tftkey", docs);
+        tairSearchPipeline.tftgetsug("tftkey", "redis");
+        tairSearchPipeline.tftsugnum("tftkey");
+        TFTGetSugParams params = new TFTGetSugParams();
+        params.maxCount(2);
+        params.fuzzy();
+        tairSearchPipeline.tftgetsug("tftkey", "redis", params);
+        tairSearchPipeline.tftgetallsugs("tftkey");
+        tairSearchPipeline.tftdelsug("tftkey", "redis cluster", "redis");
+        tairSearchPipeline.tftsugnum("tftkey");
+
+        List<Object> objs = tairSearchPipeline.syncAndReturnAll();
+
+        assertEquals(docs.size(), ((Long) objs.get(0)).intValue());
+        List<String> result = (List<String>) objs.get(1);
+        assertEquals(3, result.size());
+        for (int i = 0; i < result.size(); i++) {
+            if (!docs.containsKey(result.get(i)) || visited.contains(result.get(i))) {
+                assertTrue(false);
+            }
+            visited.add(result.get(i));
+        }
+        visited.clear();
+        assertEquals(docs.size(), ((Long) objs.get(2)).intValue());
+        List<String> maxCountResult = (List<String>) objs.get(3);
+        assertEquals(2, maxCountResult.size());
+        for (int i = 0; i < maxCountResult.size(); i++) {
+            if (!docs.containsKey(maxCountResult.get(i)) || visited.contains(maxCountResult.get(i))) {
+                assertTrue(false);
+            }
+            visited.add(result.get(i));
+        }
+        visited.clear();
+
+        List<String> allResult = (List<String>) objs.get(4);
+        assertEquals(docs.size(), allResult.size());
+        for (int i = 0; i < docs.size(); i++) {
+            if (!docs.containsKey(allResult.get(i)) || visited.contains(allResult.get(i))) {
+                assertTrue(false);
+            }
+        }
+
+        assertEquals(2, ((Long) objs.get(5)).intValue());
+        assertEquals(docs.size() - 2, ((Long) objs.get(6)).intValue());
+    }
+
+    @Test
+    public void tftgetsugtestbyte() {
+        jedis.del("tftkey");
+
+        Set<String> visited = new HashSet<>();
+        Map<String, String> cmpDocs = new HashMap();
+        cmpDocs.put("redis is a memory database", "1");
+        cmpDocs.put("redis cluster", "2");
+        cmpDocs.put("redis", "3");
+
+        Map<byte[], byte[]> docs = new HashMap();
+        docs.put("redis is a memory database".getBytes(), "1".getBytes());
+        docs.put("redis cluster".getBytes(), "2".getBytes());
+        docs.put("redis".getBytes(), "3".getBytes());
+
+        tairSearchPipeline.tftaddsug("tftkey".getBytes(), docs);
+        tairSearchPipeline.tftgetsug("tftkey".getBytes(), "redis".getBytes());
+        tairSearchPipeline.tftsugnum("tftkey".getBytes());
+        TFTGetSugParams params = new TFTGetSugParams();
+        params.maxCount(2);
+        params.fuzzy();
+        tairSearchPipeline.tftgetsug("tftkey".getBytes(), "redis".getBytes(), params);
+        tairSearchPipeline.tftgetallsugs("tftkey".getBytes());
+        tairSearchPipeline.tftdelsug("tftkey".getBytes(), "redis cluster".getBytes(), "redis".getBytes());
+        tairSearchPipeline.tftsugnum("tftkey".getBytes());
+
+        List<Object> objs = tairSearchPipeline.syncAndReturnAll();
+
+        assertEquals(docs.size(), ((Long) objs.get(0)).intValue());
+        List<byte[]> result = (List<byte[]>) objs.get(1);
+        assertEquals(3, result.size());
+        for (int i = 0; i < result.size(); i++) {
+            String tmpString = new String(result.get(i));
+            if (!cmpDocs.containsKey(tmpString) || visited.contains(tmpString)) {
+                assertTrue(false);
+            }
+            visited.add(tmpString);
+        }
+        visited.clear();
+
+        assertEquals(docs.size(), ((Long) objs.get(2)).intValue());
+        List<byte[]> maxCountResult = (List<byte[]>) objs.get(3);
+        assertEquals(2, maxCountResult.size());
+        for (int i = 0; i < maxCountResult.size(); i++) {
+            String tmpString = new String(maxCountResult.get(i));
+            if (!cmpDocs.containsKey(tmpString) || visited.contains(tmpString)) {
+                assertTrue(false);
+            }
+            visited.add(tmpString);
+        }
+        visited.clear();
+        List<byte[]> allResult = (List<byte[]>) objs.get(4);
+        assertEquals(docs.size(), allResult.size());
+        for (int i = 0; i < docs.size(); i++) {
+            String tmpString = new String(allResult.get(i));
+            if (!cmpDocs.containsKey(tmpString) || visited.contains(tmpString)) {
+                System.out.println(tmpString);
+                assertTrue(false);
+            }
+        }
+
+        assertEquals(2, ((Long) objs.get(5)).intValue());
+        assertEquals(docs.size() - 2, ((Long) objs.get(6)).intValue());
+        jedis.del("tftkey".getBytes());
     }
 }

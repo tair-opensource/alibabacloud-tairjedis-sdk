@@ -3,6 +3,7 @@ package com.aliyun.tair.tests.taircpc;
 import com.aliyun.tair.taircpc.params.*;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -832,19 +833,19 @@ public class TairCpcTestNew extends TairCpcTestBase {
         assertEquals(150, addRet, 0.001);
 
         addRet = tairCpcNew.avgAdd(key, count2, 100);
-        assertEquals(112.5, addRet, 0.001);
+        assertEquals(116.666, addRet, 0.001);
 
         Double getRet = tairCpcNew.avgGet(key);
-        assertEquals(112.5, getRet, 0.001);
+        assertEquals(116.666, getRet, 0.001);
 
         CpcUpdateParams cpcUpdateParams2 = new CpcUpdateParams();
         cpcUpdateParams2.ex(2);
 
-        addRet = tairCpcNew.avgAdd(key2, count1, 100, cpcUpdateParams2);
+        addRet = tairCpcNew.avgAdd(key2, count1, 150, cpcUpdateParams2);
         assertEquals(150, addRet, 0.001);
 
-        addRet = tairCpcNew.avgAdd(key2, count2, 150, cpcUpdateParams2);
-        assertEquals(112.5, addRet, 0.001);
+        addRet = tairCpcNew.avgAdd(key2, count2, 100, cpcUpdateParams2);
+        assertEquals(116.666, addRet, 0.001);
 
         Thread.sleep(3000);
 
@@ -854,18 +855,18 @@ public class TairCpcTestNew extends TairCpcTestBase {
         CpcUpdateParams cpcUpdateParams3 = new CpcUpdateParams();
         cpcUpdateParams3.px(2000);
 
-        addRet = tairCpcNew.avgAdd(key3, count1, 100, cpcUpdateParams3);
+        addRet = tairCpcNew.avgAdd(key3, count1, 150, cpcUpdateParams3);
         assertEquals(150, addRet, 0.001);
 
-        addRet = tairCpcNew.avgAdd(key3, count2, 150, cpcUpdateParams3);
-        assertEquals(112.5, addRet, 0.001);
+        addRet = tairCpcNew.avgAdd(key3, count2, 100, cpcUpdateParams3);
+        assertEquals(116.666, addRet, 0.001);
 
         Thread.sleep(3000);
 
         getRet = tairCpcNew.avgGet(key3);
         assertEquals(0.00, getRet, 0.001);
 
-        Double setRet = tairCpcNew.avgSet(key, count1, 100);
+        Double setRet = tairCpcNew.avgSet(key, count1, 150);
         assertEquals(150, setRet, 0.001);
 
 
@@ -873,16 +874,16 @@ public class TairCpcTestNew extends TairCpcTestBase {
         assertEquals(150, addRet, 0.001);
 
         addRet = tairCpcNew.avgAdd(bkey, count2, 100);
-        assertEquals(112.5, addRet, 0.001);
+        assertEquals(116.666, addRet, 0.001);
 
         getRet = tairCpcNew.avgGet(bkey);
-        assertEquals(112.5, getRet, 0.001);
+        assertEquals(116.666, getRet, 0.001);
 
-        addRet = tairCpcNew.avgAdd(bkey2, count1, 100, cpcUpdateParams2);
+        addRet = tairCpcNew.avgAdd(bkey2, count1, 150, cpcUpdateParams2);
         assertEquals(150, addRet, 0.001);
 
-        addRet = tairCpcNew.avgAdd(bkey2, count2, 150, cpcUpdateParams2);
-        assertEquals(112.5, addRet, 0.001);
+        addRet = tairCpcNew.avgAdd(bkey2, count2, 100, cpcUpdateParams2);
+        assertEquals(116.666, addRet, 0.001);
     }
 
     @Test
@@ -1026,7 +1027,6 @@ public class TairCpcTestNew extends TairCpcTestBase {
         assertEquals(94.2809041, getRet, 0.001);
     }
 
-
     @Test
     public void sketchesTest() throws Exception {
 
@@ -1050,13 +1050,11 @@ public class TairCpcTestNew extends TairCpcTestBase {
         assertEquals(100.00, getRet, 0.001);
 
         Object sketGetRet = tairCpcNew.sketchesGet(key, timestamp);
-        String getValueStr = new String((byte[]) sketGetRet);
-        Double value= Double.parseDouble(getValueStr);
+        Double value= (Double) sketGetRet;
         assertEquals(200.00, value, 0.001);
 
         Object sketMergeRet = tairCpcNew.sketchesGetRangeMerge(key, timestamp-winsize, timestamp);
-        getValueStr = new String((byte[]) sketMergeRet);
-        value= Double.parseDouble(getValueStr);
+        value= (Double) sketMergeRet;
         assertEquals(200.00, value, 0.001);
 
 //        List<Object> sketRangeRet = tairCpcNew.sketchesGetRange(key, timestamp-winsize, timestamp);
@@ -1098,8 +1096,8 @@ public class TairCpcTestNew extends TairCpcTestBase {
         List<Double> rangeRet = tairCpcNew.sketchesGetRange(key2, timestamp-winsize, timestamp);
         assertEquals(2, rangeRet.get(0), 0.001);
 
-        rangeRet = tairCpcNew.sketchesGetRange(key3, timestamp-winsize, timestamp);
-        assertEquals(2, rangeRet.get(0), 0.001);
+//        rangeRet = tairCpcNew.sketchesGetRange(key3, timestamp-winsize, timestamp);
+//        assertEquals(2, rangeRet.get(0), 0.001);
 
 //        List<Object> rangeRet = tairCpcNew.sketchesRange(key, timestamp-winsize, timestamp);
 //        assertEquals(1, rangeRet.get(0));

@@ -5,7 +5,7 @@ import redis.clients.jedis.util.SafeEncoder;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class TFTAddDocParams {
+public class TFTAddSugParams {
     public byte[][] getByteParams(String key, Map<String, String> docs) {
         ArrayList<byte[]> byteParams = new ArrayList<byte[]>();
 

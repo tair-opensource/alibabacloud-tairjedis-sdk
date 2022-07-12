@@ -221,7 +221,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // nx_px sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -239,7 +239,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_ex sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -258,7 +258,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_pxat sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -275,7 +275,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // nx_px sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -293,7 +293,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_ex sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -312,7 +312,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_pxat sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -387,7 +387,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // nx_px sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -405,7 +405,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_ex sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -424,7 +424,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_pxat sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(key1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -441,7 +441,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(1, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // nx_px sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -459,7 +459,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_ex sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
@@ -478,7 +478,7 @@ public class TairStringPipelineTest extends TairStringTestBase {
         assertEquals(2, ExgetResult.class.cast(objs.get(i++)).getVersion());
 
         // xx_pxat sleep
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         tairStringPipeline.exget(bkey1);
         objs = tairStringPipeline.syncAndReturnAll();
         i = 0;
