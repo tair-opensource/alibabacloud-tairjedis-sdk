@@ -306,6 +306,20 @@ public enum ModuleCommand implements ProtocolCommand {
     TRCONTAINS("tr.contains"),
     TRRANK("tr.rank"),
 
+    // TairVector
+    TVSCREATEINDEX("tvs.createindex"),
+    TVSGETINDEX("tvs.getindex"),
+    TVSDELINDEX("tvs.delindex"),
+    TVSSCANINDEX("tvs.scanindex"),
+    TVSHSET("tvs.hset"),
+    TVSHGETALL("tvs.hgetall"),
+    TVSHMGET("tvs.hmget"),
+    TVSDEL("tvs.del"),
+    TVSHDEL("tvs.hdel"),
+    TVSSCAN("tvs.scan"),
+    TVSKNNSEARCH("tvs.knnsearch"),
+    TVSMKNNSEARCH("tvs.mknnsearch"),
+
     // Aliyun Commands
     IINFO("iinfo"),
     RIINFO("riinfo"),
