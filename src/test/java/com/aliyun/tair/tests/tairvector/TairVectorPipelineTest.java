@@ -23,10 +23,10 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
 
     final String index = "default_index_pipeline";
     final int dims = 8;
-    final IndexAlgorithm algorithm = IndexAlgorithm.FLAT;
+    final IndexAlgorithm algorithm = IndexAlgorithm.HNSW;
     final DistanceMethod method = DistanceMethod.IP;
     final long dbid = 2;
-
+    List<String> index_params = Arrays.asList("max_elements", "100");
     private void tvs_del_index(String index) {
         tairVectorPipeline.tvsdelindex(index);
         tairVectorPipeline.syncAndReturnAll();
@@ -35,13 +35,15 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         tairVectorPipeline.tvsgetindex(index);
         List<Object> objs = tairVectorPipeline.syncAndReturnAll();
         if (((Map)objs.get(0)).isEmpty()) {
-            tvs_create_index(dims, algorithm, method);
+            tvs_create_index(dims, index, algorithm, method);
         }
     }
-    private void tvs_create_index(int dims, IndexAlgorithm algorithm, DistanceMethod method) {
+    private void tvs_create_index(int dims, String index, IndexAlgorithm algorithm, DistanceMethod method) {
         tairVectorPipeline.tvsdelindex(index);
-        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method);
-        tairVectorPipeline.syncAndReturnAll();
+        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method, index_params.toArray(new String[0]));
+        List<Object> result = tairVectorPipeline.syncAndReturnAll();
+        assertEquals(result.size(),  2);
+        assertEquals(result.get(1).toString(),  "OK");
     }
 
     private void tvs_hset(final String entityid, final String vector, final String param_k, final String param_v) {
@@ -62,8 +64,8 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
     @Test
     public void tvs_create_index_test() {
         tvs_del_index(index);
-        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method);
-        tairVectorPipeline.tvscreateindex(SafeEncoder.encode(index), dims, algorithm, method);
+        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method, index_params.toArray(new String[0]));
+        tairVectorPipeline.tvscreateindex(SafeEncoder.encode(index), dims, algorithm, method, SafeEncoder.encodeMany(index_params.toArray(new String[0])));
         List<Object> objs = tairVectorPipeline.syncAndReturnAll();
         assertEquals("OK", objs.get(0));
         assertNotEquals("OK", objs.get(1));
@@ -72,7 +74,7 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_get_index() {
-        tvs_create_index(dims, algorithm, method);
+        tvs_create_index(dims, index, algorithm, method);
 
         tairVectorPipeline.tvsgetindex(index);
         tairVectorPipeline.tvsgetindex(SafeEncoder.encode(index));
@@ -94,7 +96,7 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_del_index() {
-        tvs_create_index(dims, algorithm, method);
+        tvs_create_index(dims, index, algorithm, method);
 
         tairVectorPipeline.tvsdelindex(index);
         List<Object> objs = tairVectorPipeline.syncAndReturnAll();
@@ -105,7 +107,7 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_scan_index() {
-        tvs_create_index(dims, algorithm, method);
+        tvs_create_index(dims, index, algorithm, method);
 
         HscanParams hscanParams = new HscanParams();
         hscanParams.count(5);
@@ -120,7 +122,7 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_hset() {
-        tvs_create_index(dims, algorithm, method);
+        tvs_create_index(dims, index, algorithm, method);
         tvs_del_entity("first_entity");
         tvs_del_entity("second_entity");
         tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
@@ -282,6 +284,31 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
     }
 
     @Test
+    public  void tvs_knnsearch_filter() {
+        tvs_check_index(dims, index, algorithm, method);
+
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+
+        tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity"), SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"), SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+
+        long topn = 10L;
+        tairVectorPipeline.tvsknnsearchfilter(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name == \"sammy\"");
+        tairVectorPipeline.tvsknnsearchfilter(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"), SafeEncoder.encode("name == \"sammy\""));
+
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+
+        List<Object> objs = tairVectorPipeline.syncAndReturnAll();
+
+        VectorBuilderFactory.Knn<String> result_string = (VectorBuilderFactory.Knn<String>)objs.get(4);
+        assertEquals(1, result_string.getKnnResults().size());
+        VectorBuilderFactory.Knn<byte[]> entity_byte = (VectorBuilderFactory.Knn<byte[]>)objs.get(5);
+        assertEquals(1, entity_byte.getKnnResults().size());
+    }
+
+    @Test
     public  void tvs_mknnsearch() {
         tvs_check_index(dims, index, algorithm, method);
 
@@ -293,9 +320,8 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
 
         long topn = 10L;
         List<String> vectors = Arrays.asList("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
-        String pattern = "";
-        tairVectorPipeline.tvsmknnsearch(index, topn, vectors, pattern);
-        tairVectorPipeline.tvsmknnsearch(SafeEncoder.encode(index), topn, vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), SafeEncoder.encode(pattern));
+        tairVectorPipeline.tvsmknnsearch(index, topn, vectors);
+        tairVectorPipeline.tvsmknnsearch(SafeEncoder.encode(index), topn, vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()));
 
         tvs_del_entity("first_entity");
         tvs_del_entity("second_entity");
@@ -308,5 +334,40 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte= (Collection<VectorBuilderFactory.Knn<byte[]>>)objs.get(5);
         assertEquals(2, entity_byte.size());
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
+    }
+
+
+    @Test
+    public  void tvs_mknnsearch_filter() {
+        tvs_check_index(dims, index, algorithm, method);
+
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+        tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity"), SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"), SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+
+        long topn = 10L;
+        List<String> vectors = Arrays.asList("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
+        String pattern = "name == \"no-sammy\"";
+        tairVectorPipeline.tvsmknnsearchfilter(index, topn, vectors, pattern);
+        tairVectorPipeline.tvsmknnsearchfilter(SafeEncoder.encode(index), topn, vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), SafeEncoder.encode(pattern));
+
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+        List<Object> objs = tairVectorPipeline.syncAndReturnAll();
+
+        Collection<VectorBuilderFactory.Knn<String>> result_string = (Collection<VectorBuilderFactory.Knn<String>>)objs.get(4);
+        assertEquals(2, result_string.size());
+        result_string.forEach(result -> {
+            assertEquals(0, result.getKnnResults().size());
+        });
+        result_string.forEach(one -> System.out.printf("string: %s\n", one.toString()));
+
+        Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte= (Collection<VectorBuilderFactory.Knn<byte[]>>)objs.get(5);
+        assertEquals(2, entity_byte.size());
+        entity_byte.forEach(result -> {
+            assertEquals(0, result.getKnnResults().size());
+        });
+        entity_byte.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
     }
 }

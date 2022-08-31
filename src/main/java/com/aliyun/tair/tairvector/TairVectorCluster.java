@@ -35,6 +35,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.CREATEINDEX  TVS.CREATEINDEX index_name dims algorithm distance_method  [(attribute_key attribute_value) ... ]
+     * <p>
      * create tair-vector index
      *
      * @param index  index name
@@ -55,6 +56,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.GETINDEX TVS.GETINDEX index_name
+     * <p>
      * get index schema info, including: index_name, algorithm, distance_method, data_count, ...
      *
      * @param index index name
@@ -71,6 +73,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.DELINDEX TVS.DELINDEX index_name
+     * <p>
      * delete index
      *
      * @param index index name
@@ -88,6 +91,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.SCANINDEX TVS.SCANINDEX index_name
+     * <p>
      * scan index
      *
      * @param cursor start offset
@@ -107,6 +111,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.HSET TVS.HSET index entityid vector [(attribute_key attribute_value) ...]
+     * <p>
      * insert entity into tair-vector module
      *
      * @param index index name
@@ -129,6 +134,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.HGETALL TVS.HGETALL index entityid
+     * <p>
      * get entity from tair-vector module
      *
      * @param index index name
@@ -147,6 +153,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.HMGETALL TVS.HMGETALL index entityid attribute_key [attribute_key ...]
+     * <p>
      * get entity attrs from tair-vector module
      *
      * @param index index name
@@ -167,6 +174,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.DEL TVS.DEL index entityid
+     * <p>
      * delete entity from tair-vector module
      *
      * @param index index name
@@ -186,6 +194,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.HDEL TVS.HDEL index entityid attribute_key [attribute_key ...]
+     * <p>
      * delete entity attrs from tair-vector module
      *
      * @param index index name
@@ -207,6 +216,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.SCAN TVS.SCAN index_name cursor [MATCH pattern] [COUNT count]
+     * <p>
      * scan entity from tair-vector module
      *
      * @param index index name
@@ -236,6 +246,7 @@ public class TairVectorCluster {
 
     /**
      * TVS.KNNSEARCH TVS.KNNSEARCH index_name topn vector
+     * <p>
      * query entity by vector
      *
      * @param index index name
@@ -245,14 +256,47 @@ public class TairVectorCluster {
      * @return  VectorBuilderFactory.Knn<>
      */
     public VectorBuilderFactory.Knn<String> tvsknnsearch(final String index, Long topn, final String vector) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSKNNSEARCH, SafeEncoder.encode(index), toByteArray(topn), SafeEncoder.encode(vector));
-        return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+      return tvsknnsearchfilter(index, topn, vector, "");
     }
     public VectorBuilderFactory.Knn<byte[]> tvsknnsearch(byte[] index, Long topn, byte[] vector) {
-        Object obj = jc.sendCommand(index, ModuleCommand.TVSKNNSEARCH, index, toByteArray(topn), vector);
+        return tvsknnsearchfilter(index, topn, vector, SafeEncoder.encode(""));
+    }
+
+    /**
+     * TVS.KNNSEARCH TVS.KNNSEARCH index_name topn vector pattern
+     * <p>
+     * query entity by vector and scalar pattern
+     *
+     * @param index index name
+     * @param topn  topn result
+     * @param vector query vector
+     * @param pattern support +, -，>, <, !=， ,()，&&, ||, !, ==
+     *
+     * @return  VectorBuilderFactory.Knn<>
+     */
+    public VectorBuilderFactory.Knn<String> tvsknnsearchfilter(final String index, Long topn, final String vector, final String pattern) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSKNNSEARCH, SafeEncoder.encode(index), toByteArray(topn), SafeEncoder.encode(vector), SafeEncoder.encode(pattern));
+        return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+    }
+    public VectorBuilderFactory.Knn<byte[]> tvsknnsearchfilter(byte[] index, Long topn, byte[] vector, byte[] pattern) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TVSKNNSEARCH, index, toByteArray(topn), vector, pattern);
         return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
     }
 
+    /**
+     * TVS.MKNNSEARCH TVS.MKNNSEARCH index_name topn vector [vector...]
+     *
+     * @param index index name
+     * @param topn topn for each vector
+     * @param vectors vector list
+     * @return Collection<>
+     */
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmknnsearch(final String index, Long topn, Collection<String> vectors) {
+       return tvsmknnsearchfilter(index, topn, vectors, "");
+    }
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearch(byte[] index, Long topn, Collection<byte[]> vectors) {
+        return tvsmknnsearchfilter(index, topn, vectors, SafeEncoder.encode(""));
+    }
 
     /**
      * TVS.MKNNSEARCH TVS.MKNNSEARCH index_name topn vector [vector...] pattern
@@ -260,10 +304,10 @@ public class TairVectorCluster {
      * @param index index name
      * @param topn topn for each vector
      * @param vectors vector list
-     * @param pattern filter pattern
+     * @param pattern support +, -，>, <, !=， ,()，&&, ||, !, ==
      * @return Collection<>
      */
-    public Collection<VectorBuilderFactory.Knn<String>> tvsmknnsearch(final String index, Long topn, Collection<String> vectors, final String pattern) {
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmknnsearchfilter(final String index, Long topn, Collection<String> vectors, final String pattern) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(SafeEncoder.encode(index));
         args.add(toByteArray(topn));
@@ -273,7 +317,7 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
         return VectorBuilderFactory.STRING_KNN_BATCH_RESULT.build(obj);
     }
-    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearch(byte[] index, Long topn, Collection<byte[]> vectors, byte[] pattern) {
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearchfilter(byte[] index, Long topn, Collection<byte[]> vectors, byte[] pattern) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(index);
         args.add(toByteArray(topn));
