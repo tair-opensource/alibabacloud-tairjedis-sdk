@@ -62,6 +62,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         tairSearchPipeline.tftdeldoc("tftkey", "3");
         tairSearchPipeline.tftgetdoc("tftkey", "3");
         tairSearchPipeline.tftgetindexmappings("tftkey");
+        tairSearchPipeline.tftmsearch("{\"query\":{\"match\":{\"f1\":\"3\"}}}", "tftkey"); 
 
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
 
@@ -76,6 +77,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals(null, objs.get(6));
 
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", objs.get(7));
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.287682,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aux_info\":{\"index_crc64\":52600736426816810}}", objs.get(8));
     }
 
     @Test

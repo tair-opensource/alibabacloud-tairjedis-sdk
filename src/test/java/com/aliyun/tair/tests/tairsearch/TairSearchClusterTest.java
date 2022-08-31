@@ -309,6 +309,19 @@ public class TairSearchClusterTest extends TairSearchTestBase {
     }
 
     @Test
+    public void tftmsearchtest() throws Exception {
+        jedisCluster.del("{tftkey}1");
+        jedisCluster.del("{tftkey}2");
+        tairSearchCluster.tftmappingindex("{tftkey}1", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
+        tairSearchCluster.tftadddoc("{tftkey}1", "{\"f0\":1234}", "1");
+        tairSearchCluster.tftmappingindex("{tftkey}2", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
+        tairSearchCluster.tftadddoc("{tftkey}2", "{\"f0\":1234}", "1");
+
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"{tftkey}1\",\"_score\":1.0,\"_source\":{\"f0\":1234}},{\"_id\":\"1\",\"_index\":\"{tftkey}2\",\"_score\":1.0,\"_source\":{\"f0\":1234}}],\"max_score\":1.0,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aux_info\":{\"index_crc64\":10084399559244916810}}",
+               tairSearchCluster.tftmsearch("{\"query\":{\"term\":{\"f0\":1234}}}", "{tftkey}1", "{tftkey}2"));
+    }
+
+    @Test
     public void tftmaddteststring() {
         jedisCluster.del("tftkey");
         tairSearchCluster.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");

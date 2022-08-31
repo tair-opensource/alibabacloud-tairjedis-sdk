@@ -5,6 +5,7 @@ import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
 import com.aliyun.tair.tairsearch.params.TFTAddSugParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
 import com.aliyun.tair.tairsearch.params.TFTGetSugParams;
+import com.aliyun.tair.tairsearch.params.TFTMSearchParams;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
@@ -190,6 +191,18 @@ public class TairSearchPipeline extends Pipeline {
             getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, request);
         }
 
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftmsearch(String request, String... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        getClient("").sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftmsearch(byte[] request, byte[]... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        getClient("").sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
         return getResponse(BuilderFactory.STRING);
     }
 
