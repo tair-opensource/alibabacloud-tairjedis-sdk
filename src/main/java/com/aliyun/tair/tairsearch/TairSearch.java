@@ -323,6 +323,26 @@ public class TairSearch {
     }
 
     /**
+     * Full text search for multiple Indexes.
+     *
+     * @param request Search expression, for detailed grammar, please refer to the official document
+     * @param indexes Multiple Index names 
+     * @return Success: Query result in json format; Fail: error
+     */
+    public String tftmsearch(String request, String... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftmsearch(byte[] request, byte[]... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+
+    /**
      * Checks if the specified document exists in the index.
      *
      * @param index the index name

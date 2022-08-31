@@ -264,6 +264,7 @@ public enum ModuleCommand implements ProtocolCommand {
     TFTGETINDEX("tft.getindex"),
     TFTGETDOC("tft.getdoc"),
     TFTSEARCH("tft.search"),
+    TFTMSEARCH("tft.msearch"),
     TFTEXISTS("tft.exists"),
     TFTSCANDOCID("tft.scandocid"),
     TFTDOCNUM("tft.docnum"),

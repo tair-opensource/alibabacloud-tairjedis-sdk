@@ -196,6 +196,18 @@ public class TairSearchCluster {
         return BuilderFactory.STRING.build(obj);
     }
 
+    public String tftmsearch(String request, String... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        Object obj = jc.sendCommand(SafeEncoder.encode(indexes[0]), ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String tftmsearch(byte[] request, byte[]... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        Object obj = jc.sendCommand(indexes[0], ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+        return BuilderFactory.STRING.build(obj);
+    }
+
     public Long tftexists(String index, String docId) {
         return tftexists(SafeEncoder.encode(index), SafeEncoder.encode(docId));
     }
