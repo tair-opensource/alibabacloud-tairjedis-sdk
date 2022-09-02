@@ -32,18 +32,18 @@ public class TairZsetExample {
         try {
             return tairZset.exzadd(key, score, field);
         } catch (Exception e) {
-            e.printStackTrace();
+            // logger.error(e);
+            return 0;
         }
-        return 0;
     }
 
     public static long exzrank(String key, String field) {
         try {
             return tairZset.exzrank(key, field);
         } catch (Exception e) {
-            e.printStackTrace();
+            // logger.error(e);
+            return -1;
         }
-        return -1;
     }
 
     public static long del(String key) {
