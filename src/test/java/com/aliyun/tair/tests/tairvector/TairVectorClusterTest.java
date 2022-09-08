@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class TairVectorClusterTest extends TairVectorTestBase {
     final String index = "default_index_cluster";
     final int dims = 8;
-    final IndexAlgorithm algorithm = IndexAlgorithm.FLAT;
+    final IndexAlgorithm algorithm = IndexAlgorithm.HNSW;
     final DistanceMethod method = DistanceMethod.IP;
     final String attr = "name";
 
@@ -208,6 +208,22 @@ public class TairVectorClusterTest extends TairVectorTestBase {
     }
 
     @Test
+    public  void tvs_knnsearch_filter() {
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+
+        tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity"), SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"), SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+
+        long topn = 10L;
+        VectorBuilderFactory.Knn<String> result_string =  tairVectorCluster.tvsknnsearchfilter(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name == \"sammy\"");
+        assertEquals(2, result_string.getKnnResults().size());
+
+        VectorBuilderFactory.Knn<byte[]> entity_byte=  tairVectorCluster.tvsknnsearchfilter(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"), SafeEncoder.encode("name == \"sammy\""));
+        assertEquals(2, entity_byte.getKnnResults().size());
+    }
+
+    @Test
     public  void tvs_mknnsearch() {
         tvs_del_entity("first_entity");
         tvs_del_entity("second_entity");
@@ -217,13 +233,33 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long topn = 10L;
         List<String> vectors = Arrays.asList("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
-        String pattern = "";
-        Collection<VectorBuilderFactory.Knn<String>> result_string =  tairVectorCluster.tvsmknnsearch(index, topn, vectors, pattern);
+        Collection<VectorBuilderFactory.Knn<String>> result_string =  tairVectorCluster.tvsmknnsearch(index, topn, vectors);
         assertEquals(2, result_string.size());
         result_string.forEach(one -> System.out.printf("string: %s\n", one.toString()));
 
 
-        Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte=  tairVectorCluster.tvsmknnsearch(SafeEncoder.encode(index), topn, vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), SafeEncoder.encode(pattern));
+        Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte=  tairVectorCluster.tvsmknnsearch(SafeEncoder.encode(index), topn, vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()));
+        assertEquals(2, entity_byte.size());
+        result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
+    }
+
+    @Test
+    public  void tvs_mknnsearch_filter() {
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+
+        tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity"), SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"), SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+
+        long topn = 10L;
+        List<String> vectors = Arrays.asList("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
+        String pattern = "name == \"no-sammy\"";
+        Collection<VectorBuilderFactory.Knn<String>> result_string =  tairVectorCluster.tvsmknnsearchfilter(index, topn, vectors, pattern);
+        assertEquals(2, result_string.size());
+        result_string.forEach(one -> System.out.printf("string: %s\n", one.toString()));
+
+
+        Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte=  tairVectorCluster.tvsmknnsearchfilter(SafeEncoder.encode(index), topn, vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), SafeEncoder.encode(pattern));
         assertEquals(2, entity_byte.size());
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
     }
