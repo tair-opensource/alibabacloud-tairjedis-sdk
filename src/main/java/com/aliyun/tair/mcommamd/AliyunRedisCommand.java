@@ -9,21 +9,35 @@ import com.aliyun.tair.mcommamd.results.SlotAndNodeIndex;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisMonitor;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Protocol.Command;
 import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
-
 public class AliyunRedisCommand {
     private Jedis jedis;
+    private JedisPool jedisPool;
 
     public AliyunRedisCommand(Jedis jedis) {
         this.jedis = jedis;
     }
 
+    public AliyunRedisCommand(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
     private Jedis getJedis() {
+        if (jedisPool != null) {
+            return jedisPool.getResource();
+        }
         return jedis;
+    }
+
+    private void releaseJedis(Jedis jedis) {
+        if (jedisPool != null) {
+            jedis.close();
+        }
     }
 
     /**
@@ -35,13 +49,23 @@ public class AliyunRedisCommand {
      * @return SlotAndNodeIndex
      */
     public SlotAndNodeIndex infoKey(String key) {
-        Object obj = getJedis().sendCommand(Command.INFO, "KEY", key);
-        return AliyunRedisCommandBuilderFactory.SlotAndNodeIndexResult.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(Command.INFO, "KEY", key);
+            return AliyunRedisCommandBuilderFactory.SlotAndNodeIndexResult.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public SlotAndNodeIndex infoKey(byte[] key) {
-        Object obj = getJedis().sendCommand(Command.INFO, "KEY".getBytes(), key);
-        return AliyunRedisCommandBuilderFactory.SlotAndNodeIndexResult.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(Command.INFO, "KEY".getBytes(), key);
+            return AliyunRedisCommandBuilderFactory.SlotAndNodeIndexResult.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -50,13 +74,23 @@ public class AliyunRedisCommand {
      * @return the info content.
      */
     public String iInfo(int index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.IINFO, String.valueOf(index));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.IINFO, String.valueOf(index));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String iInfo(int index, String section) {
-        Object obj = getJedis().sendCommand(ModuleCommand.IINFO, String.valueOf(index), section);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.IINFO, String.valueOf(index), section);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -69,13 +103,23 @@ public class AliyunRedisCommand {
      * @return the info content.
      */
     public String rIInfo(int index, int roIndex) {
-        Object obj = getJedis().sendCommand(ModuleCommand.RIINFO, String.valueOf(index), String.valueOf(roIndex));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.RIINFO, String.valueOf(index), String.valueOf(roIndex));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String rIInfo(int index, int roIndex, String section) {
-        Object obj = getJedis().sendCommand(ModuleCommand.RIINFO, String.valueOf(index), String.valueOf(roIndex), section);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.RIINFO, String.valueOf(index), String.valueOf(roIndex), section);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -96,15 +140,20 @@ public class AliyunRedisCommand {
         args.add(cursor.getBytes());
         args.addAll(params.getParams());
 
-        Object obj = getJedis().sendCommand(ModuleCommand.ISCAN, args.toArray(new byte[args.size()][]));
-        List<Object> result = BuilderFactory.RAW_OBJECT_LIST.build(obj);
-        String newcursor = new String((byte[]) result.get(0));
-        List<String> results = new ArrayList<>();
-        List<byte[]> rawResults = (List<byte[]>) result.get(1);
-        for (byte[] bs : rawResults) {
-            results.add(SafeEncoder.encode(bs));
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.ISCAN, args.toArray(new byte[args.size()][]));
+            List<Object> result = BuilderFactory.RAW_OBJECT_LIST.build(obj);
+            String newcursor = new String((byte[]) result.get(0));
+            List<String> results = new ArrayList<>();
+            List<byte[]> rawResults = (List<byte[]>) result.get(1);
+            for (byte[] bs : rawResults) {
+                results.add(SafeEncoder.encode(bs));
+            }
+            return new ScanResult<>(newcursor, results);
+        } finally {
+            releaseJedis(jedis);
         }
-        return new ScanResult<>(newcursor, results);
     }
 
     public ScanResult<byte[]> iScan(int index, byte[] cursor) {
@@ -117,11 +166,16 @@ public class AliyunRedisCommand {
         args.add(cursor);
         args.addAll(params.getParams());
 
-        Object obj = getJedis().sendCommand(ModuleCommand.ISCAN, args.toArray(new byte[args.size()][]));
-        List<Object> result = BuilderFactory.RAW_OBJECT_LIST.build(obj);
-        byte[] newcursor = (byte[]) result.get(0);
-        List<byte[]> rawResults = (List<byte[]>) result.get(1);
-        return new ScanResult<>(newcursor, rawResults);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.ISCAN, args.toArray(new byte[args.size()][]));
+            List<Object> result = BuilderFactory.RAW_OBJECT_LIST.build(obj);
+            byte[] newcursor = (byte[]) result.get(0);
+            List<byte[]> rawResults = (List<byte[]>) result.get(1);
+            return new ScanResult<>(newcursor, rawResults);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -130,20 +184,26 @@ public class AliyunRedisCommand {
      * @param jedisMonitor process result from redis.
      */
     public void iMonitor(int index, JedisMonitor jedisMonitor) {
+        Jedis jedis = getJedis();
         try {
-            getJedis().sendCommand(ModuleCommand.IMONITOR, String.valueOf(index));
+            jedis.sendCommand(ModuleCommand.IMONITOR, String.valueOf(index));
             jedisMonitor.proceed(getJedis().getClient());
         } catch (Exception e) {
             throw e;
+        } finally {
+            releaseJedis(jedis);
         }
     }
 
     public void rIMonitor(int index, int roIndex, JedisMonitor jedisMonitor) {
+        Jedis jedis = getJedis();
         try {
-            getJedis().sendCommand(ModuleCommand.RIMONITOR, String.valueOf(index), String.valueOf(roIndex));
+            jedis.sendCommand(ModuleCommand.RIMONITOR, String.valueOf(index), String.valueOf(roIndex));
             jedisMonitor.proceed(getJedis().getClient());
         } catch (Exception e) {
             throw e;
+        } finally {
+            releaseJedis(jedis);
         }
     }
 }
