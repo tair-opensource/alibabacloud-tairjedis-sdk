@@ -14,6 +14,7 @@ public class TairHashExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairHash tairHash = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -24,12 +25,12 @@ public class TairHashExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairHash = new TairHash(jedisPool);
     }
 
     public static long exhset(String key, String field, String value) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairHash hash = new TairHash(jedis);
-            return hash.exhset(key, field, value);
+        try {
+            return tairHash.exhset(key, field, value);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -37,9 +38,8 @@ public class TairHashExample {
     }
 
     public static String exhget(String key, String field) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairHash hash = new TairHash(jedis);
-            return hash.exhget(key, field);
+        try {
+            return tairHash.exhget(key, field);
         } catch (Exception e) {
             e.printStackTrace();
         }

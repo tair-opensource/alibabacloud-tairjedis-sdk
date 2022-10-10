@@ -16,6 +16,7 @@ public class TairGisExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairGis tairGis = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -26,12 +27,12 @@ public class TairGisExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairGis = new TairGis(jedisPool);
     }
 
     public static long gisadd(String key, String polygonName, String polygonWkt) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairGis gis = new TairGis(jedis);
-            return gis.gisadd(key, polygonName, polygonWkt);
+        try {
+            return tairGis.gisadd(key, polygonName, polygonWkt);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,9 +40,8 @@ public class TairGisExample {
     }
 
     public static Map<String, String> giscontains(String key, String searchWkt) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairGis gis = new TairGis(jedis);
-            return gis.giscontains(key, searchWkt);
+        try {
+            return tairGis.giscontains(key, searchWkt);
         } catch (Exception e) {
             e.printStackTrace();
         }

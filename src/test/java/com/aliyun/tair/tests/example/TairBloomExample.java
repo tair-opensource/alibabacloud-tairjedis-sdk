@@ -14,6 +14,7 @@ public class TairBloomExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairBloom tairBloom = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -24,12 +25,12 @@ public class TairBloomExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairBloom = new TairBloom(jedisPool);
     }
 
     public static boolean bfadd(String key, String item) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairBloom bloom = new TairBloom(jedis);
-            return bloom.bfadd(key, item);
+        try {
+            return tairBloom.bfadd(key, item);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -37,9 +38,8 @@ public class TairBloomExample {
     }
 
     public static boolean bfexists(String key, String item) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairBloom bloom = new TairBloom(jedis);
-            return bloom.bfexists(key, item);
+        try {
+            return tairBloom.bfexists(key, item);
         } catch (Exception e) {
             e.printStackTrace();
         }

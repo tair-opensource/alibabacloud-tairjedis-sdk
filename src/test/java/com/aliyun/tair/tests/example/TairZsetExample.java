@@ -14,6 +14,7 @@ public class TairZsetExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairZset tairZset = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -24,12 +25,12 @@ public class TairZsetExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairZset = new TairZset(jedisPool);
     }
 
     public static long exzadd(String key, String score, String field) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairZset tzset = new TairZset(jedis);
-            return tzset.exzadd(key, score, field);
+        try {
+            return tairZset.exzadd(key, score, field);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -37,9 +38,8 @@ public class TairZsetExample {
     }
 
     public static long exzrank(String key, String field) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairZset tzset = new TairZset(jedis);
-            return tzset.exzrank(key, field);
+        try {
+            return tairZset.exzrank(key, field);
         } catch (Exception e) {
             e.printStackTrace();
         }

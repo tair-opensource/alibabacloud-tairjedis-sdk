@@ -14,6 +14,7 @@ public class TairCpcExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairCpc tairCpc = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -24,12 +25,12 @@ public class TairCpcExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairCpc = new TairCpc(jedisPool);
     }
 
     public static boolean cpcUpdate(String key, String field) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairCpc cpc = new TairCpc(jedis);
-            String result = cpc.cpcUpdate(key, field);
+        try {
+            String result = tairCpc.cpcUpdate(key, field);
             if ("OK".equals(result)) {
                 return true;
             }
@@ -40,9 +41,8 @@ public class TairCpcExample {
     }
 
     public static double cpcEstimate(String key) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairCpc cpc = new TairCpc(jedis);
-            return cpc.cpcEstimate(key);
+        try {
+            return tairCpc.cpcEstimate(key);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -18,6 +18,7 @@ public class DistributeLock {
     private static final int PORT = 6379;
     private static final String PASSWORD = "xxx";
     private static JedisPool jedisPool = null;
+    private static TairString tairString = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -28,6 +29,7 @@ public class DistributeLock {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairString = new TairString(jedisPool);
     }
 
     public static boolean tryGetDistributedLock(String lockKey, String requestId, int expireTime) {
@@ -44,7 +46,6 @@ public class DistributeLock {
 
     public static boolean releaseDistributedLock(String lockKey, String requestId) {
         try (Jedis jedis = jedisPool.getResource()) {
-            TairString tairString = new TairString(jedis);
             Long ret = tairString.cad(lockKey, requestId);
             if (1 == ret) {
                 return true;
