@@ -22,7 +22,7 @@ public class DistributeLock {
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
-        // 参数设置最佳实践可参考：https://help.aliyun.com/document_detail/98726.html
+        // JedisPool config: https://help.aliyun.com/document_detail/98726.html
         config.setMaxTotal(32);
         config.setMaxIdle(32);
         config.setMaxIdle(20);
@@ -45,7 +45,7 @@ public class DistributeLock {
     }
 
     public static boolean releaseDistributedLock(String lockKey, String requestId) {
-        try (Jedis jedis = jedisPool.getResource()) {
+        try {
             Long ret = tairString.cad(lockKey, requestId);
             if (1 == ret) {
                 return true;
@@ -69,7 +69,6 @@ public class DistributeLock {
                 public void run() {
                     String requsetId = UUID.randomUUID().toString();
                     for (int j = 0; j < 10; j++) {
-                        // 要是没拿到锁就去尝试
                         for (;;) {
                             if (tryGetDistributedLock(LOCK_KEY, requsetId, EXPIRE_TIME)) {
                                 System.out.println("I am thread: " + Thread.currentThread().getName() + ", lock success, total: " + total);

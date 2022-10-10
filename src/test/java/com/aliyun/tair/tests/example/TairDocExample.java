@@ -18,7 +18,7 @@ public class TairDocExample {
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
-        // 参数设置最佳实践可参考：https://help.aliyun.com/document_detail/98726.html
+        // JedisPool config: https://help.aliyun.com/document_detail/98726.html
         config.setMaxTotal(32);
         config.setMaxIdle(32);
         config.setMaxIdle(20);
