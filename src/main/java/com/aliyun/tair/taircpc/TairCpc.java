@@ -703,7 +703,7 @@ public class TairCpc {
         }
         Jedis jedis = getJedis();
         try {
-            Object obj = getJedis().sendCommand(ModuleCommand.CPCARRAYUPDATE2JUD, params.getByteParams(SafeEncoder.encode(key),
+            Object obj = jedis.sendCommand(ModuleCommand.CPCARRAYUPDATE2JUD, params.getByteParams(SafeEncoder.encode(key),
                 toByteArray(timestamp), SafeEncoder.encode(item)));
             return CpcBuilderFactory.CPCUPDATE2JUD_RESULT.build(obj);
         } finally {
