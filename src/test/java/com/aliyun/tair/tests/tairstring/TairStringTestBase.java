@@ -14,7 +14,7 @@ public class TairStringTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairString = new TairString(jedis);
+        tairString = new TairString(jedisPool);
         tairStringPipeline = new TairStringPipeline();
         tairStringPipeline.setClient(jedis.getClient());
         tairStringCluster = new TairStringCluster(jedisCluster);
