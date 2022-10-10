@@ -14,6 +14,7 @@ import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -21,16 +22,28 @@ import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairVector {
     private Jedis jedis;
+    private JedisPool jedisPool;
 
     public TairVector(Jedis jedis) {
         this.jedis = jedis;
     }
 
+    public TairVector(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
     private Jedis getJedis() {
+        if (jedisPool != null) {
+            return jedisPool.getResource();
+        }
         return jedis;
     }
 
-    public void quit() { jedis.quit();}
+    private void releaseJedis(Jedis jedis) {
+        if (jedisPool != null) {
+            jedis.close();
+        }
+    }
 
     /**
      * TVS.CREATEINDEX  TVS.CREATEINDEX index_name dims algorithm distance_method  [(attribute_key attribute_value) ... ]
@@ -45,18 +58,27 @@ public class TairVector {
      *  for HNSW, args include:
      *      ef_construct     default 100
      *      M			     default 16
-     *      max_elements   default UINT_MAX
      *  for FLAT, args include:
-     *      max_elements   default UINT_MAX
      * @return Success: +OK; Fail: error
      */
     public String tvscreateindex(final String index, int dims, IndexAlgorithm algorithm, DistanceMethod method, final String... attrs) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(SafeEncoder.encode(index), toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), SafeEncoder.encodeMany(attrs)));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(SafeEncoder.encode(index), toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), SafeEncoder.encodeMany(attrs)));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+
     }
     public byte[] tvscreateindex(byte[] index, int dims, IndexAlgorithm algorithm, DistanceMethod method, final byte[]... params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(index, toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), params));
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(index, toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), params));
+            return BuilderFactory.BYTE_ARRAY.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -68,12 +90,23 @@ public class TairVector {
      * @return Success: string_map, Fail:  empty
      */
     public Map<String, String> tvsgetindex(final String index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSGETINDEX, SafeEncoder.encode(index));
-        return BuilderFactory.STRING_MAP.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSGETINDEX, SafeEncoder.encode(index));
+            return BuilderFactory.STRING_MAP.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public Map<byte[], byte[]> tvsgetindex(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSGETINDEX, index);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSGETINDEX, index);
+            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -85,14 +118,24 @@ public class TairVector {
      * @return Success: 1; Fail: 0
      */
     public Long tvsdelindex(final String index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSDELINDEX, SafeEncoder.encode(index));
-        return BuilderFactory.LONG.build(obj);
-    }
-    public Long tvsdelindex(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSDELINDEX, index);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSDELINDEX, SafeEncoder.encode(index));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
+    public Long tvsdelindex(byte[] index) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSDELINDEX, index);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
 
     /**
      * TVS.SCANINDEX TVS.SCANINDEX index_name
@@ -110,8 +153,13 @@ public class TairVector {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(toByteArray(cursor));
         args.addAll(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSSCANINDEX, args.toArray(new byte[args.size()][]));
-        return VectorBuilderFactory.SCAN_CURSOR_STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSSCANINDEX, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.SCAN_CURSOR_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -130,12 +178,23 @@ public class TairVector {
      *  throw error like "(error) Illegal vector dimensions" if error
      */
     public Long tvshset(final String index, final String entityid, final String vector, final String...params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHSET, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG), SafeEncoder.encode(vector), SafeEncoder.encodeMany(params)));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHSET, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG), SafeEncoder.encode(vector), SafeEncoder.encodeMany(params)));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+    
     public Long tvshset(byte[] index, byte[] entityid, byte[] vector, final byte[]...params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHSET, JoinParameters.joinParameters(index, entityid, SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG), vector, params));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHSET, JoinParameters.joinParameters(index, entityid, SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG), vector, params));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -149,12 +208,23 @@ public class TairVector {
      * @return Map, an empty list when {@code entityid} does not exist.
      */
     public Map<String, String> tvshgetall(final String index, final String entityid) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHGETALL, SafeEncoder.encode(index), SafeEncoder.encode(entityid));
-        return BuilderFactory.STRING_MAP.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHGETALL, SafeEncoder.encode(index), SafeEncoder.encode(entityid));
+            return BuilderFactory.STRING_MAP.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+    
     public Map<byte[], byte[]> tvshgetall(byte[] index, byte[] entityid) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHGETALL, index, entityid);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHGETALL, index, entityid);
+            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -169,14 +239,24 @@ public class TairVector {
      * @return List, an empty list when {@code entityid} or {@code attrs} does not exist .
      */
     public List<String> tvshmget(final String index, final String entityid, final String... attrs) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHMGET, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encodeMany(attrs)));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHMGET, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encodeMany(attrs)));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+    
     public List<byte[]> tvshmget(byte[] index, byte[] entityid, byte[]... attrs) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHMGET, JoinParameters.joinParameters(index, entityid, attrs));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHMGET, JoinParameters.joinParameters(index, entityid, attrs));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
-
 
     /**
      * TVS.DEL TVS.DEL index entityid
@@ -190,12 +270,23 @@ public class TairVector {
      * not including specified but no existing fields.
      */
     public Long tvsdel(final String index, final String entityid) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSDEL, SafeEncoder.encode(index), SafeEncoder.encode(entityid));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSDEL, SafeEncoder.encode(index), SafeEncoder.encode(entityid));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+    
     public Long tvsdel(byte[] index, byte[] entityid) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSDEL, index, entityid);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSDEL, index, entityid);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -212,14 +303,24 @@ public class TairVector {
      * not including specified but no existing fields.
      */
     public Long tvshdel(final String index, final String entityid, final String attr, final String... attrs) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHDEL, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(attr), SafeEncoder.encodeMany(attrs)));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHDEL, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(attr), SafeEncoder.encodeMany(attrs)));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+    
     public Long tvshdel(byte[] index, byte[] entityid, byte[] attr, byte[]... attrs) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSHDEL, JoinParameters.joinParameters(index, entityid, attr, attrs));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHDEL, JoinParameters.joinParameters(index, entityid, attr, attrs));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
-
 
     /**
      * TVS.SCAN TVS.SCAN index_name cursor [MATCH pattern] [COUNT count]
@@ -239,16 +340,27 @@ public class TairVector {
         args.add(SafeEncoder.encode(index));
         args.add(toByteArray(cursor));
         args.addAll(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSSCAN, args.toArray(new byte[args.size()][]));
-        return VectorBuilderFactory.SCAN_CURSOR_STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSSCAN, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.SCAN_CURSOR_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+    
     public ScanResult<byte[]> tvsscan(byte[] index, Long cursor, HscanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(index);
         args.add(toByteArray(cursor));
         args.addAll(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSSCAN, args.toArray(new byte[args.size()][]));
-        return VectorBuilderFactory.SCAN_CURSOR_BYTE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSSCAN, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.SCAN_CURSOR_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -280,14 +392,24 @@ public class TairVector {
      * @return VectorBuilderFactory.Knn<>
      */
     public VectorBuilderFactory.Knn<String> tvsknnsearchfilter(final String index, Long topn, final String vector, final String pattern) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSKNNSEARCH, SafeEncoder.encode(index), toByteArray(topn), SafeEncoder.encode(vector), SafeEncoder.encode(pattern));
-        return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
-    }
-    public VectorBuilderFactory.Knn<byte[]> tvsknnsearchfilter(byte[] index, Long topn, byte[] vector, byte[] pattern) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSKNNSEARCH, index, toByteArray(topn), vector, pattern);
-        return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSKNNSEARCH, SafeEncoder.encode(index), toByteArray(topn), SafeEncoder.encode(vector), SafeEncoder.encode(pattern));
+            return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
+    public VectorBuilderFactory.Knn<byte[]> tvsknnsearchfilter(byte[] index, Long topn, byte[] vector, byte[] pattern) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSKNNSEARCH, index, toByteArray(topn), vector, pattern);
+            return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
 
     /**
      * TVS.MKNNSEARCH TVS.MKNNSEARCH index_name topn vector [vector...]
@@ -320,9 +442,15 @@ public class TairVector {
         args.add(toByteArray(vectors.size()));
         args.addAll(vectors.stream().map(vector -> SafeEncoder.encode(vector)).collect(Collectors.toList()));
         args.add(SafeEncoder.encode(pattern));
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
-        return VectorBuilderFactory.STRING_KNN_BATCH_RESULT.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.STRING_KNN_BATCH_RESULT.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearchfilter(byte[] index, Long topn, Collection<byte[]> vectors, byte[] pattern) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(index);
@@ -330,7 +458,12 @@ public class TairVector {
         args.add(toByteArray(vectors.size()));
         args.addAll(vectors);
         args.add(pattern);
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
-        return VectorBuilderFactory.BYTE_KNN_BATCH_RESULT.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.BYTE_KNN_BATCH_RESULT.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 }

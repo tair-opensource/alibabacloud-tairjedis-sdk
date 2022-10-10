@@ -26,7 +26,6 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
     final IndexAlgorithm algorithm = IndexAlgorithm.HNSW;
     final DistanceMethod method = DistanceMethod.IP;
     final long dbid = 2;
-    List<String> index_params = Arrays.asList("max_elements", "100");
     private void tvs_del_index(String index) {
         tairVectorPipeline.tvsdelindex(index);
         tairVectorPipeline.syncAndReturnAll();
@@ -40,7 +39,7 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
     }
     private void tvs_create_index(int dims, String index, IndexAlgorithm algorithm, DistanceMethod method) {
         tairVectorPipeline.tvsdelindex(index);
-        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method, index_params.toArray(new String[0]));
+        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method);
         List<Object> result = tairVectorPipeline.syncAndReturnAll();
         assertEquals(result.size(),  2);
         assertEquals(result.get(1).toString(),  "OK");
@@ -64,8 +63,8 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
     @Test
     public void tvs_create_index_test() {
         tvs_del_index(index);
-        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method, index_params.toArray(new String[0]));
-        tairVectorPipeline.tvscreateindex(SafeEncoder.encode(index), dims, algorithm, method, SafeEncoder.encodeMany(index_params.toArray(new String[0])));
+        tairVectorPipeline.tvscreateindex(index, dims, algorithm, method);
+        tairVectorPipeline.tvscreateindex(SafeEncoder.encode(index), dims, algorithm, method);
         List<Object> objs = tairVectorPipeline.syncAndReturnAll();
         assertEquals("OK", objs.get(0));
         assertNotEquals("OK", objs.get(1));
