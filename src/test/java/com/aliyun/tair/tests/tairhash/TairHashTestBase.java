@@ -14,7 +14,7 @@ public class TairHashTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairHash = new TairHash(jedis);
+        tairHash = new TairHash(jedisPool);
         tairHashPipeline = new TairHashPipeline();
         tairHashPipeline.setClient(jedis.getClient());
         tairHashCluster = new TairHashCluster(jedisCluster);

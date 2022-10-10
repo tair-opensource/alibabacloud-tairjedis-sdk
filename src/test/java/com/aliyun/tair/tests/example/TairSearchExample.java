@@ -14,6 +14,7 @@ public class TairSearchExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairSearch tairSearch = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -24,12 +25,12 @@ public class TairSearchExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairSearch = new TairSearch(jedisPool);
     }
 
     public static boolean createIndex(String index, String request) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairSearch search = new TairSearch(jedis);
-            String ret = search.tftcreateindex(index, request);
+        try {
+            String ret = tairSearch.tftcreateindex(index, request);
             if ("OK".equals(ret)) {
                 return true;
             }
@@ -40,9 +41,8 @@ public class TairSearchExample {
     }
 
     public static String adddoc(String index, String doc) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairSearch search = new TairSearch(jedis);
-            return search.tftadddoc(index, doc);
+        try {
+            return tairSearch.tftadddoc(index, doc);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,9 +50,8 @@ public class TairSearchExample {
     }
 
     public static String search(String index, String request) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairSearch search = new TairSearch(jedis);
-            return search.tftsearch(index, request);
+        try {
+            return tairSearch.tftsearch(index, request);
         } catch (Exception e) {
             e.printStackTrace();
         }

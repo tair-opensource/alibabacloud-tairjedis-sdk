@@ -15,6 +15,7 @@ public class TairTsExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairTs tairTs = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -25,12 +26,12 @@ public class TairTsExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairTs = new TairTs(jedisPool);
     }
 
     public static boolean tsadd(String key, String field, String ts, double value) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairTs tairts = new TairTs(jedis);
-            String ret = tairts.extsadd(key, field, ts, value);
+        try {
+            String ret = tairTs.extsadd(key, field, ts, value);
             if ("OK".equals(ret)) {
                 return true;
             }
@@ -41,9 +42,8 @@ public class TairTsExample {
     }
 
     public static ExtsDataPointResult tsget(String key, String field) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairTs tairts = new TairTs(jedis);
-            return tairts.extsget(key, field);
+        try {
+            return tairTs.extsget(key, field);
         } catch (Exception e) {
             e.printStackTrace();
         }

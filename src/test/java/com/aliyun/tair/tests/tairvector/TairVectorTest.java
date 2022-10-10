@@ -24,7 +24,6 @@ public class TairVectorTest extends TairVectorTestBase {
     final IndexAlgorithm algorithm = IndexAlgorithm.HNSW;
     final DistanceMethod method = DistanceMethod.IP;
     final long dbid = 2;
-    List<String> index_params = Arrays.asList("max_elements", "100");
     /**
      * 127.0.0.1:6379> tvs.createindex default_index 8 HNSW IP
      */
@@ -59,7 +58,7 @@ public class TairVectorTest extends TairVectorTestBase {
     @Test
     public void tvs_create_index() {
         tvs_del_index();
-        assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method, index_params.toArray(new String[0])));
+        assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method));
         try {
             tairVector.tvscreateindex(SafeEncoder.encode(index), dims, algorithm, method);
         } catch (Exception e) {
@@ -71,11 +70,10 @@ public class TairVectorTest extends TairVectorTestBase {
     public void tvs_create_index_withoption_args() {
         tvs_del_index();
         assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method,
-                "ef_construct", "50", "M", "20", "max_elements", "1000000"));
+                "ef_construct", "50", "M", "20"));
         Map<String, String> schema =  tairVector.tvsgetindex(index);
         assertEquals(String.valueOf(50), schema.get("ef_construct"));
         assertEquals(String.valueOf(20), schema.get("M"));
-        assertEquals(String.valueOf(1000000), schema.get("max_elements"));
     }
 
     /**
@@ -83,7 +81,7 @@ public class TairVectorTest extends TairVectorTestBase {
      */
     @Test
     public  void tvs_get_index() {
-        tvs_create_index(dims, algorithm, method,index_params.toArray(new String[0]));
+        tvs_create_index(dims, algorithm, method);
 
         Map<String, String> schema =  tairVector.tvsgetindex(index);
         assertEquals(index, schema.get("index_name"));
@@ -102,7 +100,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_del_index() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
 
         Map<String, String> schema =  tairVector.tvsgetindex(index);
         assertEquals(index, schema.get("index_name"));
@@ -118,7 +116,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_scan_index() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
 
         HscanParams hscanParams = new HscanParams();
         hscanParams.count(1);
@@ -135,7 +133,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_hset() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("fourth_entity_knn");
         tvs_hset("fourth_entity_knn", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
         tvs_del_entity("ten_entity_knn");
@@ -160,7 +158,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_hmgetall() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_del_entity("second_entity_knn");
         tvs_hset("first_entity_knn", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
@@ -177,7 +175,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_del() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_del_entity("second_entity_knn");
 
@@ -193,7 +191,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_hdel() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_del_entity("second_entity_knn");
 
@@ -213,7 +211,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_scan() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_hset("first_entity_knn", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
 
@@ -233,7 +231,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_knnsearch() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_del_entity(SafeEncoder.encode("second_entity_knn"));
 
@@ -252,7 +250,7 @@ public class TairVectorTest extends TairVectorTestBase {
     public  void tvs_knnsearch_with_filter() {
         tairVector.tvsdelindex(SafeEncoder.encode(index));
 
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_del_entity(SafeEncoder.encode("second_entity_knn"));
 
@@ -269,7 +267,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_mknnsearch() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_del_entity("second_entity_knn");
 
@@ -294,7 +292,7 @@ public class TairVectorTest extends TairVectorTestBase {
 
     @Test
     public  void tvs_mknnsearch_filter() {
-        check_index(dims, algorithm, method, index_params.toArray(new String[0]));
+        check_index(dims, algorithm, method);
         tvs_del_entity("first_entity_knn");
         tvs_del_entity("second_entity_knn");
 

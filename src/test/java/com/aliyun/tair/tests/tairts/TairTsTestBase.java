@@ -14,7 +14,7 @@ public class TairTsTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairTs = new TairTs(jedis);
+        tairTs = new TairTs(jedisPool);
         tairTsPipeline = new TairTsPipeline();
         tairTsPipeline.setClient(jedis.getClient());
         tairTsCluster = new TairTsCluster(jedisCluster);

@@ -13,7 +13,7 @@ public class TairZsetTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairZset = new TairZset(jedis);
+        tairZset = new TairZset(jedisPool);
         tairZsetPipeline = new TairZsetPipeline();
         tairZsetPipeline.setClient(jedis.getClient());
         tairZsetCluster = new TairZsetCluster(jedisCluster);

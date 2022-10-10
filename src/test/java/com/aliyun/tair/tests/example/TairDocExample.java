@@ -14,6 +14,7 @@ public class TairDocExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairDoc tairDoc = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -24,12 +25,12 @@ public class TairDocExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairDoc = new TairDoc(jedisPool);
     }
 
     public static boolean jsonset(String key, String path, String json) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairDoc doc = new TairDoc(jedis);
-            String ret = doc.jsonset(key, path, json);
+        try {
+            String ret = tairDoc.jsonset(key, path, json);
             if ("OK".equals(ret)) {
                 return true;
             }
@@ -40,9 +41,8 @@ public class TairDocExample {
     }
 
     public static String jsonget(String key, String path) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairDoc doc = new TairDoc(jedis);
-            return doc.jsonget(key, path);
+        try {
+            return tairDoc.jsonget(key, path);
         } catch (Exception e) {
             e.printStackTrace();
         }

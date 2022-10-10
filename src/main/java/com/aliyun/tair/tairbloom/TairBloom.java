@@ -7,6 +7,7 @@ import com.aliyun.tair.tairbloom.params.BfinsertParams;
 import com.aliyun.tair.tairbloom.params.BfmexistParams;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.List;
@@ -15,13 +16,27 @@ import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairBloom {
     private Jedis jedis;
+    private JedisPool jedisPool;
 
     public TairBloom(Jedis jedis) {
         this.jedis = jedis;
     }
 
+    public TairBloom(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
     private Jedis getJedis() {
+        if (jedisPool != null) {
+            return jedisPool.getResource();
+        }
         return jedis;
+    }
+
+    private void releaseJedis(Jedis jedis) {
+        if (jedisPool != null) {
+            jedis.close();
+        }
     }
 
     /**
@@ -39,8 +54,13 @@ public class TairBloom {
     }
 
     public String bfreserve(byte[] key, long initCapacity, double errorRate) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFRESERVE, key, toByteArray(errorRate), toByteArray(initCapacity));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFRESERVE, key, toByteArray(errorRate), toByteArray(initCapacity));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -55,8 +75,13 @@ public class TairBloom {
     }
 
     public Boolean bfadd(byte[] key, byte[] item) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFADD, key, item);
-        return BuilderFactory.BOOLEAN.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFADD, key, item);
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -66,15 +91,25 @@ public class TairBloom {
      * @return Boolean array; Success: true, fail: false
      */
     public Boolean[] bfmadd(String key, String... items) {
-        BfmaddParams params = new BfmaddParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
-        return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfmaddParams params = new BfmaddParams();
+            Object obj = jedis.sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
+            return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Boolean[] bfmadd(byte[] key, byte[]... items) {
-        BfmaddParams params = new BfmaddParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
-        return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfmaddParams params = new BfmaddParams();
+            Object obj = jedis.sendCommand(ModuleCommand.BFMADD, params.getByteParams(key, items));
+            return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -85,13 +120,23 @@ public class TairBloom {
      * @return Boolean; Success: true, fail: false
      */
     public Boolean bfexists(String key, String item) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFEXISTS, key, item);
-        return BuilderFactory.BOOLEAN.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFEXISTS, key, item);
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Boolean bfexists(byte[] key, byte[] item) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFEXISTS, key, item);
-        return BuilderFactory.BOOLEAN.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFEXISTS, key, item);
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -102,15 +147,25 @@ public class TairBloom {
      * @return Boolean array; Success: true, fail: false
      */
     public Boolean[] bfmexists(String key, String... items) {
-        BfmexistParams params = new BfmexistParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, items));
-        return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfmexistParams params = new BfmexistParams();
+            Object obj = jedis.sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, items));
+            return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Boolean[] bfmexists(byte[] key, byte[]... items) {
-        BfmexistParams params = new BfmexistParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, items));
-        return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfmexistParams params = new BfmexistParams();
+            Object obj = jedis.sendCommand(ModuleCommand.BFMEXISTS, params.getByteParams(key, items));
+            return BloomBuilderFactory.BFMADD_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -121,15 +176,25 @@ public class TairBloom {
      * @return Boolean array; Success: true, fail: false
      */
     public Boolean[] bfinsert(String key, BfinsertParams params, String... items) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT,
-            params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encodeMany(items)));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT,
+                params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encodeMany(items)));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Boolean[] bfinsert(byte[] key, BfinsertParams params, byte[]... items) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT,
-            params.getByteParams(key, items));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT,
+                params.getByteParams(key, items));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -146,10 +211,15 @@ public class TairBloom {
      */
     @Deprecated
     public Boolean[] bfinsert(String key, String initCapacityTag, long initCapacity, String errorRateTag, Double errorRate, String itemTag, String... items) {
-        BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, String.valueOf(initCapacity), errorRateTag, String.valueOf(errorRate), itemTag);
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfinsertParams params = new BfinsertParams();
+            byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, String.valueOf(initCapacity), errorRateTag, String.valueOf(errorRate), itemTag);
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -163,42 +233,67 @@ public class TairBloom {
      */
     @Deprecated
     public Boolean[] bfinsert(String key, String nocreateTag, String itemTag, String... items) {
-        BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfinsertParams params = new BfinsertParams();
+            byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     @Deprecated
     public Boolean[] bfinsert(String key, String itemTag, String... items) {
-        BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, itemTag);
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfinsertParams params = new BfinsertParams();
+            byte[][] metadata = params.getByteParamsMeta(key, itemTag);
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] initCapacityTag, long initCapacity, byte[] errorRateTag, Double errorRate, byte[] itemTag, byte[]... items) {
-        BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, toByteArray(initCapacity), errorRateTag, toByteArray(errorRate), itemTag);
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfinsertParams params = new BfinsertParams();
+            byte[][] metadata = params.getByteParamsMeta(key, initCapacityTag, toByteArray(initCapacity), errorRateTag, toByteArray(errorRate), itemTag);
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] nocreateTag, byte[] itemTag, byte[]... items) {
-        BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfinsertParams params = new BfinsertParams();
+            byte[][] metadata = params.getByteParamsMeta(key, nocreateTag, itemTag);
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     @Deprecated
     public Boolean[] bfinsert(byte[] key, byte[] itemTag, byte[]... items) {
-        BfinsertParams params = new BfinsertParams();
-        byte[][] metadata = params.getByteParamsMeta(key, itemTag);
-        Object obj = getJedis().sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
-        return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            BfinsertParams params = new BfinsertParams();
+            byte[][] metadata = params.getByteParamsMeta(key, itemTag);
+            Object obj = jedis.sendCommand(ModuleCommand.BFINSERT, params.getByteParams(metadata, items));
+            return BloomBuilderFactory.BFINSERT_RESULT_BOOLEAN_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -208,12 +303,22 @@ public class TairBloom {
      * @return List for debug messages
      */
     public List<String> bfdebug(String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFDEBUG, key);
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFDEBUG, key);
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<String> bfdebug(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.BFDEBUG, key);
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.BFDEBUG, key);
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 }

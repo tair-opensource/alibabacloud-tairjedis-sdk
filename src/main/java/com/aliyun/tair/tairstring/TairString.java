@@ -11,19 +11,34 @@ import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
 import com.aliyun.tair.tairstring.results.ExincrbyVersionResult;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.SafeEncoder;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairString {
     private Jedis jedis;
+    private JedisPool jedisPool;
 
     public TairString(Jedis jedis) {
         this.jedis = jedis;
     }
 
+    public TairString(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
     private Jedis getJedis() {
+        if (jedisPool != null) {
+            return jedisPool.getResource();
+        }
         return jedis;
+    }
+
+    private void releaseJedis(Jedis jedis) {
+        if (jedisPool != null) {
+            jedis.close();
+        }
     }
 
     /**
@@ -39,8 +54,13 @@ public class TairString {
     }
 
     public Long cas(byte[] key, byte[] oldvalue, byte[] newvalue) {
-        Object obj = getJedis().sendCommand(ModuleCommand.CAS, key, oldvalue, newvalue);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.CAS, key, oldvalue, newvalue);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -61,8 +81,13 @@ public class TairString {
     }
 
     public Long cas(byte[] key, byte[] oldvalue, byte[] newvalue, CasParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.CAS, params.getByteParams(key, oldvalue, newvalue));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.CAS, params.getByteParams(key, oldvalue, newvalue));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -77,8 +102,13 @@ public class TairString {
     }
 
     public Long cad(byte[] key, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.CAD, key, value);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.CAD, key, value);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -89,13 +119,23 @@ public class TairString {
      * @return Success: OK; Fail: error.
      */
     public String exset(String key, String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, key, value);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXSET, key, value);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String exset(byte[] key, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, key, value);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXSET, key, value);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -116,25 +156,45 @@ public class TairString {
      * @return Success: OK; Fail: error.
      */
     public String exset(String key, String value, ExsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String exset(byte[] key, byte[] value, ExsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exsetVersion(String key, String value, ExsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET,
-            params.getByteParams(key, value, "WITHVERSION"));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXSET,
+                params.getByteParams(key, value, "WITHVERSION"));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exsetVersion(byte[] key, byte[] value, ExsetParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSET,
-            params.getByteParams(key, value, "WITHVERSION".getBytes()));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXSET,
+                params.getByteParams(key, value, "WITHVERSION".getBytes()));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -144,13 +204,23 @@ public class TairString {
      * @return List, Success: [value, version]; Fail: error.
      */
     public ExgetResult<String> exget(String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXGET, key);
-        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXGET, key);
+            return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public ExgetResult<byte[]> exget(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXGET, key);
-        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXGET, key);
+            return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -160,13 +230,23 @@ public class TairString {
      * @return List, Success: [value, version, flags]; Fail: error.
      */
     public ExgetResult<String> exgetFlags(String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS");
-        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS");
+            return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public ExgetResult<byte[]> exgetFlags(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS".getBytes());
-        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS".getBytes());
+            return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -181,8 +261,13 @@ public class TairString {
     }
 
     public Long exsetver(byte[] key, long version) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXSETVER, key, toByteArray(version));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXSETVER, key, toByteArray(version));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -197,8 +282,13 @@ public class TairString {
     }
 
     public Long exincrBy(byte[] key, long incr) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBY, key, toByteArray(incr));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXINCRBY, key, toByteArray(incr));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -225,8 +315,13 @@ public class TairString {
     }
 
     public Long exincrBy(byte[] key, long incr, ExincrbyParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBY, params.getByteParams(key, toByteArray(incr)));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXINCRBY, params.getByteParams(key, toByteArray(incr)));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public ExincrbyVersionResult exincrByVersion(String key, long incr, ExincrbyParams params) {
@@ -234,9 +329,14 @@ public class TairString {
     }
 
     public ExincrbyVersionResult exincrByVersion(byte[] key, long incr, ExincrbyParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBY,
-            params.getByteParams(key, toByteArray(incr), "WITHVERSION".getBytes()));
-        return StringBuilderFactory.EXINCRBY_VERSION_RESULT_STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXINCRBY,
+                params.getByteParams(key, toByteArray(incr), "WITHVERSION".getBytes()));
+            return StringBuilderFactory.EXINCRBY_VERSION_RESULT_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -251,8 +351,13 @@ public class TairString {
     }
 
     public Double exincrByFloat(byte[] key, Double incr) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT, key, toByteArray(incr));
-        return BuilderFactory.DOUBLE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXINCRBYFLOAT, key, toByteArray(incr));
+            return BuilderFactory.DOUBLE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -277,8 +382,13 @@ public class TairString {
     }
 
     public Double exincrByFloat(byte[] key, Double incr, ExincrbyFloatParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXINCRBYFLOAT, params.getByteParams(key, toByteArray(incr)));
-        return BuilderFactory.DOUBLE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXINCRBYFLOAT, params.getByteParams(key, toByteArray(incr)));
+            return BuilderFactory.DOUBLE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -290,19 +400,29 @@ public class TairString {
      * @return List, Success: ["OK", "", version]; Fail: ["Err", value, version].
      */
     public ExcasResult<String> excas(String key, String newvalue, long version) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, String.valueOf(version));
-        if (obj instanceof Long && ((Long)obj == -1L)) {
-            return null;
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXCAS, key, newvalue, String.valueOf(version));
+            if (obj instanceof Long && ((Long)obj == -1L)) {
+                return null;
+            }
+            return StringBuilderFactory.EXCAS_RESULT_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
         }
-        return StringBuilderFactory.EXCAS_RESULT_STRING.build(obj);
     }
 
     public ExcasResult<byte[]> excas(byte[] key, byte[] newvalue, long version) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXCAS, key, newvalue, toByteArray(version));
-        if (obj instanceof Long && ((Long)obj == -1L)) {
-            return null;
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXCAS, key, newvalue, toByteArray(version));
+            if (obj instanceof Long && ((Long)obj == -1L)) {
+                return null;
+            }
+            return StringBuilderFactory.EXCAS_RESULT_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
         }
-        return StringBuilderFactory.EXCAS_RESULT_BYTE.build(obj);
     }
 
     /**
@@ -317,8 +437,13 @@ public class TairString {
     }
 
     public Long excad(byte[] key, long version) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXCAD, key, toByteArray(version));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXCAD, key, toByteArray(version));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -335,9 +460,14 @@ public class TairString {
     }
 
     public Long exappend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXAPPEND, key, value, SafeEncoder.encode(nxxx),
-            SafeEncoder.encode(verabs), toByteArray(version));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXAPPEND, key, value, SafeEncoder.encode(nxxx),
+                SafeEncoder.encode(verabs), toByteArray(version));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -354,9 +484,14 @@ public class TairString {
     }
 
     public Long exprepend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXPREPEND, key, value, SafeEncoder.encode(nxxx),
-            SafeEncoder.encode(verabs), toByteArray(version));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXPREPEND, key, value, SafeEncoder.encode(nxxx),
+                SafeEncoder.encode(verabs), toByteArray(version));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -367,13 +502,23 @@ public class TairString {
      * @return value, version, flags
      */
     public ExgetResult<String> exgae(String key, String expxwithat, long time) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXGAE, key, expxwithat, Long.toString(time));
-        return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXGAE, key, expxwithat, Long.toString(time));
+            return StringBuilderFactory.EXGET_RESULT_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public ExgetResult<byte[]> exgae(byte[] key, String expxwithat, long time) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXGAE, key, SafeEncoder.encode(expxwithat),
-            toByteArray(time));
-        return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXGAE, key, SafeEncoder.encode(expxwithat),
+                toByteArray(time));
+            return StringBuilderFactory.EXGET_RESULT_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 }

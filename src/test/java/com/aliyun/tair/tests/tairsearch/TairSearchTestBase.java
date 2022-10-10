@@ -13,7 +13,7 @@ public class TairSearchTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairSearch = new TairSearch(jedis);
+        tairSearch = new TairSearch(jedisPool);
         tairSearchPipeline = new TairSearchPipeline();
         tairSearchPipeline.setClient(jedis.getClient());
         tairSearchCluster = new TairSearchCluster(jedisCluster);

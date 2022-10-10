@@ -14,6 +14,7 @@ public class TairRoaringExample {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairRoaring tairRoaring = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
@@ -24,11 +25,11 @@ public class TairRoaringExample {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairRoaring = new TairRoaring(jedisPool);
     }
 
     public static long setbit(String key, long offset, String value) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairRoaring tairRoaring = new TairRoaring(jedis);
+        try {
             return tairRoaring.trsetbit(key, offset, value);
         } catch (Exception e) {
             e.printStackTrace(); // handle exception
@@ -37,8 +38,7 @@ public class TairRoaringExample {
     }
 
     public static long getbit(String key, long offset) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairRoaring tairRoaring = new TairRoaring(jedis);
+        try {
             return tairRoaring.trgetbit(key, offset);
         } catch (Exception e) {
             e.printStackTrace(); // handle exception
@@ -46,7 +46,17 @@ public class TairRoaringExample {
         return -1;
     }
 
+    public static long del(String key) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.del(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     public static void main(String[] args) {
+        del("key");
         setbit("key", 10, "1");
         System.out.println(getbit("key", 10));
     }
