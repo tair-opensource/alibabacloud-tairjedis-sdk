@@ -1,16 +1,11 @@
 package com.aliyun.tair.tests.example;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-/**
- * @author bodong.ybd
- * @date 2022/9/1
- */
 public class BoundedCounter {
     // init timeout
     private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
@@ -23,7 +18,7 @@ public class BoundedCounter {
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
-        // 参数设置最佳实践可参考：https://help.aliyun.com/document_detail/98726.html
+        // JedisPool config: https://help.aliyun.com/document_detail/98726.html
         config.setMaxTotal(32);
         config.setMaxIdle(32);
         config.setMaxIdle(20);
@@ -40,7 +35,7 @@ public class BoundedCounter {
      * @param interval the time interval
      * @return acquire success: true; fail: false
      */
-    public static boolean tryAcquire(String key, int upperBound, int interval) {
+    public static boolean tryAcquire(final String key, final int upperBound, final int interval) {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.eval("if redis.call('exists', KEYS[1]) == 1 "
                     + "then return redis.call('EXINCRBY', KEYS[1], '1', 'MAX', ARGV[1], 'KEEPTTL') "

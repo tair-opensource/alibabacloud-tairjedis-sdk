@@ -1,17 +1,10 @@
 package com.aliyun.tair.tests.example;
 
-import java.util.Arrays;
-
 import com.aliyun.tair.tairstring.TairString;
 import com.aliyun.tair.tairstring.params.ExincrbyParams;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-/**
- * @author bodong.ybd
- * @date 2022/9/1
- */
 public class BargainRush {
     // init timeout
     private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
@@ -21,16 +14,18 @@ public class BargainRush {
     private static final int PORT = 6379;
     private static final String PASSWORD = null;
     private static JedisPool jedisPool = null;
+    private static TairString tairString = null;
     private static final JedisPoolConfig config = new JedisPoolConfig();
 
     static {
-        // 参数设置最佳实践可参考：https://help.aliyun.com/document_detail/98726.html
+        // JedisPool config: https://help.aliyun.com/document_detail/98726.html
         config.setMaxTotal(32);
         config.setMaxIdle(32);
         config.setMaxIdle(20);
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
+        tairString = new TairString(jedisPool);
     }
 
     /**
@@ -40,9 +35,8 @@ public class BargainRush {
      * @param lowerBound the min value
      * @return acquire success: true; fail: false
      */
-    public static boolean bargainRush(String key, int upperBound, int lowerBound) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            TairString tairString = new TairString(jedis);
+    public static boolean bargainRush(final String key, final int upperBound, final int lowerBound) {
+        try {
             tairString.exincrBy(key, -1, ExincrbyParams.ExincrbyParams().def(upperBound).min(lowerBound));
             return true;
         } catch (Exception e) {
@@ -52,7 +46,7 @@ public class BargainRush {
     }
 
     public static void main(String[] args) {
-        String key = "rateLimiter";
+        String key = "bargainRush";
         for (int i = 0; i < 20; i++) {
             System.out.printf("attempt %d, result: %s\n", i, bargainRush(key, 10, 0));
         }
