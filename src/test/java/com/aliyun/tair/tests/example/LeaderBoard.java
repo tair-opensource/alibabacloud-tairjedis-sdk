@@ -7,10 +7,6 @@ import com.aliyun.tair.tairzset.TairZset;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-/**
- * @author bodong.ybd
- * @date 2022/10/10
- */
 public class LeaderBoard {
     // init timeout
     private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
