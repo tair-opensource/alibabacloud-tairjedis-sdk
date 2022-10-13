@@ -32,6 +32,13 @@ public class DistributeLock {
         tairString = new TairString(jedisPool);
     }
 
+    /**
+     * locks atomically via set with NX flag
+     * @param lockKey the key
+     * @param requestId prevents the lock from being deleted by mistake
+     * @param expireTime prevent the deadlock of business machine downtime
+     * @return success: true, fail: false.
+     */
     public static boolean tryGetDistributedLock(String lockKey, String requestId, int expireTime) {
         try (Jedis jedis = jedisPool.getResource()) {
             String result = jedis.set(lockKey, requestId, SetParams.setParams().nx().ex(expireTime));
@@ -44,6 +51,12 @@ public class DistributeLock {
         return false;
     }
 
+    /**
+     * atomically releases the lock via the CAD command
+     * @param lockKey the key
+     * @param requestId ensures that the released lock is added by itself
+     * @return success: true, fail: false.
+     */
     public static boolean releaseDistributedLock(String lockKey, String requestId) {
         try {
             Long ret = tairString.cad(lockKey, requestId);
