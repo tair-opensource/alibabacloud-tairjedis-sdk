@@ -179,7 +179,7 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb) {
-        getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.constructJSON().toString()));
+        getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()));
         return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);
     }
 
@@ -189,9 +189,9 @@ public class TairSearchPipeline extends Pipeline {
 
     public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb, boolean use_cache) {
         if (use_cache) {
-            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.constructJSON().toString()), SafeEncoder.encode("use_cache"));
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()), SafeEncoder.encode("use_cache"));
         } else {
-            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.constructJSON().toString()));
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()));
         }
 
         return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);

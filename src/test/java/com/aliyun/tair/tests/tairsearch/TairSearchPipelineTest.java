@@ -227,17 +227,17 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         tairSearchPipeline.tftsearch("tftkey", ssb);
 
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
 
         qb = QueryBuilders.termsQuery("f0",values).boost(2.0F);
         assertEquals("f0", qb.fieldName());
         assertEquals(values, qb.values());
         ssb = new SearchSourceBuilder().query(qb);
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         tairSearchPipeline.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
 
         assertEquals((String) objs.get(0), "OK");
