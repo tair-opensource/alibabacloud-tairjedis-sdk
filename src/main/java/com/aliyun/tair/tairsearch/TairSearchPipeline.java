@@ -6,6 +6,9 @@ import com.aliyun.tair.tairsearch.params.TFTAddSugParams;
 import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
 import com.aliyun.tair.tairsearch.params.TFTGetSugParams;
 import com.aliyun.tair.tairsearch.params.TFTMSearchParams;
+import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
+import com.aliyun.tair.tairsearch.action.search.SearchResponse;
+import com.aliyun.tair.tairsearch.factory.SearchBuilderFactory;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
@@ -169,6 +172,29 @@ public class TairSearchPipeline extends Pipeline {
     public Response<String> tftdelall(byte[] index) {
         getClient("").sendCommand(ModuleCommand.TFTDELALL, index);
         return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<SearchResponse> tftsearch(String key, SearchSourceBuilder ssb) {
+        return tftsearch(SafeEncoder.encode(key), ssb);
+    }
+
+    public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb) {
+        getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.constructJSON().toString()));
+        return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);
+    }
+
+    public Response<SearchResponse> tftsearch(String key, SearchSourceBuilder ssb, boolean use_cache) {
+        return tftsearch(SafeEncoder.encode(key), ssb, use_cache);
+    }
+
+    public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb, boolean use_cache) {
+        if (use_cache) {
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.constructJSON().toString()), SafeEncoder.encode("use_cache"));
+        } else {
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.constructJSON().toString()));
+        }
+
+        return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);
     }
 
     public Response<String> tftsearch(String key, String request) {

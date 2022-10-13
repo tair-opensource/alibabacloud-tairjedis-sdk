@@ -2,6 +2,8 @@ package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairsearch.params.*;
+import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
+import com.aliyun.tair.tairsearch.action.search.SearchResponse;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
@@ -291,6 +293,30 @@ public class TairSearch {
         return BuilderFactory.STRING.build(obj);
     }
 
+    public SearchResponse tftsearch(String index, SearchSourceBuilder ssb) {
+        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.constructJSON().toString())));
+    }
+
+    public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb) {
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()));
+        return new SearchResponse(BuilderFactory.STRING.build(obj));
+    }
+
+    public SearchResponse tftsearch(String index, SearchSourceBuilder ssb, boolean use_cache) {
+        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.constructJSON().toString())));
+    }
+
+    public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb, boolean use_cache) {
+        Object obj;
+        if (use_cache) {
+            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()), SafeEncoder.encode("use_cache"));
+        } else {
+            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()));
+        }
+        return new SearchResponse(BuilderFactory.STRING.build(obj));
+    }
+
+
     /**
      * Full text search in an Index.
      *
@@ -298,6 +324,8 @@ public class TairSearch {
      * @param request Search expression, for detailed grammar, please refer to the official document
      * @return Success: Query result in json format; Fail: error
      */
+
+
     public String tftsearch(String index, String request) {
         return tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(request));
     }

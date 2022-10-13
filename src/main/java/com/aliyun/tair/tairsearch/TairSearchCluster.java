@@ -2,6 +2,8 @@ package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairsearch.params.*;
+import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
+import com.aliyun.tair.tairsearch.action.search.SearchResponse;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
@@ -171,6 +173,29 @@ public class TairSearchCluster {
     public String tftdelall(byte[] index) {
         Object obj = jc.sendCommand(index, ModuleCommand.TFTDELALL, index);
         return BuilderFactory.STRING.build(obj);
+    }
+
+    public SearchResponse tftsearch(String index, SearchSourceBuilder ssb) {
+        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.constructJSON().toString())));
+    }
+
+    public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()));
+        return new SearchResponse(BuilderFactory.STRING.build(obj));
+    }
+
+    public SearchResponse tftsearch(String index, SearchSourceBuilder ssb, boolean use_cache) {
+        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.constructJSON().toString())));
+    }
+
+    public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb, boolean use_cache) {
+        Object obj;
+        if (use_cache) {
+            obj = jc.sendCommand(index, ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()), SafeEncoder.encode("use_cache"));
+        } else {
+            obj = jc.sendCommand(index, ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()));
+        }
+        return new SearchResponse(BuilderFactory.STRING.build(obj));
     }
 
     public String tftsearch(String index, String request) {

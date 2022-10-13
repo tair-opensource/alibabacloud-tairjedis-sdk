@@ -1,6 +1,11 @@
 package com.aliyun.tair.tests.tairsearch;
 
 import com.aliyun.tair.tairsearch.params.TFTGetSugParams;
+import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
+import com.aliyun.tair.tairsearch.index.query.QueryBuilders;
+import com.aliyun.tair.tairsearch.index.query.TermsQueryBuilder;
+import com.aliyun.tair.tairsearch.action.search.SearchResponse;
+import com.aliyun.tair.tairsearch.search.TotalHits;
 import org.junit.Test;
 
 import java.util.*;
@@ -199,5 +204,58 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals(2, ((Long) objs.get(5)).intValue());
         assertEquals(docs.size() - 2, ((Long) objs.get(6)).intValue());
         jedis.del("tftkey".getBytes());
+    }
+
+
+
+    @Test
+    public void tftquerybuildertest(){
+        jedis.del("tftkey");
+        tairSearchPipeline.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
+
+        tairSearchPipeline.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
+        tairSearchPipeline.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}");
+
+        List<String> values = new ArrayList<>();
+        values.add("redis");
+        values.add("database");
+
+        TermsQueryBuilder qb = QueryBuilders.termsQuery("f0","redis", "database").boost(2.0F);
+        assertEquals("f0", qb.fieldName());
+        assertEquals(values, qb.values());
+        SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
+        tairSearchPipeline.tftsearch("tftkey", ssb);
+
+        assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
+                ssb.constructJSON().toString());
+
+        qb = QueryBuilders.termsQuery("f0",values).boost(2.0F);
+        assertEquals("f0", qb.fieldName());
+        assertEquals(values, qb.values());
+        ssb = new SearchSourceBuilder().query(qb);
+        assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
+                ssb.constructJSON().toString());
+        tairSearchPipeline.tftsearch("tftkey", ssb);
+        assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
+                ssb.constructJSON().toString());
+        List<Object> objs = tairSearchPipeline.syncAndReturnAll();
+
+        assertEquals((String) objs.get(0), "OK");
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+                (String) objs.get(2));
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+                ((SearchResponse) objs.get(3)).toString());
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+                ((SearchResponse) objs.get(4)).toString());
+        SearchResponse result = (SearchResponse) objs.get(4);
+        assertEquals(1,result.getHits().getTotalHits().value);
+        assertEquals(TotalHits.Relation.EQUAL_TO,result.getHits().getTotalHits().relation);
+        assertEquals(0.216978,result.getHits().getMaxScore(),0.01);
+        assertEquals(0.216978,result.getHits().getAt(0).getScore(),0.01);
+        assertEquals("1",result.getHits().getAt(0).getId());
+        assertEquals("tftkey",result.getHits().getAt(0).getIndex());
+        assertEquals("{\"f0\":\"redis is a nosql database\"}",result.getHits().getAt(0).getSourceAsString());
+        Map<String,Object> tmp = result.getHits().getAt(0).getSourceAsMap();
+        assertEquals("redis is a nosql database",tmp.get("f0"));
     }
 }
