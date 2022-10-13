@@ -13,6 +13,7 @@ import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,17 +39,18 @@ public class TairVectorCluster {
      * <p>
      * create tair-vector index
      *
-     * @param index  index name
-     * @param dims   vector dims
+     * @param index     index name
+     * @param dims      vector dims
      * @param algorithm index algorithm
-     * @param method vector distance method
-     * @param attrs other columns, optional
+     * @param method    vector distance method
+     * @param attrs     other columns, optional
      * @return Success: +OK; Fail: error
      */
     public String tvscreateindex(final String index, int dims, IndexAlgorithm algorithm, DistanceMethod method, final String... attrs) {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(SafeEncoder.encode(index), toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), SafeEncoder.encodeMany(attrs)));
         return BuilderFactory.STRING.build(obj);
     }
+
     public byte[] tvscreateindex(byte[] index, int dims, IndexAlgorithm algorithm, DistanceMethod method, final byte[]... params) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(index, toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), params));
         return BuilderFactory.BYTE_ARRAY.build(obj);
@@ -66,6 +68,7 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSGETINDEX, SafeEncoder.encode(index));
         return BuilderFactory.STRING_MAP.build(obj);
     }
+
     public Map<byte[], byte[]> tvsgetindex(byte[] index) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSGETINDEX, index);
         return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
@@ -83,6 +86,7 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSDELINDEX, SafeEncoder.encode(index));
         return BuilderFactory.LONG.build(obj);
     }
+
     public Long tvsdelindex(byte[] index) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSDELINDEX, index);
         return BuilderFactory.LONG.build(obj);
@@ -95,10 +99,10 @@ public class TairVectorCluster {
      * scan index
      *
      * @param cursor start offset
-     * @param params  the params: [MATCH pattern] [COUNT count]
-     *  `MATCH` - Set the pattern which is used to filter the results
-     *  `COUNT` - Set the number of fields in a single scan (default is 10)
-     *  `NOVAL` - The return result contains no data portion, only cursor information
+     * @param params the params: [MATCH pattern] [COUNT count]
+     *               `MATCH` - Set the pattern which is used to filter the results
+     *               `COUNT` - Set the number of fields in a single scan (default is 10)
+     *               `NOVAL` - The return result contains no data portion, only cursor information
      * @return A ScanResult. {@link HashBuilderFactory#EXHSCAN_RESULT_STRING}
      */
     public ScanResult<String> tvsscanindex(Long cursor, HscanParams params) {
@@ -114,20 +118,20 @@ public class TairVectorCluster {
      * <p>
      * insert entity into tair-vector module
      *
-     * @param index index name
+     * @param index    index name
      * @param entityid entity id
-     * @param vector vector info
-     * @param params scalar attribute key, value
-     *
+     * @param vector   vector info
+     * @param params   scalar attribute key, value
      * @return integer-reply specifically:
-     *  {@literal k} if success, k is the number of fields that were added..
-     *  throw error like "(error) Illegal vector dimensions" if error
+     * {@literal k} if success, k is the number of fields that were added..
+     * throw error like "(error) Illegal vector dimensions" if error
      */
-    public Long tvshset(final String index, final String entityid, final String vector, final String...params) {
+    public Long tvshset(final String index, final String entityid, final String vector, final String... params) {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSHSET, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG), SafeEncoder.encode(vector), SafeEncoder.encodeMany(params)));
         return BuilderFactory.LONG.build(obj);
     }
-    public Long tvshset(byte[] index, byte[] entityid, byte[] vector, final byte[]...params) {
+
+    public Long tvshset(byte[] index, byte[] entityid, byte[] vector, final byte[]... params) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSHSET, JoinParameters.joinParameters(index, entityid, SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG), vector, params));
         return BuilderFactory.LONG.build(obj);
     }
@@ -137,15 +141,15 @@ public class TairVectorCluster {
      * <p>
      * get entity from tair-vector module
      *
-     * @param index index name
+     * @param index    index name
      * @param entityid entity id
-     *
      * @return Map, an empty list when {@code entityid} does not exist.
      */
     public Map<String, String> tvshgetall(final String index, final String entityid) {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSHGETALL, SafeEncoder.encode(index), SafeEncoder.encode(entityid));
         return BuilderFactory.STRING_MAP.build(obj);
     }
+
     public Map<byte[], byte[]> tvshgetall(byte[] index, byte[] entityid) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSHGETALL, index, entityid);
         return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
@@ -156,16 +160,16 @@ public class TairVectorCluster {
      * <p>
      * get entity attrs from tair-vector module
      *
-     * @param index index name
+     * @param index    index name
      * @param entityid entity id
-     * @param attrs attrs
-     *
+     * @param attrs    attrs
      * @return List, an empty list when {@code entityid} or {@code attrs} does not exist .
      */
     public List<String> tvshmget(final String index, final String entityid, final String... attrs) {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSHMGET, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encodeMany(attrs)));
         return BuilderFactory.STRING_LIST.build(obj);
     }
+
     public List<byte[]> tvshmget(byte[] index, byte[] entityid, byte[]... attrs) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSHMGET, JoinParameters.joinParameters(index, entityid, attrs));
         return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
@@ -177,9 +181,8 @@ public class TairVectorCluster {
      * <p>
      * delete entity from tair-vector module
      *
-     * @param index index name
+     * @param index    index name
      * @param entityid entity id
-     *
      * @return Long integer-reply the number of fields that were removed from the tair-vector
      * not including specified but non existing fields.
      */
@@ -187,6 +190,7 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSDEL, SafeEncoder.encode(index), SafeEncoder.encode(entityid));
         return BuilderFactory.LONG.build(obj);
     }
+
     public Long tvsdel(byte[] index, byte[] entityid) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSDEL, index, entityid);
         return BuilderFactory.LONG.build(obj);
@@ -197,10 +201,9 @@ public class TairVectorCluster {
      * <p>
      * delete entity attrs from tair-vector module
      *
-     * @param index index name
+     * @param index    index name
      * @param entityid entity id
-     * @param attrs attrs
-     *
+     * @param attrs    attrs
      * @return Long integer-reply the number of fields that were removed from the tair-vector
      * not including specified but non existing fields.
      */
@@ -208,6 +211,7 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSHDEL, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encodeMany(attrs)));
         return BuilderFactory.LONG.build(obj);
     }
+
     public Long tvshdel(byte[] index, byte[] entityid, byte[]... attrs) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSHDEL, JoinParameters.joinParameters(index, entityid, attrs));
         return BuilderFactory.LONG.build(obj);
@@ -219,12 +223,12 @@ public class TairVectorCluster {
      * <p>
      * scan entity from tair-vector module
      *
-     * @param index index name
+     * @param index  index name
      * @param cursor start offset
-     * @param params  the params: [MATCH pattern] [COUNT count]
-     *  `MATCH` - Set the pattern which is used to filter the results
-     *  `COUNT` - Set the number of fields in a single scan (default is 10)
-     *  `NOVAL` - The return result contains no data portion, only cursor information
+     * @param params the params: [MATCH pattern] [COUNT count]
+     *               `MATCH` - Set the pattern which is used to filter the results
+     *               `COUNT` - Set the number of fields in a single scan (default is 10)
+     *               `NOVAL` - The return result contains no data portion, only cursor information
      * @return A ScanResult.
      */
     public ScanResult<String> tvsscan(final String index, Long cursor, HscanParams params) {
@@ -235,6 +239,7 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSSCAN, args.toArray(new byte[args.size()][]));
         return VectorBuilderFactory.SCAN_CURSOR_STRING.build(obj);
     }
+
     public ScanResult<byte[]> tvsscan(byte[] index, Long cursor, HscanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(index);
@@ -249,17 +254,19 @@ public class TairVectorCluster {
      * <p>
      * query entity by vector
      *
-     * @param index index name
-     * @param topn  topn result
+     * @param index  index name
+     * @param topn   topn result
      * @param vector query vector
-     *
-     * @return  VectorBuilderFactory.Knn<>
+     * @param params for HNSW, params include:
+     *               ef_search     range [0, 1000]
+     * @return VectorBuilderFactory.Knn<>
      */
-    public VectorBuilderFactory.Knn<String> tvsknnsearch(final String index, Long topn, final String vector) {
-      return tvsknnsearchfilter(index, topn, vector, "");
+    public VectorBuilderFactory.Knn<String> tvsknnsearch(final String index, Long topn, final String vector, final String... params) {
+        return tvsknnsearchfilter(index, topn, vector, "", params);
     }
-    public VectorBuilderFactory.Knn<byte[]> tvsknnsearch(byte[] index, Long topn, byte[] vector) {
-        return tvsknnsearchfilter(index, topn, vector, SafeEncoder.encode(""));
+
+    public VectorBuilderFactory.Knn<byte[]> tvsknnsearch(byte[] index, Long topn, byte[] vector, final byte[]... params) {
+        return tvsknnsearchfilter(index, topn, vector, SafeEncoder.encode(""), params);
     }
 
     /**
@@ -267,63 +274,74 @@ public class TairVectorCluster {
      * <p>
      * query entity by vector and scalar pattern
      *
-     * @param index index name
-     * @param topn  topn result
-     * @param vector query vector
+     * @param index   index name
+     * @param topn    topn result
+     * @param vector  query vector
      * @param pattern support +, -，>, <, !=， ,()，&&, ||, !, ==
-     *
-     * @return  VectorBuilderFactory.Knn<>
+     * @param params  for HNSW, params include:
+     *                ef_search     range [0, 1000]
+     * @return VectorBuilderFactory.Knn<>
      */
-    public VectorBuilderFactory.Knn<String> tvsknnsearchfilter(final String index, Long topn, final String vector, final String pattern) {
-        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSKNNSEARCH, SafeEncoder.encode(index), toByteArray(topn), SafeEncoder.encode(vector), SafeEncoder.encode(pattern));
+    public VectorBuilderFactory.Knn<String> tvsknnsearchfilter(final String index, Long topn, final String vector, final String pattern, final String... params) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSKNNSEARCH, JoinParameters.joinParameters(SafeEncoder.encode(index), toByteArray(topn),
+                SafeEncoder.encode(vector), SafeEncoder.encode(pattern), SafeEncoder.encodeMany(params)));
         return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
     }
-    public VectorBuilderFactory.Knn<byte[]> tvsknnsearchfilter(byte[] index, Long topn, byte[] vector, byte[] pattern) {
-        Object obj = jc.sendCommand(index, ModuleCommand.TVSKNNSEARCH, index, toByteArray(topn), vector, pattern);
+
+    public VectorBuilderFactory.Knn<byte[]> tvsknnsearchfilter(byte[] index, Long topn, byte[] vector, byte[] pattern, final byte[]... params) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TVSKNNSEARCH, JoinParameters.joinParameters(index, toByteArray(topn), vector, pattern, params));
         return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
     }
 
     /**
      * TVS.MKNNSEARCH TVS.MKNNSEARCH index_name topn vector [vector...]
      *
-     * @param index index name
-     * @param topn topn for each vector
+     * @param index   index name
+     * @param topn    topn for each vector
      * @param vectors vector list
+     * @param params  for HNSW, params include:
+     *                ef_search     range [0, 1000]
      * @return Collection<>
      */
-    public Collection<VectorBuilderFactory.Knn<String>> tvsmknnsearch(final String index, Long topn, Collection<String> vectors) {
-       return tvsmknnsearchfilter(index, topn, vectors, "");
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmknnsearch(final String index, Long topn, Collection<String> vectors, final String... params) {
+        return tvsmknnsearchfilter(index, topn, vectors, "", params);
     }
-    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearch(byte[] index, Long topn, Collection<byte[]> vectors) {
-        return tvsmknnsearchfilter(index, topn, vectors, SafeEncoder.encode(""));
+
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearch(byte[] index, Long topn, Collection<byte[]> vectors, final byte[]... params) {
+        return tvsmknnsearchfilter(index, topn, vectors, SafeEncoder.encode(""), params);
     }
 
     /**
      * TVS.MKNNSEARCH TVS.MKNNSEARCH index_name topn vector [vector...] pattern
      *
-     * @param index index name
-     * @param topn topn for each vector
+     * @param index   index name
+     * @param topn    topn for each vector
      * @param vectors vector list
      * @param pattern support +, -，>, <, !=， ,()，&&, ||, !, ==
+     * @param params  for HNSW, params include:
+     *                ef_search     range [0, 1000]
      * @return Collection<>
      */
-    public Collection<VectorBuilderFactory.Knn<String>> tvsmknnsearchfilter(final String index, Long topn, Collection<String> vectors, final String pattern) {
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmknnsearchfilter(final String index, Long topn, Collection<String> vectors, final String pattern, final String... params) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(SafeEncoder.encode(index));
         args.add(toByteArray(topn));
         args.add(toByteArray(vectors.size()));
         args.addAll(vectors.stream().map(vector -> SafeEncoder.encode(vector)).collect(Collectors.toList()));
         args.add(SafeEncoder.encode(pattern));
+        args.addAll(Arrays.stream(params).map(str -> SafeEncoder.encode(str)).collect(Collectors.toList()));
         Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
         return VectorBuilderFactory.STRING_KNN_BATCH_RESULT.build(obj);
     }
-    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearchfilter(byte[] index, Long topn, Collection<byte[]> vectors, byte[] pattern) {
+
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmknnsearchfilter(byte[] index, Long topn, Collection<byte[]> vectors, byte[] pattern, final byte[]... params) {
         final List<byte[]> args = new ArrayList<byte[]>();
         args.add(index);
         args.add(toByteArray(topn));
         args.add(toByteArray(vectors.size()));
         args.addAll(vectors);
         args.add(pattern);
+        args.addAll(Arrays.stream(params).collect(Collectors.toList()));
         Object obj = jc.sendCommand(index, ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
         return VectorBuilderFactory.BYTE_KNN_BATCH_RESULT.build(obj);
     }
