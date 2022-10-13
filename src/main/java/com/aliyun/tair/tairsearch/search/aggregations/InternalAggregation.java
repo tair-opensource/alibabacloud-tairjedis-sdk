@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.aliyun.tair.tairsearch.search.aggregations.support.AggregationPath;
+import com.google.gson.JsonObject;
 
 /**
  * An internal implementation of {@link Aggregation}. Serves as a base class for all aggregation implementations.
@@ -42,14 +43,16 @@ import com.aliyun.tair.tairsearch.search.aggregations.support.AggregationPath;
  */
 public abstract class InternalAggregation implements Aggregation {
     protected final String name;
+    protected final JsonObject in;
 
     /**
      * Constructs an aggregation result with a given name.
      *
      * @param name The name of the aggregation.
      */
-    protected InternalAggregation(String name) {
+    protected InternalAggregation(String name, JsonObject in) {
         this.name = name;
+        this.in = in;
     }
 
     @Override
@@ -95,5 +98,13 @@ public abstract class InternalAggregation implements Aggregation {
 
         InternalAggregation other = (InternalAggregation) obj;
         return Objects.equals(name, other.name);
+    }
+
+    @Override
+    public String toString()
+    {
+        JsonObject aggregation = new JsonObject();
+        aggregation.add(name, in);
+        return aggregation.toString();
     }
 }

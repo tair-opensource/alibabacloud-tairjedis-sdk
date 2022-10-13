@@ -122,4 +122,9 @@ public class FetchSourceContext {
         return result;
     }
 
+    @Override
+    public String toString(){
+        return constructJSON().toString();
+    }
+
 }

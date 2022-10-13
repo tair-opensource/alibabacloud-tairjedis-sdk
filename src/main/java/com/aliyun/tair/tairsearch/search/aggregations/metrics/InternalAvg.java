@@ -43,7 +43,7 @@ public class InternalAvg extends InternalNumericMetricsAggregation.SingleValue i
     private final double avg;
 
     public InternalAvg(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         this.avg = in.get("value").getAsDouble();
     }
 

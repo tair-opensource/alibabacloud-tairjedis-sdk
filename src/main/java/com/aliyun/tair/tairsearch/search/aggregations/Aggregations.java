@@ -51,6 +51,7 @@ public class Aggregations implements Iterable<Aggregation>{
 
     protected final List<? extends Aggregation> aggregations;
     private Map<String, Aggregation> aggregationsAsMap;
+    private JsonObject aggregationsJsonObject;
 
     public Aggregations(List<? extends Aggregation> aggregations) {
         this.aggregations = aggregations;
@@ -60,6 +61,7 @@ public class Aggregations implements Iterable<Aggregation>{
     }
 
     public Aggregations(JsonObject in) {
+        aggregationsJsonObject = in;
         List<Aggregation> aggregations = new ArrayList<>();
         for (Map.Entry<String, JsonElement> entry : in.entrySet()) {
             String key = entry.getKey();
@@ -130,5 +132,10 @@ public class Aggregations implements Iterable<Aggregation>{
     @Override
     public final int hashCode() {
         return Objects.hash(getClass(), aggregations);
+    }
+
+    @Override
+    public String toString(){
+        return aggregationsJsonObject.toString();
     }
 }

@@ -117,4 +117,10 @@ public class SearchHits {
                 Arrays.hashCode(hits)
         );
     }
+
+    @Override
+    public String toString()
+    {
+        return searchHits.toString();
+    }
 }

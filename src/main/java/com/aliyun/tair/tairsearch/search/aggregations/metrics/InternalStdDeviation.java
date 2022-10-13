@@ -43,7 +43,7 @@ public class InternalStdDeviation extends InternalNumericMetricsAggregation.Sing
     private final double StdDeviation;
 
     public InternalStdDeviation(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         this.StdDeviation = in.get("value").getAsDouble();
     }
 

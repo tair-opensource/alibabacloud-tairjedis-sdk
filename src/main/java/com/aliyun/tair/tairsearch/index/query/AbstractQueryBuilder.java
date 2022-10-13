@@ -91,4 +91,9 @@ public abstract class AbstractQueryBuilder<QB extends AbstractQueryBuilder<QB>> 
     }
 
     protected abstract int doHashCode();
+
+    @Override
+    public String toString(){
+        return constructJSON().toString();
+    }
 }
