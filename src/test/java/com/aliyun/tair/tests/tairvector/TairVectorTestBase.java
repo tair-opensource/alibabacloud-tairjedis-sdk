@@ -19,9 +19,28 @@ public class TairVectorTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairVector = new TairVector(jedisPool);
+        tairVector = new TairVector(jedis);
         tairVectorPipeline = new TairVectorPipeline();
         tairVectorPipeline.setClient(jedis.getClient());
         tairVectorCluster = new TairVectorCluster(jedisCluster);
+    }
+
+    @AfterClass
+    public static void closeDown() {
+        tairVector.quit();
+        tairVectorCluster.quit();
+    }
+
+    public static void assertLongListEquals(List<Long> expected, List<Long> actual) {
+        assertEquals(expected.size(), actual.size());
+        for (int n = 0; n < expected.size(); n++) {
+            assertEquals(expected.get(n), actual.get(n));
+        }
+    }
+
+    public static void assertScanResultEquals(List<Long> expected, ScanResult<Long> actual) {
+        for (int n = 0; n < expected.size(); n++) {
+            assertEquals(expected.get(n), actual.getResult().get(n));
+        }
     }
 }
