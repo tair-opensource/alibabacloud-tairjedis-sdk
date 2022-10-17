@@ -43,7 +43,7 @@ public class InternalValueCount extends InternalNumericMetricsAggregation.Single
     private final long value;
 
     public InternalValueCount(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         this.value = in.get("value").getAsLong();
     }
 

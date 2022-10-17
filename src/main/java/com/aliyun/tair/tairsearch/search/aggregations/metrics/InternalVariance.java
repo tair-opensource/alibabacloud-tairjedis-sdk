@@ -39,7 +39,7 @@ public class InternalVariance extends InternalNumericMetricsAggregation.SingleVa
     private final double Variance;
 
     public InternalVariance(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         this.Variance = in.get("value").getAsDouble();
     }
 

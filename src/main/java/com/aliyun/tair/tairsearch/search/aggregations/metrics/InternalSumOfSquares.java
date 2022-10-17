@@ -43,7 +43,7 @@ public class InternalSumOfSquares extends InternalNumericMetricsAggregation.Sing
     private final double SumOfSquares;
 
     public InternalSumOfSquares(String name, JsonObject in) {
-        super(name);
+        super(name ,in);
         this.SumOfSquares = in.get("value").getAsDouble();
     }
 

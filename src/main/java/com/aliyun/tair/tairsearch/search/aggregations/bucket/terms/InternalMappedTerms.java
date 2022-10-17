@@ -54,7 +54,7 @@ public abstract class InternalMappedTerms<A extends InternalTerms<A, B>, B exten
             String name,
             JsonObject in
     ) {
-        super(name);
+        super(name, in);
         List<B> buckets = new ArrayList<>();
         JsonArray bucketsArray = in.get("buckets").getAsJsonArray();
         for(int i = 0;i < bucketsArray.size();i++){

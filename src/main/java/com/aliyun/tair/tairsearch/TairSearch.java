@@ -294,24 +294,24 @@ public class TairSearch {
     }
 
     public SearchResponse tftsearch(String index, SearchSourceBuilder ssb) {
-        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.constructJSON().toString())));
+        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.toString())));
     }
 
     public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()));
+        Object obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()));
         return new SearchResponse(BuilderFactory.STRING.build(obj));
     }
 
     public SearchResponse tftsearch(String index, SearchSourceBuilder ssb, boolean use_cache) {
-        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.constructJSON().toString())));
+        return new SearchResponse(tftsearch(SafeEncoder.encode(index), SafeEncoder.encode(ssb.toString())));
     }
 
     public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb, boolean use_cache) {
         Object obj;
         if (use_cache) {
-            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()), SafeEncoder.encode("use_cache"));
+            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()), SafeEncoder.encode("use_cache"));
         } else {
-            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.constructJSON().toString()));
+            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()));
         }
         return new SearchResponse(BuilderFactory.STRING.build(obj));
     }

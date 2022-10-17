@@ -43,7 +43,7 @@ public class InternalMin extends InternalNumericMetricsAggregation.SingleValue i
     private final double min;
 
     public InternalMin(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         this.min = in.get("value").getAsDouble();
     }
 

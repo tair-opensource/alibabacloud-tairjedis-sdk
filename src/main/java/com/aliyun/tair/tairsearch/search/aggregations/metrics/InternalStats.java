@@ -68,7 +68,7 @@ public class InternalStats extends InternalNumericMetricsAggregation.MultiValue 
             String name,
             JsonObject in
     ) {
-        super(name);
+        super(name, in);
         count = in.get(Metrics.count.name()).getAsLong();
         sum = in.get(Metrics.sum.name()).getAsDouble();
         min = in.get(Metrics.min.name()).getAsDouble();

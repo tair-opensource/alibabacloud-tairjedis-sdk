@@ -79,7 +79,6 @@ public class SearchSourceBuilder {
 
     private AggregatorFactories.Builder aggregations;
 
-    //public Map<String, AggregationBuilder> nameToType;
 
     /**
      * Constructs a new search source builder.
@@ -306,5 +305,10 @@ public class SearchSourceBuilder {
             queryObject.add(AGGS_FIELD, aggregations.constructJSON());
         }
         return queryObject;
+    }
+
+    @Override
+    public String toString(){
+        return constructJSON().toString();
     }
 }

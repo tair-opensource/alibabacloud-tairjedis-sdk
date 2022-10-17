@@ -505,9 +505,13 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"term\":{\"f0\":{\"boost\":2.0,\"value\":\"redis\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
+        assertEquals("{\"relation\":\"eq\",\"value\":1}", result.getHits().getTotalHits().toString());
+        assertEquals("{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}", result.getHits().toString());
+        assertEquals("[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}]",Arrays.toString(result.getHits().getHits()));
+        assertEquals("{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}", result.getHits().getAt(0).toString());
         assertEquals(1,result.getHits().getTotalHits().value);
         assertEquals(TotalHits.Relation.EQUAL_TO,result.getHits().getTotalHits().relation);
         assertEquals(0.153426,result.getHits().getMaxScore(),0.01);
@@ -536,7 +540,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"term\":{\"f0.f1\":{\"boost\":2.0,\"value\":\"redis\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
         assertEquals(1,result.getHits().getTotalHits().value);
@@ -596,7 +600,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
 
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -605,10 +609,10 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals(values, qb.values());
         ssb = new SearchSourceBuilder().query(qb);
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
     }
@@ -629,7 +633,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"wildcard\":{\"f0\":{\"boost\":2.0,\"value\":\"redis*\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":2.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":2.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -651,7 +655,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"prefix\":{\"f0\":{\"value\":\"redi\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":1.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -672,7 +676,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"match_all\":{\"boost\":2.0}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":2.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":2.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
     }
@@ -695,7 +699,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"range\":{\"f0\":{\"gt\":\"ra\",\"lt\":\"rf\",\"boost\":2.0}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":2.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":2.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -703,7 +707,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         ssb = new SearchSourceBuilder().query(qb);
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"range\":{\"f0\":{\"gt\":\"ra\",\"lt\":\"rf\",\"boost\":2.0}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":2.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":2.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -715,7 +719,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         ssb = new SearchSourceBuilder().query(qb);
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"range\":{\"f0\":{\"gte\":\"ra\",\"lte\":\"rf\",\"boost\":2.0}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":2.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":2.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -723,7 +727,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         ssb = new SearchSourceBuilder().query(qb);
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"range\":{\"f0\":{\"gte\":\"ra\",\"boost\":2.0}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":2.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":2.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -731,7 +735,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         ssb = new SearchSourceBuilder().query(qb);
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"range\":{\"f0\":{\"gte\":\"ra\",\"lte\":\"rf\",\"boost\":2.0}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":2.0,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":2.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -751,7 +755,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"match\":{\"f0\":{\"query\":\"nosql\",\"fuzziness\":1,\"prefix_length\":1}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -761,7 +765,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals(1, qb.minimumShouldMatch());
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"match\":{\"f0\":{\"query\":\"redis nosql\",\"analyzer\":\"standard\",\"minimum_should_match\":1}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
         Operator and = Operator.fromString("and");
@@ -771,7 +775,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         ssb = new SearchSourceBuilder().query(qb);
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"match\":{\"f0\":{\"query\":\"redis nosql\",\"analyzer\":\"standard\",\"operator\":\"and\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
 
@@ -793,7 +797,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"constant_score\":{\"boost\":0.153426,\"filter\":{\"term\":{\"f0\":{\"boost\":2.0,\"value\":\"redis\"}}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
     }
@@ -818,7 +822,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"dis_max\":{\"tie_breaker\":0.5,\"queries\":[{\"term\":{\"f0\":{\"boost\":1.0,"
                         + "\"value\":\"redis\"}}}]}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
     }
@@ -849,7 +853,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"bool\":{\"must\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}}],\"must_not\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"kvstore\"}}}],\"should\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"nosql\"}}}],\"minimum_should_match\":1}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.140133,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.140133,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
     }
@@ -870,9 +874,11 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb).sort("_score");
         assertEquals(qb, ssb.query());
         assertEquals(SortOrder.DESC, ssb.sorts().get(0).order());
+        assertEquals("{\"_score\":{\"order\":\"desc\"}}", ssb.sorts().get(0).toString());
+        assertEquals("[{\"_score\":{\"order\":\"desc\"}}]", ssb.sorts().toString());
         SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"sort\":[{\"_score\":{\"order\":\"desc\"}}]}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.356159,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.267119,\"_source\":{\"f0\":\"redis supports many different kind of values\"}}],\"max_score\":0.356159,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
 
@@ -883,16 +889,17 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals(SortOrder.ASC, ssb.sorts().get(0).order());
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"size\":1,\"from\":1,\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"sort\":[{\"_doc\":{\"order\":\"asc\"}}]}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}}],\"max_score\":0.311639,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
 
         ssb = new SearchSourceBuilder().query(qb).trackTotalHits(true).fetchSource("f0",null);
         TestCase.assertTrue(ssb.trackTotalHits());
         assertEquals("f0", ssb.fetchSource().includes()[0]);
+        assertEquals("{\"includes\":[\"f0\"],\"excludes\":[]}", ssb.fetchSource().toString());
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"track_total_hits\":true,\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"_source\":{\"includes\":[\"f0\"],\"excludes\":[]}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.356159,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.267119,\"_source\":{\"f0\":\"redis supports many different kind of values\"}}],\"max_score\":0.356159,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
 
@@ -900,7 +907,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("f0", ssb.fetchSource().excludes()[0]);
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"track_total_hits\":true,\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"_source\":{\"includes\":[],\"excludes\":[\"f0\"]}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.356159,\"_source\":{}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.267119,\"_source\":{}}],\"max_score\":0.356159,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
     }
@@ -930,12 +937,13 @@ public class TairSearchClusterTest extends TairSearchTestBase {
 
         SearchResponse sr = tairSearchCluster.tftsearch("tftkey", ssb);
         Sum s = sr.getAggregations().get("price_sum");
+        assertEquals("{\"price_sum\":{\"value\":212.2,\"type\":\"sum\"}}", s.toString());
         assertEquals(212.2, s.value(),0.001);
         assertEquals("sum", s.getType());
         assertEquals("price_sum", ab.getName());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_sum\":{\"sum\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_sum\":{\"value\":212.2,\"type\":\"sum\"}}}",
                 sr.toString());
     }
@@ -970,7 +978,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("price_max", s.getName());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_max\":{\"max\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_max\":{\"value\":111.1,\"type\":\"max\"}}}",
                 sr.toString());
     }
@@ -1005,7 +1013,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("price_avg", s.getName());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_avg\":{\"avg\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_avg\":{\"value\":106.1,\"type\":\"avg\"}}}",
                 sr.toString());
     }
@@ -1040,7 +1048,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals(101.1, s.value(),0.001);
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_min\":{\"min\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},"
                         + "\"aggregations\":{\"price_min\":{\"value\":101.1,\"type\":\"min\"}}}",
                 sr.toString());
@@ -1076,7 +1084,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals(22564.42, s.value(),0.001);
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_sum_of_squares\":{\"sum_of_squares\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_sum_of_squares\":{\"value\":22564.42,\"type\":\"sum_of_squares\"}}}",
                 sr.toString());
     }
@@ -1111,7 +1119,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("price_variance", s.getName());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_variance\":{\"variance\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_variance\":{\"value\":25.0,\"type\":\"variance\"}}}",
                 sr.toString());
     }
@@ -1146,7 +1154,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("price_std_deviation", s.getName());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_std_deviation\":{\"std_deviation\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_std_deviation\":{\"value\":5.0,\"type\":\"std_deviation\"}}}",
                 sr.toString());
     }
@@ -1187,7 +1195,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("price_extended_stats", s.getName());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_extended_stats\":{\"extended_stats\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_extended_stats\":{\"count\":2,\"sum\":212.2,\"max\":111.1,\"min\":101.1,\"avg\":106.1,\"sum_of_squares\":22564.42,\"variance\":25.0,\"std_deviation\":5.0,\"type\":\"extended_stats\"}}}",
                 sr.toString());
     }
@@ -1223,7 +1231,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("price_count", s.getName());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},"
                         + "\"aggs\":{\"price_count\":{\"value_count\":{\"field\":\"purchase_price\"}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"price_count\":{\"value\":2.0,\"type\":\"value_count\"}}}",
                 sr.toString());
     }
@@ -1254,13 +1262,16 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("Jay_BuyIn_Filter", filterAggregationBuilder.getName());
         SearchSourceBuilder ssb = new SearchSourceBuilder().size(0).query(qb).aggregation(filterAggregationBuilder);
         SearchResponse sr = tairSearchCluster.tftsearch("tftkey", ssb);
+        assertEquals("{\"Jay_BuyIn_Filter\":{\"doc_count\":2,\"type\":\"filter\",\"Jay_BuyIn_Quatation\":{\"count\":2,\"sum\":212.2,\"max\":111.1,\"min\":101.1,\"avg\":106.1,\"sum_of_squares\":22564.42,\"variance\":25.0,\"std_deviation\":5.0,\"type\":\"extended_stats\"}}}", sr.getAggregations().toString());
         assertEquals((long)2,((InternalAggregation)sr.getAggregations().get("Jay_BuyIn_Filter")).getProperty("_count"));
         assertEquals(106.1,((InternalAggregation)sr.getAggregations().get("Jay_BuyIn_Filter")).getProperty("Jay_BuyIn_Quatation.avg"));
         Filter result = sr.getAggregations().get("Jay_BuyIn_Filter");
+        assertEquals("{\"Jay_BuyIn_Filter\":{\"doc_count\":2,\"type\":\"filter\",\"Jay_BuyIn_Quatation\":{\"count\":2,\"sum\":212.2,\"max\":111.1,\"min\":101.1,\"avg\":106.1,\"sum_of_squares\":22564.42,\"variance\":25.0,\"std_deviation\":5.0,\"type\":\"extended_stats\"}}}", result.toString());
         assertEquals("filter", result.getType());
         assertEquals("Jay_BuyIn_Filter", result.getName());
         assertEquals(2, result.getDocCount());
         ExtendedStats s = result.getAggregations().get("Jay_BuyIn_Quatation");
+        assertEquals("{\"Jay_BuyIn_Quatation\":{\"count\":2,\"sum\":212.2,\"max\":111.1,\"min\":101.1,\"avg\":106.1,\"sum_of_squares\":22564.42,\"variance\":25.0,\"std_deviation\":5.0,\"type\":\"extended_stats\"}}", s.toString());
         assertEquals(106.1, s.getAvg(),0.001);
         assertEquals(2, s.getCount(),0.001);
         assertEquals(111.1, s.getMax(),0.001);
@@ -1270,7 +1281,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals(22564.42, s.getSumOfSquares(),0.001);
         assertEquals(25.0, s.getVariance(),0.001);
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"investor\":{\"boost\":1.0,\"value\":\"Jay\"}}},\"aggs\":{\"Jay_BuyIn_Filter\":{\"filter\":{\"term\":{\"purchase_type\":{\"boost\":1.0,\"value\":1}}},\"aggs\":{\"Jay_BuyIn_Quatation\":{\"extended_stats\":{\"field\":\"purchase_price\"}}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aggregations\":{\"Jay_BuyIn_Filter\":{\"doc_count\":2,\"type\":\"filter\",\"Jay_BuyIn_Quatation\":{\"count\":2,\"sum\":212.2,\"max\":111.1,\"min\":101.1,\"avg\":106.1,\"sum_of_squares\":22564.42,\"variance\":25.0,\"std_deviation\":5.0,\"type\":\"extended_stats\"}}}}",
                 sr.toString());
     }
@@ -1299,17 +1310,19 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         SearchSourceBuilder ssb = new SearchSourceBuilder().size(0).query(qb).aggregation(termsAggregationBuilder);
         SearchResponse sr = tairSearchCluster.tftsearch("tftkey", ssb);
         Terms result = sr.getAggregations().get("Per_Investor_Freq");
+        assertEquals("{\"Per_Investor_Freq\":{\"type\":\"sterms\",\"buckets\":[{\"key\":\"Jay\",\"doc_count\":2},{\"key\":\"Mila\",\"doc_count\":1}]}}", result.toString());
         assertEquals(2,result.getBucketByKey("Jay").getDocCount());
         assertEquals("sterms", result.getType());
         assertEquals("Per_Investor_Freq", result.getName());
 
         List<?> buckets = result.getBuckets();
+        assertEquals("[{\"key\":\"Jay\",\"doc_count\":2}, {\"key\":\"Mila\",\"doc_count\":1}]", buckets.toString());
         assertEquals("Jay", ((Terms.Bucket)buckets.get(0)).getKey());
         assertEquals(2, ((Terms.Bucket)buckets.get(0)).getDocCount());
         assertEquals("Mila", ((Terms.Bucket)buckets.get(1)).getKey());
         assertEquals(1, ((Terms.Bucket)buckets.get(1)).getDocCount());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"purchase_type\":{\"boost\":1.0,\"value\":1}}},\"aggs\":{\"Per_Investor_Freq\":{\"terms\":{\"field\":\"investor\",\"size\":10,\"min_doc_count\":1,\"order\":{\"_count\":\"desc\"}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":3}},\"aggregations\":{\"Per_Investor_Freq\":{\"type\":\"sterms\",\"buckets\":[{\"key\":\"Jay\",\"doc_count\":2},{\"key\":\"Mila\",\"doc_count\":1}]}}}",
                 sr.toString());
 
@@ -1324,7 +1337,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("Jay", ((Terms.Bucket)buckets.get(1)).getKey());
         assertEquals(2, ((Terms.Bucket)buckets.get(1)).getDocCount());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"purchase_type\":{\"boost\":1.0,\"value\":1}}},\"aggs\":{\"Per_Investor_Freq\":{\"terms\":{\"field\":\"investor\",\"size\":10,\"min_doc_count\":1,\"order\":{\"_key\":\"desc\"}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":3}},\"aggregations\":{\"Per_Investor_Freq\":{\"type\":\"sterms\",\"buckets\":[{\"key\":\"Mila\",\"doc_count\":1},{\"key\":\"Jay\",\"doc_count\":2}]}}}",
                 sr.toString());
 
@@ -1337,7 +1350,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("Jay", ((Terms.Bucket)buckets.get(0)).getKey());
         assertEquals(2, ((Terms.Bucket)buckets.get(0)).getDocCount());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"purchase_type\":{\"boost\":1.0,\"value\":1}}},\"aggs\":{\"Per_Investor_Freq\":{\"terms\":{\"field\":\"investor\",\"size\":10,\"min_doc_count\":2,\"order\":{\"_count\":\"desc\"}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":3}},\"aggregations\":{\"Per_Investor_Freq\":{\"type\":\"sterms\",\"buckets\":[{\"key\":\"Jay\",\"doc_count\":2}]}}}",
                 sr.toString());
 
@@ -1350,7 +1363,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("Jay", ((Terms.Bucket)buckets.get(0)).getKey());
         assertEquals(2, ((Terms.Bucket)buckets.get(0)).getDocCount());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"purchase_type\":{\"boost\":1.0,\"value\":1}}},\"aggs\":{\"Per_Investor_Freq\":{\"terms\":{\"field\":\"investor\",\"size\":1,\"min_doc_count\":1,\"order\":{\"_count\":\"desc\"}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":3}},\"aggregations\":{\"Per_Investor_Freq\":{\"type\":\"sterms\",\"buckets\":[{\"key\":\"Jay\",\"doc_count\":2}]}}}",
                 sr.toString());
 
@@ -1366,7 +1379,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals("YBY", ((Terms.Bucket)buckets.get(0)).getKey());
         assertEquals(1, ((Terms.Bucket)buckets.get(0)).getDocCount());
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"purchase_type\":{\"boost\":1.0,\"value\":1}}},\"aggs\":{\"Per_Investor_Freq\":{\"terms\":{\"field\":\"shares_name\",\"size\":10,\"min_doc_count\":1,\"include\":\"[A-Z]+\",\"exclude\":[\"XAX\"],\"order\":{\"_count\":\"desc\"}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":3}},\"aggregations\":{\"Per_Investor_Freq\":{\"type\":\"sterms\",\"buckets\":[{\"key\":\"YBY\",\"doc_count\":1}]}}}",
                 sr.toString());
 
@@ -1388,7 +1401,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         sum = ((Terms.Bucket)buckets.get(1)).getAggregations().get("Jay_BuyIn_Sum");
         assertEquals(11.1, sum.value(),0.001);
         assertEquals("{\"size\":0,\"query\":{\"term\":{\"purchase_type\":{\"boost\":1.0,\"value\":1}}},\"aggs\":{\"Per_Investor_Freq\":{\"terms\":{\"field\":\"investor\",\"size\":10,\"min_doc_count\":1,\"order\":{\"_count\":\"desc\"}},\"aggs\":{\"Jay_BuyIn_Sum\":{\"sum\":{\"field\":\"purchase_price\"}}}}}}",
-                ssb.constructJSON().toString());
+                ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[],\"max_score\":null,\"total\":{\"relation\":\"eq\",\"value\":3}},\"aggregations\":{\"Per_Investor_Freq\":{\"type\":\"sterms\",\"buckets\":[{\"key\":\"Jay\",\"doc_count\":2,\"Jay_BuyIn_Sum\":{\"value\":212.2,\"type\":\"sum\"}},{\"key\":\"Mila\",\"doc_count\":1,\"Jay_BuyIn_Sum\":{\"value\":11.1,\"type\":\"sum\"}}]}}}",
                 sr.toString());
     }

@@ -34,6 +34,7 @@ package com.aliyun.tair.tairsearch.search.aggregations;
 
 import com.aliyun.tair.tairsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import com.aliyun.tair.tairsearch.search.aggregations.bucket.SingleBucketAggregation;
+import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -49,8 +50,8 @@ public abstract class InternalMultiBucketAggregation<
     private static String COUNT = "_count";
     private static String KEY = "_key";
 
-    public InternalMultiBucketAggregation(String name) {
-        super(name);
+    public InternalMultiBucketAggregation(String name, JsonObject in) {
+        super(name, in);
     }
 
     @Override

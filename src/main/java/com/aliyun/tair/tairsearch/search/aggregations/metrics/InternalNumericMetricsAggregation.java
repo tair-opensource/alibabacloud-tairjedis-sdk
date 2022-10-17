@@ -32,6 +32,7 @@
 package com.aliyun.tair.tairsearch.search.aggregations.metrics;
 
 import com.aliyun.tair.tairsearch.search.aggregations.InternalAggregation;
+import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -46,8 +47,9 @@ public abstract class InternalNumericMetricsAggregation extends InternalAggregat
      *
      */
     public abstract static class SingleValue extends InternalNumericMetricsAggregation implements NumericMetricsAggregation.SingleValue{
-        protected SingleValue(String name) {
-            super(name);
+
+        protected SingleValue(String name, JsonObject in) {
+            super(name, in);
         }
 
         @Override
@@ -66,6 +68,7 @@ public abstract class InternalNumericMetricsAggregation extends InternalAggregat
             }
         }
 
+
     }
 
     /**
@@ -73,8 +76,8 @@ public abstract class InternalNumericMetricsAggregation extends InternalAggregat
      *
      */
     public abstract static class MultiValue extends InternalNumericMetricsAggregation implements NumericMetricsAggregation.MultiValue{
-        protected MultiValue(String name) {
-            super(name);
+        protected MultiValue(String name, JsonObject in) {
+            super(name, in);
         }
 
         public abstract double value(String name);
@@ -96,8 +99,8 @@ public abstract class InternalNumericMetricsAggregation extends InternalAggregat
 
     }
 
-    private InternalNumericMetricsAggregation(String name) {
-        super(name);
+    private InternalNumericMetricsAggregation(String name, JsonObject in) {
+        super(name, in);
     }
     
 }

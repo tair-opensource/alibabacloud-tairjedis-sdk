@@ -169,14 +169,6 @@ public class BoolQueryBuilder extends AbstractQueryBuilder<BoolQueryBuilder> {
         JsonObject queryObject = new JsonObject();
         queryObject.add(NAME, newQueryObject);
         return queryObject;
-//        JSONObject newQueryObject = new JSONObject();
-//        constructJSONArray(MUST, mustClauses, newQueryObject);
-//        constructJSONArray(MUST_NOT, mustNotClauses, newQueryObject);
-//        constructJSONArray(SHOULD, shouldClauses, newQueryObject);
-//        newQueryObject.put(MINIMUM_SHOULD_MATCH, minimumShouldMatch);
-//        JSONObject queryObject = new JSONObject();
-//        queryObject.put(NAME, newQueryObject);
-//        return queryObject;
     }
 
     private static void constructJSONArray(String field, List<QueryBuilder> queryBuilders, JsonObject builder){

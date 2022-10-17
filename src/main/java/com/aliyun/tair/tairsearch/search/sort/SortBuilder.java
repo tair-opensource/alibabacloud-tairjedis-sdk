@@ -65,4 +65,9 @@ public abstract class SortBuilder<T extends SortBuilder<T>> {
      */
     public abstract JsonObject constructJSON();
 
+    @Override
+    public String toString(){
+        return constructJSON().toString();
+    }
+
 }

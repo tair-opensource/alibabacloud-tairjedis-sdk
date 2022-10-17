@@ -109,5 +109,10 @@ public class AggregatorFactories {
             }
             return true;
         }
+
+        @Override
+        public String toString(){
+            return constructJSON().toString();
+        }
     }
 }

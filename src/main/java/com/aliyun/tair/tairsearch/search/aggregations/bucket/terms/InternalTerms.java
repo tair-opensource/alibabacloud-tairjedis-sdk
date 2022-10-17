@@ -68,8 +68,10 @@ public abstract class InternalTerms<A extends InternalTerms<A, B>, B extends Int
         protected long docCount;
         protected InternalAggregations aggregations;
         private static String TYPE = "type";
+        private JsonObject bucket;
 
         protected Bucket(JsonObject in){
+            bucket = in;
             List<InternalAggregation> aggregations = new ArrayList<>();
             for (Map.Entry<String, JsonElement> entry : in.entrySet()) {
                 if("doc_count".equals(entry.getKey()))
@@ -119,12 +121,15 @@ public abstract class InternalTerms<A extends InternalTerms<A, B>, B extends Int
         public int hashCode() {
             return Objects.hash(getClass(), docCount, aggregations);
         }
+
+        @Override
+        public String toString() {return bucket.toString();}
     }
 
     protected InternalTerms(
-            String name
+            String name, JsonObject in
     ) {
-        super(name);
+        super(name ,in);
     }
 
 

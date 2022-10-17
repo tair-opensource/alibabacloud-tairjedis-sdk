@@ -44,7 +44,7 @@ public class InternalMax extends InternalNumericMetricsAggregation.SingleValue i
     private final double max;
 
     public InternalMax(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         this.max = in.get("value").getAsDouble();
     }
 

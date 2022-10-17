@@ -44,7 +44,7 @@ public class InternalSum extends InternalNumericMetricsAggregation.SingleValue i
     private final double sum;
 
     public InternalSum(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         this.sum = in.get("value").getAsDouble();
     }
 

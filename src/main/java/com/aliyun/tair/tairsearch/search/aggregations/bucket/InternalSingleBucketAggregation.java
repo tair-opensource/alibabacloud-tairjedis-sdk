@@ -53,7 +53,7 @@ public abstract class InternalSingleBucketAggregation extends InternalAggregatio
     private static String TYPE = "type";
 
     protected InternalSingleBucketAggregation(String name, JsonObject in) {
-        super(name);
+        super(name, in);
         List<InternalAggregation> aggregations = new ArrayList<>();
         for (Map.Entry<String, JsonElement> entry : in.entrySet()) {
             if("doc_count".equals(entry.getKey()))
@@ -71,19 +71,6 @@ public abstract class InternalSingleBucketAggregation extends InternalAggregatio
         }
         this.aggregations = InternalAggregations.from(aggregations);
     }
-
-//    /**
-//     * Creates a single bucket aggregation.
-//     *
-//     * @param name          The aggregation name.
-//     * @param docCount      The document count in the single bucket.
-//     * @param aggregations  The already built sub-aggregations that are associated with the bucket.
-//     */
-//    protected InternalSingleBucketAggregation(String name, long docCount, InternalAggregations aggregations) {
-//        super(name);
-//        this.docCount = docCount;
-//        this.aggregations = aggregations;
-//    }
 
     @Override
     public long getDocCount() {
