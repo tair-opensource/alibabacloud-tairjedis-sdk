@@ -1002,6 +1002,49 @@ public class TairHashTest extends TairHashTestBase {
         }
     }
 
+    @Test
+    public void exhscanunorderTest() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        for (int i = 0; i < 100; i++) {
+            map.put("field" + i, "val" + i);
+        }
+        tairHash.exhmset(foo, map);
+
+        map.clear();
+        String cursor = ScanParams.SCAN_POINTER_START;
+        do {
+            ScanResult<Entry<String, String>> scanResult = tairHash.exhscanunorder(foo, cursor);
+            cursor = scanResult.getCursor();
+            for (Entry<String, String> entry : scanResult.getResult()) {
+                map.put(entry.getKey(), entry.getValue());
+            }
+        } while (!cursor.equals("0"));
+
+        Assert.assertEquals(100, map.size());
+    }
+
+    @Test
+    public void exhscanunorderWithParamsTest() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        for (int i = 0; i < 100; i++) {
+            map.put("field" + i, "val" + i);
+        }
+        tairHash.exhmset(foo, map);
+
+        map.clear();
+        String cursor = ScanParams.SCAN_POINTER_START;
+        do {
+            ScanResult<Entry<String, String>> scanResult = tairHash.exhscanunorder(foo, cursor,
+                new ScanParams().match("*1*"));
+            cursor = scanResult.getCursor();
+            for (Entry<String, String> entry : scanResult.getResult()) {
+                map.put(entry.getKey(), entry.getValue());
+            }
+        } while (!cursor.equals("0"));
+
+        Assert.assertEquals(19, map.size());
+    }
+
     // ======== common equal ========
     public boolean arrayContains(Collection<byte[]> array, byte[] expected) {
         for (byte[] a : array) {

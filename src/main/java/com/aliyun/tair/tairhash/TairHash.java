@@ -895,4 +895,57 @@ public class TairHash {
             releaseJedis(jedis);
         }
     }
+
+    /**
+     * EXHSCANUNORDER key cursor
+     * @param key the key
+     * @param cursor the cursor
+     * @return ScanResult
+     */
+    public ScanResult<Entry<String, String>> exhscanunorder(final String key, final String cursor) {
+        return exhscanunorder(key, cursor, new ScanParams());
+    }
+
+    public ScanResult<Entry<byte[], byte[]>> exhscanunorder(final byte[] key, final byte[] cursor) {
+        return exhscanunorder(key, cursor, new ScanParams());
+    }
+
+    /**
+     * EXHSCANUNORDER key cursor [MATCH pattern] [COUNT count]
+     * @param key
+     * @param cursor
+     * @param params
+     * @return
+     */
+    public ScanResult<Entry<String, String>> exhscanunorder(final String key, final String cursor,
+        final ScanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(SafeEncoder.encode(key));
+        args.add(SafeEncoder.encode(cursor));
+        args.addAll(params.getParams());
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXHSCANUNORDER, args.toArray(new byte[args.size()][]));
+            return HashBuilderFactory.EXHSCAN_RESULT_STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public ScanResult<Entry<byte[], byte[]>> exhscanunorder(final byte[] key, final byte[] cursor,
+        final ScanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(key);
+        args.add(cursor);
+        args.addAll(params.getParams());
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXHSCANUNORDER, args.toArray(new byte[args.size()][]));
+            return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
 }
