@@ -46,6 +46,7 @@ public enum ModuleCommand implements ProtocolCommand {
     EXHGETALL("EXHGETALL"),
     EXHMGETWITHVER("EXHMGETWITHVER"),
     EXHSCAN("EXHSCAN"),
+    EXHSCANUNORDER("EXHSCANUNORDER"),
 
     // CAS & CAD
     CAS("CAS"),

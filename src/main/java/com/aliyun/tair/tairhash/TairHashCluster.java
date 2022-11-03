@@ -12,6 +12,7 @@ import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
 import com.aliyun.tair.tairhash.params.*;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
@@ -424,6 +425,37 @@ public class TairHashCluster {
         args.addAll(params.getParams());
 
         Object obj = jc.sendCommand(key, ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
+        return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
+    }
+
+    public ScanResult<Entry<String, String>> exhscanunorder(final String key, final String cursor) {
+        return exhscanunorder(key, cursor, new ScanParams());
+    }
+
+    public ScanResult<Entry<byte[], byte[]>> exhscanunorder(final byte[] key, final byte[] cursor) {
+        return exhscanunorder(key, cursor, new ScanParams());
+    }
+
+    public ScanResult<Entry<String, String>> exhscanunorder(final String key, final String cursor,
+        final ScanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(SafeEncoder.encode(key));
+        args.add(SafeEncoder.encode(cursor));
+        args.addAll(params.getParams());
+
+        Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.EXHSCANUNORDER,
+            args.toArray(new byte[args.size()][]));
+        return HashBuilderFactory.EXHSCAN_RESULT_STRING.build(obj);
+    }
+
+    public ScanResult<Entry<byte[], byte[]>> exhscanunorder(final byte[] key, final byte[] cursor,
+        final ScanParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(key);
+        args.add(cursor);
+        args.addAll(params.getParams());
+
+        Object obj = jc.sendCommand(key, ModuleCommand.EXHSCANUNORDER, args.toArray(new byte[args.size()][]));
         return HashBuilderFactory.EXHSCAN_RESULT_BYTE.build(obj);
     }
 }
