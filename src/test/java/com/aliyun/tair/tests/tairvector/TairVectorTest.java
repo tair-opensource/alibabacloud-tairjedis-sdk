@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,7 @@ public class TairVectorTest extends TairVectorTestBase {
     final DistanceMethod method = DistanceMethod.IP;
     final long dbid = 2;
     final List<String> index_params = Arrays.asList("ef_construct", "100", "M", "16");
+    final List<String> index_params_with_dataType = Arrays.asList("ef_construct", "100", "M", "16","data_type","BINARY");
     final List<String> ef_params = Arrays.asList("ef_search", "100");
 
     /**
@@ -66,6 +68,23 @@ public class TairVectorTest extends TairVectorTestBase {
     public void tvs_create_index() {
         tvs_del_index();
         assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method, index_params.toArray(new String[0])));
+        try {
+            tairVector.tvscreateindex(SafeEncoder.encode(index), dims, algorithm, method);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "ERR duplicated index key");
+        }
+    }
+
+
+    @Test
+    public void tvs_create_index_with_datatype() {
+        tvs_del_index();
+        try {
+            tairVector.tvscreateindex(index, dims, algorithm, method, index_params_with_dataType.toArray(new String[0]));
+        }catch (Exception e){
+            assertEquals(e.getMessage(), "ERR index parameters invalid");
+        }
+        assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, DistanceMethod.JACCARD, index_params_with_dataType.toArray(new String[0])));
         try {
             tairVector.tvscreateindex(SafeEncoder.encode(index), dims, algorithm, method);
         } catch (Exception e) {
@@ -139,6 +158,33 @@ public class TairVectorTest extends TairVectorTestBase {
     }
 
     @Test
+    public void tvs_hset_data_bin() {
+        check_index(dims, algorithm, DistanceMethod.JACCARD, index_params_with_dataType.toArray(new String[0]));
+        tvs_del_entity("fourth_entity_knn");
+        tvs_hset("fourth_entity_knn", "[1,1,0,0,1,0,1,0]", "name", "sammy");
+        tvs_del_entity("ten_entity_knn");
+        tvs_hset(SafeEncoder.encode("ten_entity_knn"), SafeEncoder.encode("[1,1,0,0,1,0,1,0]"),
+                SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+    }
+
+    @Test
+    public void tvs_hgetall_data_bin() {
+        tvs_del_entity("first_entity_knn");
+        tvs_del_entity("second_entity_knn");
+        tvs_hset("first_entity_knn", "[1,1,1,1,0,0,0,0]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity_knn"), SafeEncoder.encode("[1,1,1,1,0,0,0,0]"),
+                SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+
+        Map<String, String> entity_string = tairVector.tvshgetall(index, "first_entity_knn");
+        assertEquals("[1,1,1,1,0,0,0,0]", entity_string.get(VectorBuilderFactory.VECTOR_TAG));
+        assertEquals("sammy", entity_string.get("name"));
+
+        Map<byte[], byte[]> entity_byte = tairVector.tvshgetall(SafeEncoder.encode(index), SafeEncoder.encode("first_entity_knn"));
+        assertEquals("[1,1,1,1,0,0,0,0]", SafeEncoder.encode(entity_byte.get(SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG))));
+        assertEquals("sammy", SafeEncoder.encode(entity_byte.get(SafeEncoder.encode("name"))));
+    }
+
+    @Test
     public void tvs_hset() {
         check_index(dims, algorithm, method, index_params.toArray(new String[0]));
         tvs_del_entity("fourth_entity_knn");
@@ -164,6 +210,8 @@ public class TairVectorTest extends TairVectorTestBase {
         assertEquals("[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]", SafeEncoder.encode(entity_byte.get(SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG))));
         assertEquals("sammy", SafeEncoder.encode(entity_byte.get(SafeEncoder.encode("name"))));
     }
+
+
 
     @Test
     public void tvs_hmgetall() {
@@ -260,6 +308,24 @@ public class TairVectorTest extends TairVectorTestBase {
 
         VectorBuilderFactory.Knn<byte[]> entity_byte = tairVector.tvsknnsearch(SafeEncoder.encode(index), topn,
                 SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"));
+        assertEquals(2, entity_byte.getKnnResults().size());
+    }
+    @Test
+    public void tvs_knnsearch_with_databin() {
+        check_index(dims, algorithm, DistanceMethod.JACCARD, index_params_with_dataType.toArray(new String[0]));
+        tvs_del_entity("first_entity_knn");
+        tvs_del_entity(SafeEncoder.encode("second_entity_knn"));
+
+        tvs_hset("first_entity_knn", "[1,1,1,1,0,0,0,0]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity_knn"), SafeEncoder.encode("[1,1,1,1,0,0,0,0]"),
+                SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+
+        long topn = 2L;
+        VectorBuilderFactory.Knn<String> result_string = tairVector.tvsknnsearch(index, topn, "[1,1,1,1,0,0,0,0]");
+        assertEquals(2, result_string.getKnnResults().size());
+
+        VectorBuilderFactory.Knn<byte[]> entity_byte = tairVector.tvsknnsearch(SafeEncoder.encode(index), topn,
+                SafeEncoder.encode("[1,1,1,1,0,0,0,0]"));
         assertEquals(2, entity_byte.getKnnResults().size());
     }
 
