@@ -19,7 +19,7 @@ public class GisBuilderFactory {
             List<byte[]> rawResults;
             List<Object> result = (List<Object>) data;
             if (null == result || 0 == result.size()) {
-                rawResults = null;
+                return new HashMap<>();
             } else {
                 rawResults = (List) result.get(1);
             }
@@ -45,7 +45,7 @@ public class GisBuilderFactory {
             List<byte[]> rawResults;
             List<Object> result = (List<Object>) data;
             if (null == result || 0 == result.size()) {
-                rawResults = null;
+                return new HashMap<>();
             } else {
                 rawResults = (List) result.get(1);
             }
