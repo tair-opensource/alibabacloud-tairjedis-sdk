@@ -76,6 +76,16 @@ public class TairGisPipelineTest extends TairGisTestBase {
     }
 
     @Test
+    public void gissearchNotExistsTest() throws Exception {
+        String polygonWktText = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))", pointWktText = "POINT (30 11)";
+        // String
+        tairGisPipeline.gissearch(area, pointWktText);
+        List<Object> objs = tairGisPipeline.syncAndReturnAll();
+        Assert.assertEquals(1, objs.size());
+        Assert.assertEquals(0, Map.class.cast(objs.get(0)).size());
+    }
+
+    @Test
     public void gisdelTest() throws Exception {
         String uuid = UUID.randomUUID().toString();
         String key = "hangzhou" + uuid;
