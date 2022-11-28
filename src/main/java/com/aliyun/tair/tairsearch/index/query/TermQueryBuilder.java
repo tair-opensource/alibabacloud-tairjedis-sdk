@@ -79,6 +79,9 @@ public class TermQueryBuilder extends BaseTermQueryBuilder<TermQueryBuilder> {
         JsonObject valueObject = new JsonObject();
         valueObject.addProperty(BOOST,boost);
         valueObject.add(VALUE_FIELD, new Gson().toJsonTree(value));
+        if(!lowercase) {
+            valueObject.addProperty(LOWERCASE_FIELD, lowercase);
+        }
         JsonObject queryObject = new JsonObject();
         queryObject.add(fieldName,valueObject);
         JsonObject newQueryObject = new JsonObject();

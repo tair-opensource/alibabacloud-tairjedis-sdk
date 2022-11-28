@@ -519,6 +519,17 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals("{\"f0\":\"redis is a nosql database\"}",result.getHits().getAt(0).getSourceAsString());
         Map<String,Object> tmp = result.getHits().getAt(0).getSourceAsMap();
         assertEquals("redis is a nosql database",tmp.get("f0"));
+
+        jedis.del("tftkey");
+        ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"whitespace\"}}}}");
+        assertEquals(ret, "OK");
+        tairSearch.tftadddoc("tftkey", "{\"f0\":\"Redis is a nosql database\"}", "1");
+        qb = QueryBuilders.termQuery("f0","Redis").lowercase(false);
+        assertEquals(false, qb.lowercase());
+        ssb = new SearchSourceBuilder().query(qb);
+        result = tairSearch.tftsearch("tftkey", ssb);
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.134248,\"_source\":{\"f0\":\"Redis is a nosql database\"}}],\"max_score\":0.134248,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+                result.toString());
     }
 
     @Test
@@ -614,6 +625,17 @@ public class TairSearchTest extends TairSearchTestBase {
             ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
+
+        jedis.del("tftkey");
+        ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"whitespace\"}}}}");
+        assertEquals(ret, "OK");
+        tairSearch.tftadddoc("tftkey", "{\"f0\":\"Redis is a nosql database\"}", "1");
+        qb = QueryBuilders.termsQuery("f0","Redis", "apple").lowercase(false);
+        assertEquals(false, qb.lowercase());
+        ssb = new SearchSourceBuilder().query(qb);
+        result = tairSearch.tftsearch("tftkey", ssb);
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.019691,\"_source\":{\"f0\":\"Redis is a nosql database\"}}],\"max_score\":0.019691,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+                result.toString());
     }
 
     @Test
