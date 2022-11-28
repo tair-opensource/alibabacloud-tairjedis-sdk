@@ -88,7 +88,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearchCluster.tftupdatedocfield("tftkey", "1", "{\"f1\":\"mysql is a dbms\"}");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.191783,\"_source\":{\"f0\":\"redis is a nosql database\",\"f1\":\"mysql is a dbms\"}}],\"max_score\":0.191783,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.191783,\"_source\":{\"f1\":\"mysql is a dbms\",\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.191783,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearchCluster.tftsearch("tftkey", "{\"query\":{\"term\":{\"f1\":\"mysql\"}}}"));
     }
 
@@ -485,7 +485,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
 
         assertEquals(2, tairSearchCluster.tftdelsug("tftkey".getBytes(), "redis cluster".getBytes(), "redis".getBytes()).intValue());
         assertEquals(docs.size() - 2, tairSearchCluster.tftsugnum("tftkey".getBytes()).intValue());
-        jedis.del("tftkey".getBytes());
+        jedisCluster.del("tftkey".getBytes());
     }
 
     @Test
@@ -525,20 +525,20 @@ public class TairSearchClusterTest extends TairSearchTestBase {
 
     @Test
     public void tftsourceasmaptest(){
-        jedis.del("tftkey");
-        String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"properties\":{\"f1\":{\"type\":\"text\"}}},\"f2\":{\"type\":\"long\"},\"f3\":{\"type\":\"double\"},\"f4\":{\"type\":\"integer\"}}}}");
+        jedisCluster.del("tftkey");
+        String ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"properties\":{\"f1\":{\"type\":\"text\"}}},\"f2\":{\"type\":\"long\"},\"f3\":{\"type\":\"double\"},\"f4\":{\"type\":\"integer\"}}}}");
         assertEquals(ret, "OK");
 
-        tairSearch.tftadddoc("tftkey", "{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}", "1");
+        tairSearchCluster.tftadddoc("tftkey", "{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}", "1");
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
-                tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0.f1\":\"redis\"}}}"));
+                tairSearchCluster.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0.f1\":\"redis\"}}}"));
 
         TermQueryBuilder qb = QueryBuilders.termQuery("f0.f1","redis").boost(2.0F);
         assertEquals("f0.f1", qb.fieldName());
         assertEquals("redis", qb.value());
         assertEquals(2.0, qb.boost(),0.01);
         SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
-        SearchResponse result = tairSearch.tftsearch("tftkey", ssb);
+        SearchResponse result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"term\":{\"f0.f1\":{\"boost\":2.0,\"value\":\"redis\"}}}}",
                 ssb.toString());
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
@@ -559,20 +559,20 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         int f4 = ((Number)tmp.get("f4")).intValue();
         assertEquals(10, f4);
 
-        jedis.del("tftkey");
-        String ret1 = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"properties\":{\"f1\":{\"type\":\"long\"}}}}}}");
+        jedisCluster.del("tftkey");
+        String ret1 = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"properties\":{\"f1\":{\"type\":\"long\"}}}}}}");
         assertEquals(ret1, "OK");
 
-        tairSearch.tftadddoc("tftkey", "{\"f0\":{\"f1\":10}}", "1");
+        tairSearchCluster.tftadddoc("tftkey", "{\"f0\":{\"f1\":10}}", "1");
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.0,\"_source\":{\"f0\":{\"f1\":10}}}],\"max_score\":1.0,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
-                tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0.f1\":10}}}"));
+                tairSearchCluster.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0.f1\":10}}}"));
 
         TermQueryBuilder qb1 = QueryBuilders.termQuery("f0.f1",10).boost(2.0F);
         assertEquals("f0.f1", qb1.fieldName());
         assertEquals(10, qb1.value());
         assertEquals(2.0, qb1.boost(),0.01);
         SearchSourceBuilder ssb1 = new SearchSourceBuilder().query(qb1);
-        SearchResponse result1 = tairSearch.tftsearch("tftkey", ssb1);
+        SearchResponse result1 = tairSearchCluster.tftsearch("tftkey", ssb1);
         Map<String,Object> tmp1 = result1.getHits().getAt(0).getSourceAsMap();
         Map<String, Object> f0Map = (Map<String, Object>)(tmp1.get("f0"));
         long f0F1 = ((Number)f0Map.get("f1")).longValue();
@@ -890,7 +890,7 @@ public class TairSearchClusterTest extends TairSearchTestBase {
         result = tairSearchCluster.tftsearch("tftkey", ssb);
         assertEquals("{\"size\":1,\"from\":1,\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"sort\":[{\"_doc\":{\"order\":\"asc\"}}]}",
                 ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}}],\"max_score\":0.311639,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.0,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}}],\"max_score\":1.0,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
 
         ssb = new SearchSourceBuilder().query(qb).trackTotalHits(true).fetchSource("f0",null);

@@ -87,7 +87,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftupdatedocfield("tftkey", "1", "{\"f1\":\"mysql is a dbms\"}");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.191783,\"_source\":{\"f0\":\"redis is a nosql database\",\"f1\":\"mysql is a dbms\"}}],\"max_score\":0.191783,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.191783,\"_source\":{\"f1\":\"mysql is a dbms\",\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.191783,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f1\":\"mysql\"}}}"));
     }
 
@@ -890,7 +890,7 @@ public class TairSearchTest extends TairSearchTestBase {
         result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"size\":1,\"from\":1,\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"sort\":[{\"_doc\":{\"order\":\"asc\"}}]}",
                 ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}}],\"max_score\":0.311639,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.0,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}}],\"max_score\":1.0,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
 
         ssb = new SearchSourceBuilder().query(qb).trackTotalHits(true).fetchSource("f0",null);
