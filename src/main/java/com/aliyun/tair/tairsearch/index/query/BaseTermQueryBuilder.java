@@ -40,12 +40,15 @@ import java.util.Objects;
  */
 public abstract class BaseTermQueryBuilder<QB extends BaseTermQueryBuilder<QB>> extends AbstractQueryBuilder<QB> {
     public static final String VALUE_FIELD = "value";
-
+    public static final String LOWERCASE_FIELD = "lowercase";
     /** Name of field to match against. */
     protected final String fieldName;
 
     /** Value to find matches for. */
     protected final Object value;
+
+    /** Default true. If lowercase is false, term will not convert to lowercase. */
+    protected boolean lowercase = true;
 
     /**
      * Constructs a new base term query.
@@ -137,13 +140,20 @@ public abstract class BaseTermQueryBuilder<QB extends BaseTermQueryBuilder<QB>> 
         return this.value;
     }
 
+    public QB lowercase(boolean lowercase) {
+        this.lowercase = lowercase;
+        return (QB)this;
+    }
+
+    public boolean lowercase() { return this.lowercase; }
+
     @Override
     protected int doHashCode() {
-        return Objects.hash(fieldName, value);
+        return Objects.hash(fieldName, value, lowercase);
     }
 
     @Override
     protected boolean doEquals(QB other) {
-        return Objects.equals(fieldName, other.fieldName) && Objects.equals(value, other.value);
+        return Objects.equals(fieldName, other.fieldName) && Objects.equals(value, other.value) && Objects.equals(lowercase, other.lowercase);
     }
 }

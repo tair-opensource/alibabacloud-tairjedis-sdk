@@ -50,9 +50,12 @@ import com.google.gson.JsonObject;
  */
 public class TermsQueryBuilder extends AbstractQueryBuilder<TermsQueryBuilder> {
     public static final String NAME = "terms";
+    public static final String LOWERCASE_FIELD = "lowercase";
 
     protected final String fieldName;
     protected List<Object> values;
+    /** Default true. If lowercase is false, terms will not convert to lowercase. */
+    protected boolean lowercase = true;
 
     /**
      * A filter for a field based on several terms matching on any of them.
@@ -150,7 +153,12 @@ public class TermsQueryBuilder extends AbstractQueryBuilder<TermsQueryBuilder> {
         return this.values;
     }
 
+    public TermsQueryBuilder lowercase(boolean lowercase) {
+        this.lowercase = lowercase;
+        return this;
+    }
 
+    public boolean lowercase() { return this.lowercase; }
 
     @Override
     public JsonObject constructJSON() {
@@ -161,6 +169,9 @@ public class TermsQueryBuilder extends AbstractQueryBuilder<TermsQueryBuilder> {
         }
         valueObject.add(fieldName,valuesArray);
         valueObject.addProperty(BOOST,boost);
+        if(!lowercase) {
+            valueObject.addProperty(LOWERCASE_FIELD, lowercase);
+        }
         JsonObject queryObject = new JsonObject();
         queryObject.add(NAME,valueObject);
         return queryObject;
@@ -168,12 +179,13 @@ public class TermsQueryBuilder extends AbstractQueryBuilder<TermsQueryBuilder> {
 
     @Override
     protected int doHashCode() {
-        return Objects.hash(fieldName, values);
+        return Objects.hash(fieldName, values, lowercase);
     }
 
     @Override
     protected boolean doEquals(TermsQueryBuilder other) {
         return Objects.equals(fieldName, other.fieldName)
-                && Objects.equals(values, other.values);
+                && Objects.equals(values, other.values)
+                && Objects.equals(lowercase, other.lowercase);
     }
 }
