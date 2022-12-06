@@ -27,7 +27,7 @@ public class VectorSearch {
 
         jedisPool = new JedisPool(config, HOST, PORT, DEFAULT_CONNECTION_TIMEOUT,
             DEFAULT_SO_TIMEOUT, PASSWORD, 0, null);
-        tairVector = new TairVector(jedisPool);
+        tairVector = new TairVector(jedisPool.getResource());
     }
 
     public static boolean createIndex(final String index, int dims, final String... attrs) {

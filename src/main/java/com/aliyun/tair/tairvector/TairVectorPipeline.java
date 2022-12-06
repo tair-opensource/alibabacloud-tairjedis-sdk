@@ -1,12 +1,5 @@
 package com.aliyun.tair.tairvector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
 import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
@@ -19,6 +12,9 @@ import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
