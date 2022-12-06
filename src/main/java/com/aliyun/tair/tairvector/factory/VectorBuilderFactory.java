@@ -1,17 +1,17 @@
 package com.aliyun.tair.tairvector.factory;
 
+import redis.clients.jedis.Builder;
+import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.util.SafeEncoder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.ScanResult;
-import redis.clients.jedis.util.SafeEncoder;
-
 public class VectorBuilderFactory {
     public static final String VECTOR_TAG = "VECTOR";
-    public static class KnnItem<T> {
+    public static class KnnItem<T> implements Comparable<KnnItem<T>> {
         private T id;
         private double score;
         public KnnItem(T id, double score) {
@@ -31,6 +31,9 @@ public class VectorBuilderFactory {
         public String toString() {
             return "id =" + id + ", score =" + score + ";";
         }
+
+        @Override
+        public int compareTo(KnnItem<T> other) { return Double.compare(this.score, other.score); }
     }
 
     public static class Knn<T> {

@@ -1,16 +1,10 @@
 package com.aliyun.tair.tairvector.params;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import redis.clients.jedis.Protocol;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.nio.ByteBuffer;
+import java.util.*;
 
 
 public class HscanParams {
