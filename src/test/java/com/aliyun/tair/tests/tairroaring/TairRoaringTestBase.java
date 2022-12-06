@@ -26,7 +26,7 @@ public class TairRoaringTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairRoaring = new TairRoaring(jedis);
+        tairRoaring = new TairRoaring(jedisPool);
         tairRoaringPipeline = new TairRoaringPipeline();
         tairRoaringPipeline.setClient(jedis.getClient());
         tairRoaringCluster = new TairRoaringCluster(jedisCluster);

@@ -11,6 +11,7 @@ import com.aliyun.tair.tairzset.params.ExzrangeParams;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.SafeEncoder;
 
 import static com.aliyun.tair.tairzset.LeaderBoard.joinScoresToString;
@@ -18,13 +19,27 @@ import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairZset {
     private Jedis jedis;
+    private JedisPool jedisPool;
 
     public TairZset(Jedis jedis) {
         this.jedis = jedis;
     }
 
+    public TairZset(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
     private Jedis getJedis() {
+        if (jedisPool != null) {
+            return jedisPool.getResource();
+        }
         return jedis;
+    }
+
+    private void releaseJedis(Jedis jedis) {
+        if (jedisPool != null) {
+            jedis.close();
+        }
     }
 
     /**
@@ -43,13 +58,23 @@ public class TairZset {
     }
 
     public Long exzadd(final String key, final String score, final String member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, key, score, member);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD, key, score, member);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzadd(final byte[] key, final byte[] score, final byte[] member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, key, score, member);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD, key, score, member);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzadd(final String key, final String score, final String member, final ExzaddParams params) {
@@ -57,8 +82,13 @@ public class TairZset {
     }
 
     public Long exzadd(final byte[] key, final byte[] score, final byte[] member, final ExzaddParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, params.getByteParams(key, score, member));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD, params.getByteParams(key, score, member));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -75,8 +105,14 @@ public class TairZset {
             bparams.add(SafeEncoder.encode(entry.getKey()));
             bparams.add(SafeEncoder.encode(entry.getValue()));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -97,8 +133,14 @@ public class TairZset {
             bparams.add(SafeEncoder.encode(entry.getValue()));
             bparams.add(SafeEncoder.encode(entry.getKey()));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /** see {@link TairZset#exzaddMembers(byte[], Map)} */
@@ -111,8 +153,14 @@ public class TairZset {
             bparams.add(entry.getKey());
             bparams.add(entry.getValue());
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzaddMembers(final byte[] key, final Map<byte[], byte[]> members) {
@@ -123,8 +171,14 @@ public class TairZset {
             bparams.add(entry.getValue());
             bparams.add(entry.getKey());
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /** see {@link TairZset#exzaddMembers(String, Map, ExzaddParams)} */
@@ -135,9 +189,15 @@ public class TairZset {
             bparams.add(SafeEncoder.encode(entry.getKey()));
             bparams.add(SafeEncoder.encode(entry.getValue()));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD,
+                params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzaddMembers(final String key, final Map<String, String> members, final ExzaddParams params) {
@@ -146,11 +206,17 @@ public class TairZset {
             bparams.add(SafeEncoder.encode(entry.getValue()));
             bparams.add(SafeEncoder.encode(entry.getKey()));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD,
+                params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
-    
+
     /** see {@link TairZsetCluster#exzaddMembers(byte[], Map, ExzaddParams)} */
     @Deprecated
     public Long exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers, final ExzaddParams params) {
@@ -159,9 +225,15 @@ public class TairZset {
             bparams.add(entry.getKey());
             bparams.add(entry.getValue());
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD,
+                params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzaddMembers(final byte[] key, final Map<byte[], byte[]> members, final ExzaddParams params) {
@@ -170,9 +242,15 @@ public class TairZset {
             bparams.add(entry.getValue());
             bparams.add(entry.getKey());
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
-        return BuilderFactory.LONG.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZADD,
+                params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -183,24 +261,44 @@ public class TairZset {
      * @return
      */
     public String exzincrBy(final String key, final String increment, final String member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZINCRBY, key, increment, member);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZINCRBY, key, increment, member);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public byte[] exzincrBy(final byte[] key, final byte[] increment, final byte[] member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZINCRBY, key, increment, member);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZINCRBY, key, increment, member);
+            return BuilderFactory.BYTE_ARRAY.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String exzincrBy(final String key, final String member, final double... scores) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZINCRBY, key, joinScoresToString(scores), member);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZINCRBY, key, joinScoresToString(scores), member);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public byte[] exzincrBy(final byte[] key, final byte[] member, final double... scores) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZINCRBY, key,
-            SafeEncoder.encode(joinScoresToString(scores)), member);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZINCRBY, key,
+                SafeEncoder.encode(joinScoresToString(scores)), member);
+            return BuilderFactory.BYTE_ARRAY.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -210,13 +308,23 @@ public class TairZset {
      * @return
      */
     public Long exzrem(final String key, final String... member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREM, JoinParameters.joinParameters(key, member));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREM, JoinParameters.joinParameters(key, member));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzrem(final byte[] key, final byte[]... member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREM, JoinParameters.joinParameters(key, member));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREM, JoinParameters.joinParameters(key, member));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -227,13 +335,23 @@ public class TairZset {
      * @return
      */
     public Long exzremrangeByScore(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREMRANGEBYSCORE, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREMRANGEBYSCORE, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzremrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREMRANGEBYSCORE, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREMRANGEBYSCORE, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -248,9 +366,14 @@ public class TairZset {
     }
 
     public Long exzremrangeByRank(final byte[] key, final long start, final long stop) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREMRANGEBYRANK, key, toByteArray(start),
-            toByteArray(stop));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREMRANGEBYRANK, key, toByteArray(start),
+                toByteArray(stop));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -266,13 +389,23 @@ public class TairZset {
      * @return
      */
     public Long exzremrangeByLex(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREMRANGEBYLEX, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREMRANGEBYLEX, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzremrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREMRANGEBYLEX, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREMRANGEBYLEX, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -282,13 +415,23 @@ public class TairZset {
      * @return
      */
     public String exzscore(final String key, final String member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZSCORE, key, member);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZSCORE, key, member);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public byte[] exzscore(final byte[] key, final byte[] member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZSCORE, key, member);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZSCORE, key, member);
+            return BuilderFactory.BYTE_ARRAY.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -299,26 +442,46 @@ public class TairZset {
      * @return
      */
     public List<String> exzrange(final String key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGE, SafeEncoder.encode(key), toByteArray(min),
+                toByteArray(max));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrange(final byte[] key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<String> exzrangeWithScores(final String key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max), SafeEncoder.encode("WITHSCORES"));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGE, SafeEncoder.encode(key), toByteArray(min),
+                toByteArray(max), SafeEncoder.encode("WITHSCORES"));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrangeWithScores(final byte[] key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max),
-            SafeEncoder.encode("WITHSCORES"));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max),
+                SafeEncoder.encode("WITHSCORES"));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -330,26 +493,46 @@ public class TairZset {
      * @return
      */
     public List<String> exzrevrange(final String key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, SafeEncoder.encode(key), toByteArray(min),
+                toByteArray(max));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrevrange(final byte[] key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<String> exzrevrangeWithScores(final String key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max), SafeEncoder.encode("WITHSCORES"));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, SafeEncoder.encode(key), toByteArray(min),
+                toByteArray(max), SafeEncoder.encode("WITHSCORES"));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrevrangeWithScores(final byte[] key, final long min, final long max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max),
-            SafeEncoder.encode("WITHSCORES"));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max),
+                SafeEncoder.encode("WITHSCORES"));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -361,24 +544,44 @@ public class TairZset {
      * @return
      */
     public List<String> exzrangeByScore(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYSCORE, key, min, max);
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYSCORE, key, min, max);
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYSCORE, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYSCORE, key, min, max);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<String> exzrangeByScore(final String key, final String min, final String max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(SafeEncoder.encode(key),
+                SafeEncoder.encode(min), SafeEncoder.encode(max)));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrangeByScore(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(key, min, max));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -391,24 +594,44 @@ public class TairZset {
      * @return
      */
     public List<String> exzrevrangeByScore(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrevrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<String> exzrevrangeByScore(final String key, final String min, final String max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(SafeEncoder.encode(key),
+                SafeEncoder.encode(min), SafeEncoder.encode(max)));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrevrangeByScore(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(key, min, max));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -419,24 +642,44 @@ public class TairZset {
      * @return
      */
     public List<String> exzrangeByLex(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYLEX, key, min, max);
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYLEX, key, min, max);
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYLEX, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYLEX, key, min, max);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<String> exzrangeByLex(final String key, final String min, final String max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYLEX, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYLEX, params.getByteParams(SafeEncoder.encode(key),
+                SafeEncoder.encode(min), SafeEncoder.encode(max)));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrangeByLex(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANGEBYLEX, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYLEX, params.getByteParams(key, min, max));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -447,24 +690,44 @@ public class TairZset {
      * @return
      */
     public List<String> exzrevrangeByLex(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrevrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<String> exzrevrangeByLex(final String key, final String min, final String max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(SafeEncoder.encode(key),
+                SafeEncoder.encode(min), SafeEncoder.encode(max)));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> exzrevrangeByLex(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(key, min, max));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -473,13 +736,23 @@ public class TairZset {
      * @return
      */
     public Long exzcard(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZCARD, key);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZCARD, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzcard(final byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZCARD, key);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZCARD, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -490,23 +763,43 @@ public class TairZset {
      * @return
      */
     public Long exzrank(final String key, final String member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANK, key, member);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANK, key, member);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzrank(final byte[] key, final byte[] member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANK, key, member);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANK, key, member);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzrevrank(final String key, final String member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANK, key, member);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANK, key, member);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzrevrank(final byte[] key, final byte[] member) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANK, key, member);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANK, key, member);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -517,23 +810,43 @@ public class TairZset {
      * @return
      */
     public Long exzrankByScore(final String key, final String score) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANKBYSCORE, key, score);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANKBYSCORE, key, score);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzrankByScore(final byte[] key, final byte[] score) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZRANKBYSCORE, key, score);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZRANKBYSCORE, key, score);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzrevrankByScore(final String key, final String score) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANKBYSCORE, key, score);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANKBYSCORE, key, score);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzrevrankByScore(final byte[] key, final byte[] score) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZREVRANKBYSCORE, key, score);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANKBYSCORE, key, score);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -544,13 +857,23 @@ public class TairZset {
      * @return
      */
     public Long exzcount(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZCOUNT, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZCOUNT, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzcount(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZCOUNT, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZCOUNT, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -562,12 +885,22 @@ public class TairZset {
      * @return
      */
     public Long exzlexcount(final String key, final String min, final String max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZLEXCOUNT, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZLEXCOUNT, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long exzlexcount(final byte[] key, final byte[] min, final byte[] max) {
-        Object obj = getJedis().sendCommand(ModuleCommand.EXZLEXCOUNT, key, min, max);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.EXZLEXCOUNT, key, min, max);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 }
