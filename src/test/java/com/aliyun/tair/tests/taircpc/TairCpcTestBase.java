@@ -17,7 +17,7 @@ public class TairCpcTestBase extends TestBase {
     @BeforeClass
     public static void setUp() {
         tairCpc = new TairCpcOld(jedis);
-        tairCpcNew = new TairCpc(jedis);
+        tairCpcNew = new TairCpc(jedisPool);
         tairTs = new TairTs(jedis);
         tairCpcPipeline = new TairCpcPipeline();
         tairCpcPipeline.setClient(jedis.getClient());

@@ -8,19 +8,34 @@ import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairRoaring {
     private Jedis jedis;
+    private JedisPool jedisPool;
 
     public TairRoaring(Jedis jedis) {
         this.jedis = jedis;
     }
 
+    public TairRoaring(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
     private Jedis getJedis() {
+        if (jedisPool != null) {
+            return jedisPool.getResource();
+        }
         return jedis;
+    }
+
+    private void releaseJedis(Jedis jedis) {
+        if (jedisPool != null) {
+            jedis.close();
+        }
     }
 
     /**
@@ -33,16 +48,33 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trsetbit(final String key, long offset, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(value));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trsetbit(final String key, long offset, long value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), toByteArray(value));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETBIT, SafeEncoder.encode(key), toByteArray(offset), toByteArray(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trsetbit(byte[] key, long offset, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETBIT, key, toByteArray(offset), value);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETBIT, key, toByteArray(offset), value);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -58,18 +90,29 @@ public class TairRoaring {
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITS,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.LONG.build(obj);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trsetbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITS,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.LONG.build(obj);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -81,12 +124,23 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trgetbit(final String key, long offset) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRGETBIT, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRGETBIT, SafeEncoder.encode(key), toByteArray(offset));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trgetbit(byte[] key, long offset) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRGETBIT, key, toByteArray(offset));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRGETBIT, key, toByteArray(offset));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -102,20 +156,30 @@ public class TairRoaring {
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRGETBITS,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRGETBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.LONG_LIST.build(obj);
+            return BuilderFactory.LONG_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public List<Long> trgetbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRGETBITS,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRGETBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.LONG_LIST.build(obj);
+            return BuilderFactory.LONG_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
-
 
     /**
      * TR.CLEARBITS    TR.CLEARBITS <key> <offset> [<offset2> <offset3> ... <offsetn>]
@@ -130,18 +194,29 @@ public class TairRoaring {
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRCLEARBITS,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRCLEARBITS,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.LONG.build(obj);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trclearbits(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRCLEARBITS,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRCLEARBITS,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.LONG.build(obj);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -155,12 +230,23 @@ public class TairRoaring {
      * @return Success: array long; Fail: error
      */
     public List<Long> trrange(final String key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public List<Long> trrange(byte[] key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRRANGE, key, toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRRANGE, key, toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -173,12 +259,23 @@ public class TairRoaring {
      * @return Success: string; Fail: error
      */
     public String trrangebitarray(final String key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRRANGEBITARRAY, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRRANGEBITARRAY, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public String trrangebitarray(byte[] key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRRANGEBITARRAY, key, toByteArray(start), toByteArray(end));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRRANGEBITARRAY, key, toByteArray(start), toByteArray(end));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -192,18 +289,34 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trappendbitarray(final String key, long offset, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRAPPENDBITARRAY, SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(value));
-        return BuilderFactory.LONG.build(obj);
-    }
-    public long trappendbitarray(final String key, long offset, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRAPPENDBITARRAY, SafeEncoder.encode(key), toByteArray(offset), value);
-        return BuilderFactory.LONG.build(obj);
-    }
-    public long trappendbitarray(byte[] key, long offset, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRAPPENDBITARRAY, key, toByteArray(offset), value);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRAPPENDBITARRAY, SafeEncoder.encode(key), toByteArray(offset), SafeEncoder.encode(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
+    public long trappendbitarray(final String key, long offset, byte[] value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRAPPENDBITARRAY, SafeEncoder.encode(key), toByteArray(offset), value);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public long trappendbitarray(byte[] key, long offset, byte[] value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRAPPENDBITARRAY, key, toByteArray(offset), value);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
 
     /**
      * TR.SETRANGE TR.SETRANGE <key> <start> <end>
@@ -215,12 +328,23 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trsetrange(final String key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trsetrange(byte[] key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETRANGE, key, toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETRANGE, key, toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -233,12 +357,23 @@ public class TairRoaring {
      * @return Success: array long; Fail: error
      */
     public long trfliprange(final String key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRFLIPRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRFLIPRANGE, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trfliprange(byte[] key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRFLIPRANGE, key, toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRFLIPRANGE, key, toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -252,20 +387,43 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trbitcount(final String key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key), toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitcount(byte[] key, long start, long end) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, key, toByteArray(start), toByteArray(end));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITCOUNT, key, toByteArray(start), toByteArray(end));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitcount(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITCOUNT, SafeEncoder.encode(key));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitcount(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITCOUNT, key);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITCOUNT, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -276,13 +434,23 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trmin(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRMIN, SafeEncoder.encode(key));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRMIN, SafeEncoder.encode(key));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public long trmin(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRMIN, key);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRMIN, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -293,13 +461,23 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trmax(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRMAX, SafeEncoder.encode(key));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRMAX, SafeEncoder.encode(key));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public long trmax(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRMAX, key);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRMAX, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -312,15 +490,24 @@ public class TairRoaring {
      * @return Success: +OK; Fail: error
      */
     public String troptimize(final String key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TROPTIMIZE, SafeEncoder.encode(key));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TROPTIMIZE, SafeEncoder.encode(key));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String troptimize(byte[] key) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TROPTIMIZE, key);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TROPTIMIZE, key);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
-
 
     /**
      * TR.STAT	TR.STAT <key>
@@ -330,22 +517,32 @@ public class TairRoaring {
      * @return Success: string; Fail: error
      */
     public String trstat(final String key, boolean json) {
-        if (json == true) {
-            Object obj = getJedis().sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key), SafeEncoder.encode("JSON"));
+        Jedis jedis = getJedis();
+        try {
+            if (json) {
+                Object obj = jedis.sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key), SafeEncoder.encode("JSON"));
+                return BuilderFactory.STRING.build(obj);
+            }
+            Object obj = jedis.sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key));
             return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSTAT, SafeEncoder.encode(key));
-        return BuilderFactory.STRING.build(obj);
-    }
-    public String trstat(byte[] key, boolean json) {
-        if (json == true) {
-            Object obj = getJedis().sendCommand(ModuleCommand.TRSTAT, key, SafeEncoder.encode("JSON"));
-            return BuilderFactory.STRING.build(obj);
-        }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSTAT, key);
-        return BuilderFactory.STRING.build(obj);
     }
 
+    public String trstat(byte[] key, boolean json) {
+        Jedis jedis = getJedis();
+        try {
+            if (json) {
+                Object obj = jedis.sendCommand(ModuleCommand.TRSTAT, key, SafeEncoder.encode("JSON"));
+                return BuilderFactory.STRING.build(obj);
+            }
+            Object obj = jedis.sendCommand(ModuleCommand.TRSTAT, key);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
 
     /**
      * TR.BITPOS	TR.BITPOS <key> <value> [counting]
@@ -359,28 +556,63 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trbitpos(final String key, final String value, long count) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value), toByteArray(count));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value), toByteArray(count));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitpos(final String key, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), SafeEncoder.encode(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitpos(final String key, long value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitpos(final String key, long value, long count) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value), toByteArray(count));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITPOS, SafeEncoder.encode(key), toByteArray(value), toByteArray(count));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitpos(byte[] key, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, key, value);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITPOS, key, value);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trbitpos(byte[] key, byte[] value, byte[] count) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITPOS, key, value, count);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITPOS, key, value, count);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -393,12 +625,23 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trrank(final String key, long offset) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRRANK, SafeEncoder.encode(key), toByteArray(offset));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRRANK, SafeEncoder.encode(key), toByteArray(offset));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trrank(byte[] key, byte[] offset) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRRANK, key, offset);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRRANK, key, offset);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -414,14 +657,24 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trbitop(final String destkey, final String operation, final String... keys) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITOP,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITOP,
                 JoinParameters.joinParameters(SafeEncoder.encode(destkey), SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
-        return BuilderFactory.LONG.build(obj);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public long trbitop(byte[] destkey, byte[] operation, byte[]... keys) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITOP, JoinParameters.joinParameters(destkey, operation, keys));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITOP, JoinParameters.joinParameters(destkey, operation, keys));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -435,14 +688,24 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trbitopcard(final String operation , final String... keys) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITOPCARD,
-            JoinParameters.joinParameters(SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITOPCARD,
+                JoinParameters.joinParameters(SafeEncoder.encode(operation), SafeEncoder.encodeMany(keys)));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public long trbitopcard(byte[] operation, byte[]... keys) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRBITOPCARD, JoinParameters.joinParameters(operation, keys));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRBITOPCARD, JoinParameters.joinParameters(operation, keys));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -457,20 +720,43 @@ public class TairRoaring {
      * @return Success: cursor and array long; Fail: error
      */
     public ScanResult<Long> trscan(final String  key, long cursor, long count) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor), SafeEncoder.encode("COUNT"), toByteArray(count));
-        return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor), SafeEncoder.encode("COUNT"), toByteArray(count));
+            return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public ScanResult<Long> trscan(final String key, long cursor) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor));
-        return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSCAN, SafeEncoder.encode(key), toByteArray(cursor));
+            return RoaringBuilderFactory.TRSCAN_RESULT_LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public ScanResult<byte[]> trscan(byte[] key, byte[] cursor) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, key, cursor);
-        return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSCAN, key, cursor);
+            return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public ScanResult<byte[]> trscan(byte[] key, byte[] cursor, byte[] count) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSCAN, key, cursor, SafeEncoder.encode("COUNT"), count);
-        return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSCAN, key, cursor, SafeEncoder.encode("COUNT"), count);
+            return RoaringBuilderFactory.TRSCAN_RESULT_BYTE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -484,12 +770,23 @@ public class TairRoaring {
      * @return Success: long; Fail: error
      */
     public long trloadstring(final String key, final String stringkey) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRLOADSTRING, SafeEncoder.encode(key), SafeEncoder.encode(stringkey));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRLOADSTRING, SafeEncoder.encode(key), SafeEncoder.encode(stringkey));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public long trloadstring(byte[] key, byte[] stringkey) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRLOADSTRING, key, stringkey);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRLOADSTRING, key, stringkey);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -503,14 +800,24 @@ public class TairRoaring {
      * @return Success: OK; Fail: error
      */
     public String trdiff(final String destkey, final String key1, final String key2) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRDIFF,
-            SafeEncoder.encode(destkey), SafeEncoder.encode(key1), SafeEncoder.encode(key2));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRDIFF,
+                SafeEncoder.encode(destkey), SafeEncoder.encode(key1), SafeEncoder.encode(key2));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String trdiff(byte[] destkey, byte[] key1, byte[] key2) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRDIFF, destkey, key1, key2);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRDIFF, destkey, key1, key2);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -527,9 +834,14 @@ public class TairRoaring {
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETINTARRAY,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETINTARRAY,
+                JoinParameters.joinParameters(SafeEncoder.encode(key), args.toArray(new byte[args.size()][])));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String trsetintarray(byte[] key, long... fields) {
@@ -537,9 +849,14 @@ public class TairRoaring {
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETINTARRAY,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETINTARRAY,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -555,18 +872,29 @@ public class TairRoaring {
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRAPPENDINTARRAY,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRAPPENDINTARRAY,
                 JoinParameters.joinParameters(SafeEncoder.encode(key),  args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public String trappendintarray(byte[] key, long... fields) {
         final List<byte[]> args = new ArrayList<byte[]>();
         for (long value : fields) {
             args.add(toByteArray(value));
         }
-        Object obj = getJedis().sendCommand(ModuleCommand.TRAPPENDINTARRAY,
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRAPPENDINTARRAY,
                 JoinParameters.joinParameters(key, args.toArray(new byte[args.size()][])));
-        return BuilderFactory.STRING.build(obj);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -578,12 +906,23 @@ public class TairRoaring {
      * @return Success: +OK; Fail: error
      */
     public String trsetbitarray(final String key, final String value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITARRAY, SafeEncoder.encode(key), SafeEncoder.encode(value));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETBITARRAY, SafeEncoder.encode(key), SafeEncoder.encode(value));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
+
     public String trsetbitarray(byte[] key, byte[] value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRSETBITARRAY, key, value);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRSETBITARRAY, key, value);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -595,13 +934,23 @@ public class TairRoaring {
      * @return Success: double; Fail: error
      */
     public Double trjaccard(final String key1, final String key2) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRJACCARD, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
-        return BuilderFactory.DOUBLE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRJACCARD, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
+            return BuilderFactory.DOUBLE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Double trjaccard(byte[] key1, byte[] key2) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRJACCARD, key1, key2);
-        return BuilderFactory.DOUBLE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRJACCARD, key1, key2);
+            return BuilderFactory.DOUBLE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -613,12 +962,22 @@ public class TairRoaring {
      * @return Success: double; Fail: error
      */
     public Boolean trcontains(final String key1, final String key2) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRCONTAINS, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
-        return BuilderFactory.BOOLEAN.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRCONTAINS, SafeEncoder.encode(key1), SafeEncoder.encode(key2));
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Boolean trcontains(byte[] key1, byte[] key2) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TRCONTAINS, key1, key2);
-        return BuilderFactory.BOOLEAN.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TRCONTAINS, key1, key2);
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 }

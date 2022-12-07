@@ -7,6 +7,7 @@ import com.aliyun.tair.tairsearch.action.search.SearchResponse;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -17,14 +18,28 @@ import java.util.Map;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairSearch {
-    private final Jedis jedis;
-
+    private Jedis jedis;
+    private JedisPool jedisPool;
+    
     public TairSearch(Jedis jedis) {
         this.jedis = jedis;
     }
 
+    public TairSearch(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
     private Jedis getJedis() {
+        if (jedisPool != null) {
+            return jedisPool.getResource();
+        }
         return jedis;
+    }
+
+    private void releaseJedis(Jedis jedis) {
+        if (jedisPool != null) {
+            jedis.close();
+        }
     }
 
     /**
@@ -40,8 +55,13 @@ public class TairSearch {
     }
 
     public String tftmappingindex(byte[] index, byte[] request) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTMAPPINGINDEX, index, request);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTMAPPINGINDEX, index, request);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -57,8 +77,13 @@ public class TairSearch {
     }
 
     public String tftcreateindex(byte[] index, byte[] request) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTCREATEINDEX, index, request);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTCREATEINDEX, index, request);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -74,8 +99,13 @@ public class TairSearch {
     }
 
     public String tftupdateindex(byte[] index, byte[] request) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTUPDATEINDEX, index, request);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTUPDATEINDEX, index, request);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -89,8 +119,13 @@ public class TairSearch {
     }
 
     public String tftgetindexmappings(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETINDEX, index, SafeEncoder.encode("mappings"));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETINDEX, index, SafeEncoder.encode("mappings"));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -105,8 +140,13 @@ public class TairSearch {
     }
 
     public String tftadddoc(byte[] index, byte[] request) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTADDDOC, index, request);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTADDDOC, index, request);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -117,8 +157,13 @@ public class TairSearch {
     }
 
     public String tftadddoc(byte[] index, byte[] request, byte[] docId) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTADDDOC, index, request, SafeEncoder.encode("WITH_ID"), docId);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTADDDOC, index, request, SafeEncoder.encode("WITH_ID"), docId);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -131,14 +176,24 @@ public class TairSearch {
      */
     public String tftmadddoc(String index, Map<String /* docContent */, String /* docId */> docs) {
         TFTAddDocParams params = new TFTAddDocParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(index, docs));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(index, docs));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String tftmadddoc(byte[] index, Map<byte[] /* docContent */, byte[] /* docId */> docs) {
         TFTAddDocParams params = new TFTAddDocParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(index, docs));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(index, docs));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -156,8 +211,13 @@ public class TairSearch {
 
     @Deprecated
     public String tftupdatedoc(byte[] index, byte[] docId, byte[] docContent) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTUPDATEDOC, index, docId, docContent);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTUPDATEDOC, index, docId, docContent);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -174,8 +234,13 @@ public class TairSearch {
     }
 
     public String tftupdatedocfield(byte[] index, byte[] docId, byte[] docContent) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTUPDATEDOCFIELD, index, docId, docContent);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTUPDATEDOCFIELD, index, docId, docContent);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -192,8 +257,13 @@ public class TairSearch {
     }
 
     public Long tftincrlongdocfield(byte[] index, byte[] docId, byte[] field, long value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTINCRLONGDOCFIELD, index, docId, field, toByteArray(value));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTINCRLONGDOCFIELD, index, docId, field, toByteArray(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -210,8 +280,13 @@ public class TairSearch {
     }
 
     public Double tftincrfloatdocfield(byte[] index, byte[] docId, byte[] field, double value) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTINCRFLOATDOCFIELD, index, docId, field, toByteArray(value));
-        return BuilderFactory.DOUBLE.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTINCRFLOATDOCFIELD, index, docId, field, toByteArray(value));
+            return BuilderFactory.DOUBLE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -227,8 +302,13 @@ public class TairSearch {
     }
 
     public Long tftdeldocfield(byte[] index, byte[] docId, byte[]... field) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTDELDOCFIELD, JoinParameters.joinParameters(index, docId, field));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTDELDOCFIELD, JoinParameters.joinParameters(index, docId, field));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -243,8 +323,13 @@ public class TairSearch {
     }
 
     public String tftgetdoc(byte[] index, byte[] docId) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETDOC, index, docId);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETDOC, index, docId);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -255,8 +340,13 @@ public class TairSearch {
     }
 
     public String tftgetdoc(byte[] index, byte[] docId, byte[] request) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETDOC, index, docId, request);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETDOC, index, docId, request);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -268,14 +358,24 @@ public class TairSearch {
      */
     public String tftdeldoc(String index, String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String tftdeldoc(byte[] index, byte[]... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(index, docId));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -289,8 +389,13 @@ public class TairSearch {
     }
 
     public String tftdelall(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTDELALL, index);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTDELALL, index);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public SearchResponse tftsearch(String index, SearchSourceBuilder ssb) {
@@ -298,8 +403,13 @@ public class TairSearch {
     }
 
     public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()));
-        return new SearchResponse(BuilderFactory.STRING.build(obj));
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()));
+            return new SearchResponse(BuilderFactory.STRING.build(obj));
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public SearchResponse tftsearch(String index, SearchSourceBuilder ssb, boolean use_cache) {
@@ -308,11 +418,17 @@ public class TairSearch {
 
     public SearchResponse tftsearch(byte[] index, SearchSourceBuilder ssb, boolean use_cache) {
         Object obj;
-        if (use_cache) {
-            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()), SafeEncoder.encode("use_cache"));
-        } else {
-            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()));
+        Jedis jedis = getJedis();
+        try {
+            if (use_cache) {
+                obj = jedis.sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()), SafeEncoder.encode("use_cache"));
+            } else {
+                obj = jedis.sendCommand(ModuleCommand.TFTSEARCH, index, SafeEncoder.encode(ssb.toString()));
+            }
+        } finally {
+            releaseJedis(jedis);
         }
+
         return new SearchResponse(BuilderFactory.STRING.build(obj));
     }
 
@@ -331,8 +447,13 @@ public class TairSearch {
     }
 
     public String tftsearch(byte[] index, byte[] request) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, request);
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTSEARCH, index, request);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String tftsearch(String index, String request, boolean use_cache) {
@@ -341,10 +462,15 @@ public class TairSearch {
 
     public String tftsearch(byte[] index, byte[] request, boolean use_cache) {
         Object obj;
-        if (use_cache) {
-            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, request, SafeEncoder.encode("use_cache"));
-        } else {
-            obj = getJedis().sendCommand(ModuleCommand.TFTSEARCH, index, request);
+        Jedis jedis = getJedis();
+        try {
+            if (use_cache) {
+                obj = jedis.sendCommand(ModuleCommand.TFTSEARCH, index, request, SafeEncoder.encode("use_cache"));
+            } else {
+                obj = jedis.sendCommand(ModuleCommand.TFTSEARCH, index, request);
+            }
+        } finally {
+            releaseJedis(jedis);
         }
 
         return BuilderFactory.STRING.build(obj);
@@ -359,14 +485,24 @@ public class TairSearch {
      */
     public String tftmsearch(String request, String... indexes) {
         TFTMSearchParams params = new TFTMSearchParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public String tftmsearch(byte[] request, byte[]... indexes) {
         TFTMSearchParams params = new TFTMSearchParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
-        return BuilderFactory.STRING.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 
@@ -382,8 +518,13 @@ public class TairSearch {
     }
 
     public Long tftexists(byte[] index, byte[] docId) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTEXISTS, index, docId);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTEXISTS, index, docId);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -397,8 +538,13 @@ public class TairSearch {
     }
 
     public Long tftdocnum(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTDOCNUM, index);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTDOCNUM, index);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -409,23 +555,33 @@ public class TairSearch {
      * @return the scan result with the results of this iteration and the new position of the cursor.
      */
     public ScanResult<String> tftscandocid(String index, String cursor) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSCANDOCID, index, cursor);
-        List<Object> result = (List<Object>) obj;
-        String newcursor = new String((byte[]) result.get(0));
-        List<String> results = new ArrayList<>();
-        List<byte[]> rawResults = (List<byte[]>) result.get(1);
-        for (byte[] bs : rawResults) {
-            results.add(SafeEncoder.encode(bs));
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTSCANDOCID, index, cursor);
+            List<Object> result = (List<Object>) obj;
+            String newcursor = new String((byte[]) result.get(0));
+            List<String> results = new ArrayList<>();
+            List<byte[]> rawResults = (List<byte[]>) result.get(1);
+            for (byte[] bs : rawResults) {
+                results.add(SafeEncoder.encode(bs));
+            }
+            return new ScanResult<>(newcursor, results);
+        } finally {
+            releaseJedis(jedis);
         }
-        return new ScanResult<>(newcursor, results);
     }
 
     public ScanResult<byte[]> tftscandocid(byte[] index, byte[] cursor) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSCANDOCID, index, cursor);
-        List<Object> result = (List<Object>) obj;
-        byte[] newcursor = (byte[]) result.get(0);
-        List<byte[]> rawResults = (List<byte[]>) result.get(1);
-        return new ScanResult<>(newcursor, rawResults);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTSCANDOCID, index, cursor);
+            List<Object> result = (List<Object>) obj;
+            byte[] newcursor = (byte[]) result.get(0);
+            List<byte[]> rawResults = (List<byte[]>) result.get(1);
+            return new ScanResult<>(newcursor, rawResults);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -444,15 +600,21 @@ public class TairSearch {
         args.add(SafeEncoder.encode(index));
         args.add(SafeEncoder.encode(cursor));
         args.addAll(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSCANDOCID, args.toArray(new byte[args.size()][]));
-        List<Object> result = (List<Object>) obj;
-        String newcursor = new String((byte[]) result.get(0));
-        List<String> results = new ArrayList<>();
-        List<byte[]> rawResults = (List<byte[]>) result.get(1);
-        for (byte[] bs : rawResults) {
-            results.add(SafeEncoder.encode(bs));
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTSCANDOCID, args.toArray(new byte[args.size()][]));
+            List<Object> result = (List<Object>) obj;
+            String newcursor = new String((byte[]) result.get(0));
+            List<String> results = new ArrayList<>();
+            List<byte[]> rawResults = (List<byte[]>) result.get(1);
+            for (byte[] bs : rawResults) {
+                results.add(SafeEncoder.encode(bs));
+            }
+            return new ScanResult<>(newcursor, results);
+        } finally {
+            releaseJedis(jedis);
         }
-        return new ScanResult<>(newcursor, results);
     }
 
     public ScanResult<byte[]> tftscandocid(byte[] index, byte[] cursor, final TFTScanParams params) {
@@ -460,11 +622,17 @@ public class TairSearch {
         args.add(index);
         args.add(cursor);
         args.addAll(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSCANDOCID, args.toArray(new byte[args.size()][]));
-        List<Object> result = (List<Object>) obj;
-        byte[] newcursor = (byte[]) result.get(0);
-        List<byte[]> rawResults = (List<byte[]>) result.get(1);
-        return new ScanResult<>(newcursor, rawResults);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTSCANDOCID, args.toArray(new byte[args.size()][]));
+            List<Object> result = (List<Object>) obj;
+            byte[] newcursor = (byte[]) result.get(0);
+            List<byte[]> rawResults = (List<byte[]>) result.get(1);
+            return new ScanResult<>(newcursor, rawResults);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -476,14 +644,24 @@ public class TairSearch {
      */
     public Long tftaddsug(String index, Map<String /* docContent */, String /* docId */> texts) {
         TFTAddSugParams params = new TFTAddSugParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public Long tftaddsug(byte[] index, Map<byte[] /* docContent */, byte[] /* docId */> texts) {
         TFTAddSugParams params = new TFTAddSugParams();
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -498,8 +676,13 @@ public class TairSearch {
     }
 
     public Long tftdelsug(byte[] index, byte[]... text) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTDELSUG, JoinParameters.joinParameters(index, text));
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTDELSUG, JoinParameters.joinParameters(index, text));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -513,8 +696,13 @@ public class TairSearch {
     }
 
     public Long tftsugnum(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTSUGNUM, index);
-        return BuilderFactory.LONG.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTSUGNUM, index);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -525,13 +713,23 @@ public class TairSearch {
      * @return List of the suggestions in index.
      */
     public List<String> tftgetsug(String index, String prefix) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> tftgetsug(byte[] index, byte[] prefix) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -547,8 +745,14 @@ public class TairSearch {
         args.add(SafeEncoder.encode(index));
         args.add(SafeEncoder.encode(prefix));
         args.addAll(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
-        return BuilderFactory.STRING_LIST.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> tftgetsug(byte[] index, byte[] prefix, final TFTGetSugParams params) {
@@ -556,8 +760,14 @@ public class TairSearch {
         args.add(index);
         args.add(prefix);
         args.addAll(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     /**
@@ -567,13 +777,23 @@ public class TairSearch {
      * @return List of the all suggestions in index.
      */
     public List<String> tftgetallsugs(String index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETALLSUGS, SafeEncoder.encode(index));
-        return BuilderFactory.STRING_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETALLSUGS, SafeEncoder.encode(index));
+            return BuilderFactory.STRING_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
     public List<byte[]> tftgetallsugs(byte[] index) {
-        Object obj = getJedis().sendCommand(ModuleCommand.TFTGETALLSUGS, index);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTGETALLSUGS, index);
+            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
     }
 
 

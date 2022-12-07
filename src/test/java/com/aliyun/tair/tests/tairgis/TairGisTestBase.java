@@ -14,7 +14,7 @@ public class TairGisTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairGis = new TairGis(jedis);
+        tairGis = new TairGis(jedisPool);
         tairGisPipeline = new TairGisPipeline();
         tairGisPipeline.setClient(jedis.getClient());
         tairGisCluster = new TairGisCluster(jedisCluster);

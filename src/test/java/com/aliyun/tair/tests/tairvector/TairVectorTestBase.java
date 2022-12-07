@@ -19,7 +19,7 @@ public class TairVectorTestBase extends TestBase {
 
     @BeforeClass
     public static void setUp() {
-        tairVector = new TairVector(jedis);
+        tairVector = new TairVector(jedisPool);
         tairVectorPipeline = new TairVectorPipeline();
         tairVectorPipeline.setClient(jedis.getClient());
         tairVectorCluster = new TairVectorCluster(jedisCluster);
