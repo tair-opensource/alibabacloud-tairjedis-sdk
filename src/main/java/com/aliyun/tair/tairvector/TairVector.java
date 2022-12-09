@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.tairsearch.params.TFTMSearchParams;
 import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
+import com.aliyun.tair.tairvector.params.MIndexKnnsearchParams;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
@@ -483,5 +485,24 @@ public class TairVector {
         } finally {
             releaseJedis(jedis);
         }
+    }
+    public VectorBuilderFactory.Knn<String> tvsmindexknnsearch(Long topn, String vector, MIndexKnnsearchParams params, String... indexs) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.addAll(Arrays.stream(indexs).map(str -> SafeEncoder.encode(str)).collect(Collectors.toList()));
+        args.add(toByteArray(topn));
+        args.add(SafeEncoder.encode(vector));
+        args.add(params.getParams());
+        Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
+        return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+    }
+
+    public VectorBuilderFactory.Knn<byte[]> tvsmindexknnsearch(Long topn, byte[] vector, MIndexKnnsearchParams params, byte[]... indexs) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.addAll(Arrays.stream(indexs).collect(Collectors.toList()));
+        args.add(toByteArray(topn));
+        args.add(vector);
+        args.add(params.getParams());
+        Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
+        return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
     }
 }

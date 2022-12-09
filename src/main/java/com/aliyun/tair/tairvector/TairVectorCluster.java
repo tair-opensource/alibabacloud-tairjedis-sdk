@@ -6,6 +6,7 @@ import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
+import com.aliyun.tair.tairvector.params.MIndexKnnsearchParams;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
@@ -345,4 +346,15 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
         return VectorBuilderFactory.BYTE_KNN_BATCH_RESULT.build(obj);
     }
+
+
+    public VectorBuilderFactory.Knn<String> tvsmindexknnsearch(Long topn, String vector, MIndexKnnsearchParams params, String... indexs) {
+        return null;
+    }
+
+    public VectorBuilderFactory.Knn<byte[]> tvsmindexknnsearch(Long topn, byte[] vector, MIndexKnnsearchParams params, byte[]... indexs) {
+        return null;
+    }
+
+
 }
