@@ -4,7 +4,6 @@ import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
-import com.aliyun.tair.tairvector.params.MIndexKnnsearchParams;
 import org.junit.Test;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
@@ -481,14 +480,39 @@ public class TairVectorTest extends TairVectorTestBase {
 
 
         long topn = 2L;
+        List<String> indexs = Arrays.asList("index1","index2");
         String vector = "[0, 0, 0, 0, 0, 0, 0, 0]";
-        VectorBuilderFactory.Knn<String> result_string = tairVector.tvsmindexknnsearch(topn,vector,new MIndexKnnsearchParams(),"index1","index2");
+        VectorBuilderFactory.Knn<String> result_string = tairVector.tvsmindexknnsearch(indexs,topn,vector,ef_params.toArray(new String[0]));
         assertEquals(2, result_string.getKnnResults().size());
-
-        MIndexKnnsearchParams mIndexKnnsearchParams =new MIndexKnnsearchParams();
-        mIndexKnnsearchParams.filter("name=='sammy'");
-        mIndexKnnsearchParams.efSearch("100");
-        VectorBuilderFactory.Knn<byte[]> result_byte = tairVector.tvsmindexknnsearch(topn,SafeEncoder.encode(vector),mIndexKnnsearchParams,SafeEncoder.encode("index1"),SafeEncoder.encode("index2"));
+        VectorBuilderFactory.Knn<byte[]> result_byte = tairVector.tvsmindexknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),topn,SafeEncoder.encode(vector),SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
         assertEquals(2, result_byte.getKnnResults().size());
+    }
+    @Test
+    public void tvs_mindexmknnsearch_with_params() {
+        check_and_create_index("index1",dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+        check_and_create_index("index2",dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+
+        long result = tairVector.tvshset("index1", "first_entity_knn", "[1, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index1", "second_entity_knn", "[3, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "third_entity_knn", "[2, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "fourth_entity_knn", "[4, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+
+
+        long topn = 2L;
+        List<String> indexs = Arrays.asList("index1","index2");
+        List<String> vectors = Arrays.asList("[0, 0, 0, 0, 0, 0, 0, 0]","[1, 1, 1, 1, 1, 1, 1, 1]");
+
+        Collection<VectorBuilderFactory.Knn<String>> result_string = tairVector.tvsmindexmknnsearch(indexs,topn,vectors,ef_params.toArray(new String[0]));
+        result_string.forEach(res -> {
+            assertEquals(2, res.getKnnResults().size());
+        });
+        Collection<VectorBuilderFactory.Knn<byte[]>> result_byte = tairVector.tvsmindexmknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),topn,vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        result_byte.forEach(res -> {
+            assertEquals(2, res.getKnnResults().size());
+        });
     }
 }

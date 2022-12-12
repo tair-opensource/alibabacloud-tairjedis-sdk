@@ -13,7 +13,6 @@ import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
-import com.aliyun.tair.tairvector.params.MIndexKnnsearchParams;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
@@ -486,23 +485,91 @@ public class TairVector {
             releaseJedis(jedis);
         }
     }
-    public VectorBuilderFactory.Knn<String> tvsmindexknnsearch(Long topn, String vector, MIndexKnnsearchParams params, String... indexs) {
-        final List<byte[]> args = new ArrayList<byte[]>();
-        args.addAll(Arrays.stream(indexs).map(str -> SafeEncoder.encode(str)).collect(Collectors.toList()));
-        args.add(toByteArray(topn));
-        args.add(SafeEncoder.encode(vector));
-        args.add(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
-        return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+
+
+    public VectorBuilderFactory.Knn<String> tvsmindexknnsearch(Collection<String> indexs, Long topn, String vector, String... params) {
+        return tvsmindexknnsearchfilter(indexs,topn,vector,"",params);
     }
 
-    public VectorBuilderFactory.Knn<byte[]> tvsmindexknnsearch(Long topn, byte[] vector, MIndexKnnsearchParams params, byte[]... indexs) {
-        final List<byte[]> args = new ArrayList<byte[]>();
-        args.addAll(Arrays.stream(indexs).collect(Collectors.toList()));
-        args.add(toByteArray(topn));
-        args.add(vector);
-        args.add(params.getParams());
-        Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
-        return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
+    public VectorBuilderFactory.Knn<byte[]> tvsmindexknnsearch(Collection<byte[]> indexs, Long topn, byte[] vector, byte[]... params) {
+        return tvsmindexknnsearchfilter(indexs,topn,vector,SafeEncoder.encode(""),params);
+    }
+
+    public VectorBuilderFactory.Knn<String> tvsmindexknnsearchfilter(Collection<String> indexs, Long topn, String vector, String pattern, String... params) {
+        Jedis jedis = getJedis();
+        try{
+            final List<byte[]> args = new ArrayList<byte[]>();
+            args.add(toByteArray(indexs.size()));
+            args.addAll(indexs.stream().map(index -> SafeEncoder.encode(index)).collect(Collectors.toList()));
+            args.add(toByteArray(topn));
+            args.add(SafeEncoder.encode(vector));
+            args.add(SafeEncoder.encode(pattern));
+            args.addAll(Arrays.stream(params).map(str -> SafeEncoder.encode(str)).collect(Collectors.toList()));
+            Object obj = jedis.sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+        }finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public VectorBuilderFactory.Knn<byte[]> tvsmindexknnsearchfilter(Collection<byte[]> indexs, Long topn, byte[] vector, byte[] pattern, final byte[]... params) {
+        Jedis jedis = getJedis();
+        try{
+            final List<byte[]> args = new ArrayList<byte[]>();
+            args.add(toByteArray(indexs.size()));
+            args.addAll(indexs);
+            args.add(toByteArray(topn));
+            args.add(vector);
+            args.add(pattern);
+            args.addAll(Arrays.stream(params).collect(Collectors.toList()));
+            Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
+        }finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmindexmknnsearch(Collection<String> indexs, Long topn, Collection<String> vectors, String... params) {
+        return tvsmindexmknnsearchfilter(indexs,topn,vectors,"",params);
+    }
+
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmindexmknnsearch(Collection<byte[]> indexs, Long topn, Collection<byte[]> vectors, byte[]... params) {
+        return tvsmindexmknnsearchfilter(indexs,topn,vectors,SafeEncoder.encode(""),params);
+    }
+
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmindexmknnsearchfilter(Collection<String> indexs, Long topn, Collection<String> vectors, String pattern, String... params) {
+        Jedis jedis = getJedis();
+        try{
+            final List<byte[]> args = new ArrayList<byte[]>();
+            args.add(toByteArray(indexs.size()));
+            args.addAll(indexs.stream().map(index -> SafeEncoder.encode(index)).collect(Collectors.toList()));
+            args.add(toByteArray(topn));
+            args.add(toByteArray(vectors.size()));
+            args.addAll(vectors.stream().map(vector -> SafeEncoder.encode(vector)).collect(Collectors.toList()));
+            args.add(SafeEncoder.encode(pattern));
+            args.addAll(Arrays.stream(params).map(str -> SafeEncoder.encode(str)).collect(Collectors.toList()));
+            Object obj =jedis.sendCommand(ModuleCommand.TVSMINDEXMKNNSEARCH, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.STRING_KNN_BATCH_RESULT.build(obj);
+        }finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmindexmknnsearchfilter(Collection<byte[]> indexs, Long topn, Collection<byte[]> vectors, byte[] pattern, byte[]... params) {
+        Jedis jedis = getJedis();
+        try{
+            final List<byte[]> args = new ArrayList<byte[]>();
+            args.add(toByteArray(indexs.size()));
+            args.addAll(indexs);
+            args.add(toByteArray(topn));
+            args.add(toByteArray(vectors.size()));
+            args.addAll(vectors);
+            args.add(pattern);
+            args.addAll(Arrays.stream(params).collect(Collectors.toList()));
+            Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXMKNNSEARCH, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.BYTE_KNN_BATCH_RESULT.build(obj);
+        }finally {
+            releaseJedis(jedis);
+        }
     }
 }
