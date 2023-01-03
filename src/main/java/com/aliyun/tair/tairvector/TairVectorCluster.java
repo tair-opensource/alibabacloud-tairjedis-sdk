@@ -345,4 +345,38 @@ public class TairVectorCluster {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
         return VectorBuilderFactory.BYTE_KNN_BATCH_RESULT.build(obj);
     }
+
+    public VectorBuilderFactory.Knn<String> tvsmindexknnsearch(Collection<String> indexs, Long topn, String vector, String... params) {
+        return null;
+    }
+
+    public VectorBuilderFactory.Knn<byte[]> tvsmindexknnsearch(Collection<byte[]> indexs, Long topn, byte[] vector, byte[]... params) {
+        return null;
+    }
+
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmindexmknnsearch(Collection<String> indexs, Long topn, Collection<String> vectors, String... params) {
+        return null;
+    }
+
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmindexmknnsearch(Collection<byte[]> indexs, Long topn, Collection<byte[]> vectors, byte[]... params) {
+        return null;
+    }
+
+    public VectorBuilderFactory.Knn<String> tvsmindexknnsearchfilter(Collection<String> indexs, Long topn, String vector, String pattern, String... params) {
+        return null;
+    }
+
+    public VectorBuilderFactory.Knn<byte[]> tvsmindexknnsearchfilter(Collection<byte[]> indexs, Long topn, byte[] vector, byte[] pattern, byte[]... params) {
+        return null;
+    }
+
+    public Collection<VectorBuilderFactory.Knn<String>> tvsmindexmknnsearchfilter(Collection<String> indexs, Long topn, Collection<String> vectors, String pattern, String... params) {
+        return null;
+    }
+
+    public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmindexmknnsearchfilter(Collection<byte[]> indexs, Long topn, Collection<byte[]> vectors, byte[] pattern, byte[]... params) {
+        return null;
+    }
+
+
 }

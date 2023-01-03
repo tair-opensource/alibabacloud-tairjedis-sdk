@@ -45,6 +45,14 @@ public class TairVectorTest extends TairVectorTestBase {
         }
         assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method, attr));
     }
+    private void check_and_create_index(String index,int dims, IndexAlgorithm algorithm, DistanceMethod method, final String... attr) {
+        Map<String, String> objs = tairVector.tvsgetindex(index);
+        if (!objs.isEmpty()) {
+            long result = tairVector.tvsdelindex(index);
+            assertEquals(result, 1);
+        }
+        assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method, attr));
+    }
 
     private void tvs_hset(final String entityid, final String vector, final String param_k, final String param_v) {
         long result = tairVector.tvshset(index, entityid, vector, param_k, param_v);
@@ -456,4 +464,55 @@ public class TairVectorTest extends TairVectorTestBase {
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
     }
 
+    @Test
+    public void tvs_mindexknnsearch_with_params() {
+        check_and_create_index("index1",dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+        check_and_create_index("index2",dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+
+        long result = tairVector.tvshset("index1", "first_entity_knn", "[1, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index1", "second_entity_knn", "[3, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "third_entity_knn", "[2, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "fourth_entity_knn", "[4, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+
+
+        long topn = 2L;
+        List<String> indexs = Arrays.asList("index1","index2");
+        String vector = "[0, 0, 0, 0, 0, 0, 0, 0]";
+        VectorBuilderFactory.Knn<String> result_string = tairVector.tvsmindexknnsearch(indexs,topn,vector,ef_params.toArray(new String[0]));
+        assertEquals(2, result_string.getKnnResults().size());
+        VectorBuilderFactory.Knn<byte[]> result_byte = tairVector.tvsmindexknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),topn,SafeEncoder.encode(vector),SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        assertEquals(2, result_byte.getKnnResults().size());
+    }
+    @Test
+    public void tvs_mindexmknnsearch_with_params() {
+        check_and_create_index("index1",dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+        check_and_create_index("index2",dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+
+        long result = tairVector.tvshset("index1", "first_entity_knn", "[1, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index1", "second_entity_knn", "[3, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "third_entity_knn", "[2, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "fourth_entity_knn", "[4, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+
+
+        long topn = 2L;
+        List<String> indexs = Arrays.asList("index1","index2");
+        List<String> vectors = Arrays.asList("[0, 0, 0, 0, 0, 0, 0, 0]","[1, 1, 1, 1, 1, 1, 1, 1]");
+
+        Collection<VectorBuilderFactory.Knn<String>> result_string = tairVector.tvsmindexmknnsearch(indexs,topn,vectors,ef_params.toArray(new String[0]));
+        result_string.forEach(res -> {
+            assertEquals(2, res.getKnnResults().size());
+        });
+        Collection<VectorBuilderFactory.Knn<byte[]>> result_byte = tairVector.tvsmindexmknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),topn,vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        result_byte.forEach(res -> {
+            assertEquals(2, res.getKnnResults().size());
+        });
+    }
 }
