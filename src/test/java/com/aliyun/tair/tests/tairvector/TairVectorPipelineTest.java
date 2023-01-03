@@ -447,4 +447,50 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         assertEquals(2, entity_byte.size());
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
     }
+
+    @Test
+    public void tvs_mindexknnsearch() {
+        tvs_check_index(dims, "index1", algorithm, DistanceMethod.L2);
+        tvs_check_index(dims, "index2", algorithm, DistanceMethod.L2);
+        tairVectorPipeline.tvshset("index1", "first_entity_knn", "[1, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        tairVectorPipeline.tvshset("index1", "second_entity_knn", "[3, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        tairVectorPipeline.tvshset("index2", "third_entity_knn", "[2, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        tairVectorPipeline.tvshset("index2", "fourth_entity_knn", "[4, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        long topn = 2L;
+        List<String> indexs = Arrays.asList("index1", "index2");
+        String vector = "[0, 0, 0, 0, 0, 0, 0, 0]";
+        tairVectorPipeline.tvsmindexknnsearch(indexs, topn, vector, ef_params.toArray(new String[0]));
+        tairVectorPipeline.tvsmindexknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn, SafeEncoder.encode(vector), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        tairVectorPipeline.tvsmindexknnsearchfilter(indexs, topn, vector, "", ef_params.toArray(new String[0]));
+        tairVectorPipeline.tvsmindexknnsearchfilter(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn, SafeEncoder.encode(vector), SafeEncoder.encode(""), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        List<Object> objs = tairVectorPipeline.syncAndReturnAll();
+        VectorBuilderFactory.Knn<String> result_string = (VectorBuilderFactory.Knn<String>) objs.get(4);
+        assertEquals(2, result_string.getKnnResults().size());
+        VectorBuilderFactory.Knn<byte[]> entity_byte = (VectorBuilderFactory.Knn<byte[]>) objs.get(5);
+        assertEquals(2, entity_byte.getKnnResults().size());
+    }
+
+    @Test
+    public void tvs_mindexmknnsearch() {
+        tvs_check_index(dims, "index1", algorithm, DistanceMethod.L2);
+        tvs_check_index(dims, "index2", algorithm, DistanceMethod.L2);
+        tairVectorPipeline.tvshset("index1", "first_entity_knn", "[1, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        tairVectorPipeline.tvshset("index1", "second_entity_knn", "[3, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        tairVectorPipeline.tvshset("index2", "third_entity_knn", "[2, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        tairVectorPipeline.tvshset("index2", "fourth_entity_knn", "[4, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        long topn = 2L;
+        List<String> indexs = Arrays.asList("index1", "index2");
+        List<String> vectors = Arrays.asList("[0, 0, 0, 0, 0, 0, 0, 0]", "[1, 1, 1, 1, 1, 1, 1, 1]");
+        tairVectorPipeline.tvsmindexmknnsearch(indexs, topn, vectors, ef_params.toArray(new String[0]));
+        tairVectorPipeline.tvsmindexmknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn,
+                vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        tairVectorPipeline.tvsmindexmknnsearchfilter(indexs, topn, vectors, "", ef_params.toArray(new String[0]));
+        tairVectorPipeline.tvsmindexmknnsearchfilter(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn,
+                vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), SafeEncoder.encode(""), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        List<Object> objs = tairVectorPipeline.syncAndReturnAll();
+        Collection<VectorBuilderFactory.Knn<String>> result_string = (Collection<VectorBuilderFactory.Knn<String>>) objs.get(4);
+        assertEquals(2, result_string.size());
+        Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte = (Collection<VectorBuilderFactory.Knn<byte[]>>) objs.get(5);
+        assertEquals(2, entity_byte.size());
+    }
 }
