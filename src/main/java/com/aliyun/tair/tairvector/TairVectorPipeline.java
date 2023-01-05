@@ -338,4 +338,70 @@ public class TairVectorPipeline extends Pipeline {
         getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSMKNNSEARCH, args.toArray(new byte[args.size()][]));
         return getResponse(VectorBuilderFactory.BYTE_KNN_BATCH_RESULT);
     }
+
+    public Response<VectorBuilderFactory.Knn<String>> tvsmindexknnsearch(Collection<String> indexs, Long topn, String vector, String... params) {
+        return tvsmindexknnsearchfilter(indexs, topn, vector, "", params);
+    }
+
+    public Response<VectorBuilderFactory.Knn<byte[]>> tvsmindexknnsearch(Collection<byte[]> indexs, Long topn, byte[] vector, byte[]... params) {
+        return tvsmindexknnsearchfilter(indexs, topn, vector, SafeEncoder.encode(""), params);
+    }
+
+    public Response<VectorBuilderFactory.Knn<String>> tvsmindexknnsearchfilter(Collection<String> indexs, Long topn, String vector, String pattern, String... params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(toByteArray(indexs.size()));
+        args.addAll(indexs.stream().map(index -> SafeEncoder.encode(index)).collect(Collectors.toList()));
+        args.add(toByteArray(topn));
+        args.add(SafeEncoder.encode(vector));
+        args.add(SafeEncoder.encode(pattern));
+        args.addAll(Arrays.stream(params).map(str -> SafeEncoder.encode(str)).collect(Collectors.toList()));
+        getClient("").sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
+        return getResponse(VectorBuilderFactory.STRING_KNN_RESULT);
+    }
+
+    public Response<VectorBuilderFactory.Knn<byte[]>> tvsmindexknnsearchfilter(Collection<byte[]> indexs, Long topn, byte[] vector, byte[] pattern, final byte[]... params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(toByteArray(indexs.size()));
+        args.addAll(indexs);
+        args.add(toByteArray(topn));
+        args.add(vector);
+        args.add(pattern);
+        args.addAll(Arrays.stream(params).collect(Collectors.toList()));
+        getClient("").sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
+        return getResponse(VectorBuilderFactory.BYTE_KNN_RESULT);
+    }
+
+    public Response<Collection<VectorBuilderFactory.Knn<String>>> tvsmindexmknnsearch(Collection<String> indexs, Long topn, Collection<String> vectors, String... params) {
+        return tvsmindexmknnsearchfilter(indexs, topn, vectors, "", params);
+    }
+
+    public Response<Collection<VectorBuilderFactory.Knn<byte[]>>> tvsmindexmknnsearch(Collection<byte[]> indexs, Long topn, Collection<byte[]> vectors, byte[]... params) {
+        return tvsmindexmknnsearchfilter(indexs, topn, vectors, SafeEncoder.encode(""), params);
+    }
+
+    public Response<Collection<VectorBuilderFactory.Knn<String>>> tvsmindexmknnsearchfilter(Collection<String> indexs, Long topn, Collection<String> vectors, String pattern, String... params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(toByteArray(indexs.size()));
+        args.addAll(indexs.stream().map(index -> SafeEncoder.encode(index)).collect(Collectors.toList()));
+        args.add(toByteArray(topn));
+        args.add(toByteArray(vectors.size()));
+        args.addAll(vectors.stream().map(vector -> SafeEncoder.encode(vector)).collect(Collectors.toList()));
+        args.add(SafeEncoder.encode(pattern));
+        args.addAll(Arrays.stream(params).map(str -> SafeEncoder.encode(str)).collect(Collectors.toList()));
+        getClient("").sendCommand(ModuleCommand.TVSMINDEXMKNNSEARCH, args.toArray(new byte[args.size()][]));
+        return getResponse(VectorBuilderFactory.STRING_KNN_BATCH_RESULT);
+    }
+
+    public Response<Collection<VectorBuilderFactory.Knn<byte[]>>> tvsmindexmknnsearchfilter(Collection<byte[]> indexs, Long topn, Collection<byte[]> vectors, byte[] pattern, byte[]... params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(toByteArray(indexs.size()));
+        args.addAll(indexs);
+        args.add(toByteArray(topn));
+        args.add(toByteArray(vectors.size()));
+        args.addAll(vectors);
+        args.add(pattern);
+        args.addAll(Arrays.stream(params).collect(Collectors.toList()));
+        getClient("").sendCommand(ModuleCommand.TVSMINDEXMKNNSEARCH, args.toArray(new byte[args.size()][]));
+        return getResponse(VectorBuilderFactory.BYTE_KNN_BATCH_RESULT);
+    }
 }

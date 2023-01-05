@@ -305,6 +305,8 @@ public enum ModuleCommand implements ProtocolCommand {
     TVSSCAN("tvs.scan"),
     TVSKNNSEARCH("tvs.knnsearch"),
     TVSMKNNSEARCH("tvs.mknnsearch"),
+    TVSMINDEXKNNSEARCH("tvs.mindexknnsearch"),
+    TVSMINDEXMKNNSEARCH("tvs.mindexmknnsearch"),
 
     // Aliyun Commands
     IINFO("iinfo"),

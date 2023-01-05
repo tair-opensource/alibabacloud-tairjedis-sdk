@@ -25,7 +25,7 @@ public class TairVectorTest extends TairVectorTestBase {
     final DistanceMethod method = DistanceMethod.IP;
     final long dbid = 2;
     final List<String> index_params = Arrays.asList("ef_construct", "100", "M", "16");
-    final List<String> index_params_with_dataType = Arrays.asList("ef_construct", "100", "M", "16","data_type","BINARY");
+    final List<String> index_params_with_dataType = Arrays.asList("ef_construct", "100", "M", "16", "data_type", "BINARY");
     final List<String> ef_params = Arrays.asList("ef_search", "100");
 
     /**
@@ -37,6 +37,15 @@ public class TairVectorTest extends TairVectorTestBase {
     }
 
     private void check_index(int dims, IndexAlgorithm algorithm, DistanceMethod method, final String... attr) {
+        Map<String, String> objs = tairVector.tvsgetindex(index);
+        if (!objs.isEmpty()) {
+            long result = tairVector.tvsdelindex(index);
+            assertEquals(result, 1);
+        }
+        assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method, attr));
+    }
+
+    private void check_and_create_index(String index, int dims, IndexAlgorithm algorithm, DistanceMethod method, final String... attr) {
         Map<String, String> objs = tairVector.tvsgetindex(index);
         if (!objs.isEmpty()) {
             long result = tairVector.tvsdelindex(index);
@@ -80,7 +89,7 @@ public class TairVectorTest extends TairVectorTestBase {
         tvs_del_index();
         try {
             tairVector.tvscreateindex(index, dims, algorithm, method, index_params_with_dataType.toArray(new String[0]));
-        }catch (Exception e){
+        } catch (Exception e) {
             assertEquals(e.getMessage(), "ERR index parameters invalid");
         }
         assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, DistanceMethod.JACCARD, index_params_with_dataType.toArray(new String[0])));
@@ -211,7 +220,6 @@ public class TairVectorTest extends TairVectorTestBase {
     }
 
 
-
     @Test
     public void tvs_hmgetall() {
         check_index(dims, algorithm, method, index_params.toArray(new String[0]));
@@ -309,6 +317,7 @@ public class TairVectorTest extends TairVectorTestBase {
                 SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"));
         assertEquals(2, entity_byte.getKnnResults().size());
     }
+
     @Test
     public void tvs_knnsearch_with_databin() {
         check_index(dims, algorithm, DistanceMethod.JACCARD, index_params_with_dataType.toArray(new String[0]));
@@ -453,6 +462,52 @@ public class TairVectorTest extends TairVectorTestBase {
             assertEquals(2, result.getKnnResults().size());
         });
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
+    }
+
+    @Test
+    public void tvs_mindexknnsearch_with_params() {
+        check_and_create_index("index1", dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+        check_and_create_index("index2", dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+        long result = tairVector.tvshset("index1", "first_entity_knn", "[1, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index1", "second_entity_knn", "[3, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "third_entity_knn", "[2, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "fourth_entity_knn", "[4, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        long topn = 2L;
+        List<String> indexs = Arrays.asList("index1", "index2");
+        String vector = "[0, 0, 0, 0, 0, 0, 0, 0]";
+        VectorBuilderFactory.Knn<String> result_string = tairVector.tvsmindexknnsearch(indexs, topn, vector, ef_params.toArray(new String[0]));
+        assertEquals(2, result_string.getKnnResults().size());
+        VectorBuilderFactory.Knn<byte[]> result_byte = tairVector.tvsmindexknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn, SafeEncoder.encode(vector), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        assertEquals(2, result_byte.getKnnResults().size());
+    }
+
+    @Test
+    public void tvs_mindexmknnsearch_with_params() {
+        check_and_create_index("index1", dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+        check_and_create_index("index2", dims, algorithm, DistanceMethod.L2, index_params.toArray(new String[0]));
+        long result = tairVector.tvshset("index1", "first_entity_knn", "[1, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index1", "second_entity_knn", "[3, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "third_entity_knn", "[2, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        result = tairVector.tvshset("index2", "fourth_entity_knn", "[4, 1, 1, 1, 1, 1, 1, 1]", "name", "sammy");
+        assertEquals(result, 2);
+        long topn = 2L;
+        List<String> indexs = Arrays.asList("index1", "index2");
+        List<String> vectors = Arrays.asList("[0, 0, 0, 0, 0, 0, 0, 0]", "[1, 1, 1, 1, 1, 1, 1, 1]");
+        Collection<VectorBuilderFactory.Knn<String>> result_string = tairVector.tvsmindexmknnsearch(indexs, topn, vectors, ef_params.toArray(new String[0]));
+        result_string.forEach(res -> {
+            assertEquals(2, res.getKnnResults().size());
+        });
+        Collection<VectorBuilderFactory.Knn<byte[]>> result_byte = tairVector.tvsmindexmknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn, vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        result_byte.forEach(res -> {
+            assertEquals(2, res.getKnnResults().size());
+        });
     }
 
 }
