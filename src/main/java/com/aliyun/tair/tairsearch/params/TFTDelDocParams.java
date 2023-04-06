@@ -1,8 +1,8 @@
 package com.aliyun.tair.tairsearch.params;
 
-import java.util.ArrayList;
-
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.ArrayList;
 
 public class TFTDelDocParams {
     public byte[][] getByteParams(String key, String... args) {

@@ -1,24 +1,18 @@
 package com.aliyun.tair.tairsearch.params;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-
 import redis.clients.jedis.Protocol;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.nio.ByteBuffer;
+import java.util.*;
 
 import static redis.clients.jedis.Protocol.Keyword.COUNT;
 import static redis.clients.jedis.Protocol.Keyword.MATCH;
 
 public class TFTScanParams {
-    private final Map<Protocol.Keyword, ByteBuffer> params = new EnumMap<>(Protocol.Keyword.class);
-
     public static final String SCAN_POINTER_START = String.valueOf(0);
     public static final byte[] SCAN_POINTER_START_BINARY = SafeEncoder.encode(SCAN_POINTER_START);
+    private final Map<Protocol.Keyword, ByteBuffer> params = new EnumMap<>(Protocol.Keyword.class);
 
     public TFTScanParams match(final byte[] pattern) {
         params.put(MATCH, ByteBuffer.wrap(pattern));
