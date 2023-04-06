@@ -1,15 +1,19 @@
 package com.aliyun.tair.tairsearch;
 
-import java.util.Map;
-
 import com.aliyun.tair.ModuleCommand;
-import com.aliyun.tair.tairsearch.params.TFTAddDocParams;
-import com.aliyun.tair.tairsearch.params.TFTDelDocParams;
+import com.aliyun.tair.tairsearch.action.search.SearchResponse;
+import com.aliyun.tair.tairsearch.factory.SearchBuilderFactory;
+import com.aliyun.tair.tairsearch.params.*;
+import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
@@ -41,12 +45,36 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
+    @Deprecated
     public Response<String> tftgetindexmappings(String key) {
         return tftgetindexmappings(SafeEncoder.encode(key));
     }
 
+    @Deprecated
     public Response<String> tftgetindexmappings(byte[] key) {
         getClient("").sendCommand(ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("mappings"));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftgetindex(String index) {
+        return tftgetindex(SafeEncoder.encode(index));
+    }
+
+    public Response<String> tftgetindex(byte[] index) {
+        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, index);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftgetindex(String index, final TFTGetIndexParams params) {
+        return tftgetindex(SafeEncoder.encode(index), params);
+    }
+
+    public Response<String> tftgetindex(byte[] index, final TFTGetIndexParams params) {
+        if(params.getParams() == null){
+            getClient("").sendCommand(ModuleCommand.TFTGETINDEX, index);
+        } else {
+            getClient("").sendCommand(ModuleCommand.TFTGETINDEX, index, params.getParams());
+        }
         return getResponse(BuilderFactory.STRING);
     }
 
@@ -68,14 +96,28 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
+    @Deprecated
     public Response<String> tftmadddoc(String key, Map<String /* docId */, String /* docContent */> docs) {
         TFTAddDocParams params = new TFTAddDocParams();
         getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
         return getResponse(BuilderFactory.STRING);
     }
 
+    @Deprecated
     public Response<String> tftmadddoc(byte[] key, Map<byte[] /* docId */, byte[] /* docContent */> docs) {
         TFTAddDocParams params = new TFTAddDocParams();
+        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftmadddoc(String key, List<DocInfo> docs) {
+        TFTMaddDocParams params = new TFTMaddDocParams();
+        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftmadddoc(byte[] key, List<DocInfoByte> docs) {
+        TFTMaddDocParams params = new TFTMaddDocParams();
         getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
         return getResponse(BuilderFactory.STRING);
     }
@@ -145,7 +187,7 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
-    public Response<String> tftdeldoc(String key,  String... docId) {
+    public Response<String> tftdeldoc(String key, String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
         getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
         return getResponse(BuilderFactory.STRING);
@@ -164,6 +206,29 @@ public class TairSearchPipeline extends Pipeline {
     public Response<String> tftdelall(byte[] index) {
         getClient("").sendCommand(ModuleCommand.TFTDELALL, index);
         return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<SearchResponse> tftsearch(String key, SearchSourceBuilder ssb) {
+        return tftsearch(SafeEncoder.encode(key), ssb);
+    }
+
+    public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb) {
+        getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()));
+        return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);
+    }
+
+    public Response<SearchResponse> tftsearch(String key, SearchSourceBuilder ssb, boolean use_cache) {
+        return tftsearch(SafeEncoder.encode(key), ssb, use_cache);
+    }
+
+    public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb, boolean use_cache) {
+        if (use_cache) {
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()), SafeEncoder.encode("use_cache"));
+        } else {
+            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()));
+        }
+
+        return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);
     }
 
     public Response<String> tftsearch(String key, String request) {
@@ -189,6 +254,18 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
+    public Response<String> tftmsearch(String request, String... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        getClient("").sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftmsearch(byte[] request, byte[]... indexes) {
+        TFTMSearchParams params = new TFTMSearchParams();
+        getClient("").sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
+        return getResponse(BuilderFactory.STRING);
+    }
+
     public Response<Long> tftexists(String index, String docId) {
         return tftexists(SafeEncoder.encode(index), SafeEncoder.encode(docId));
     }
@@ -206,4 +283,132 @@ public class TairSearchPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.TFTDOCNUM, index);
         return getResponse(BuilderFactory.LONG);
     }
+
+    public Response<String> tftanalyzer(String index_name, String text) {
+        return tftanalyzer(SafeEncoder.encode(index_name), SafeEncoder.encode(text));
+    }
+
+    public Response<String> tftanalyzer(byte[] index_name, byte[] text) {
+        getClient("").sendCommand(ModuleCommand.TFTANALYZER, index_name, text);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> tftanalyzer(String index_name, String text, final TFTAnalyzerParams params) {
+        return tftanalyzer(SafeEncoder.encode(index_name), SafeEncoder.encode(text), params);
+    }
+
+    public Response<String> tftanalyzer(byte[] index_name, byte[] text, final TFTAnalyzerParams params) {
+        getClient("").sendCommand(ModuleCommand.TFTANALYZER, params.getByteParams(index_name, text));
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    /**
+     * Add suggestions in index.
+     *
+     * @param index the index name
+     * @param texts the suggestions and their weight
+     * @return Success:  Number of successfully added suggestions; Fail: error.
+     */
+    public Response<Long> tftaddsug(String index, Map<String /* suggestion */, Integer /* weight */> texts) {
+        TFTAddSugParams params = new TFTAddSugParams();
+        getClient("").sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> tftaddsug(byte[] index, Map<byte[] /* suggestion */, Integer /* weight */> texts) {
+        TFTAddSugParams params = new TFTAddSugParams();
+        getClient("").sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Delete the specified suggestions from the index.
+     *
+     * @param index the index name
+     * @param text  the suggestions
+     * @return Success: Number of successfully deleted suggestions; Fail: error
+     */
+    public Response<Long> tftdelsug(String index, String... text) {
+        return tftdelsug(SafeEncoder.encode(index), SafeEncoder.encodeMany(text));
+    }
+
+    public Response<Long> tftdelsug(byte[] index, byte[]... text) {
+        getClient("").sendCommand(ModuleCommand.TFTDELSUG, JoinParameters.joinParameters(index, text));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Gets the number of suggestions in index.
+     *
+     * @param index the index name
+     * @return the number of autocomplete texts.
+     */
+    public Response<Long> tftsugnum(String index) {
+        return tftsugnum(SafeEncoder.encode(index));
+    }
+
+    public Response<Long> tftsugnum(byte[] index) {
+        getClient("").sendCommand(ModuleCommand.TFTSUGNUM, index);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Get suggestions in index according to prefix query.
+     *
+     * @param index  the index name
+     * @param prefix the prefix
+     * @return List of the suggestions in index.
+     */
+    public Response<List<String>> tftgetsug(String index, String prefix) {
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
+        return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<List<byte[]>> tftgetsug(byte[] index, byte[] prefix) {
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
+        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    }
+
+    /**
+     * Get suggestions in index according to prefix query.
+     *
+     * @param index  the index name
+     * @param prefix the prefix
+     * @param params the get parameters. For example the max number of suggestions returned and use fuzzy query
+     * @return List of the suggestions in index.
+     */
+    public Response<List<String>> tftgetsug(String index, String prefix, final TFTGetSugParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(SafeEncoder.encode(index));
+        args.add(SafeEncoder.encode(prefix));
+        args.addAll(params.getParams());
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
+        return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<List<byte[]>> tftgetsug(byte[] index, byte[] prefix, final TFTGetSugParams params) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(index);
+        args.add(prefix);
+        args.addAll(params.getParams());
+        getClient("").sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
+        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    }
+
+    /**
+     * Get all suggestions in index.
+     *
+     * @param index the index name
+     * @return List of the all suggestions in index.
+     */
+    public Response<List<String>> tftgetallsugs(String index) {
+        getClient("").sendCommand(ModuleCommand.TFTGETALLSUGS, SafeEncoder.encode(index));
+        return getResponse(BuilderFactory.STRING_LIST);
+    }
+
+    public Response<List<byte[]>> tftgetallsugs(byte[] index) {
+        getClient("").sendCommand(ModuleCommand.TFTGETALLSUGS, index);
+        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+    }
+
 }

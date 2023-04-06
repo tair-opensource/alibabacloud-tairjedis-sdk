@@ -48,3 +48,6 @@ JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tai
 | Python   |https://github.com/alibaba/tair-py|
 | Go       |https://github.com/alibaba/tair-go|
 | .Net     |https://github.com/alibaba/AlibabaCloud.TairSDK|
+
+# 依赖
+tairjedis中TairSearch模块依赖: [OpenSearch](https://github.com/opensearch-project/OpenSearch)

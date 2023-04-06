@@ -49,3 +49,6 @@ Refer to the complete example under [tests/example/*](https://github.com/alibaba
 | Python   |https://github.com/alibaba/tair-py|
 | Go       |https://github.com/alibaba/tair-go|
 | .Net     |https://github.com/alibaba/AlibabaCloud.TairSDK|
+
+# Dependency
+The TairSearch module in tairjedis depends on: [OpenSearch](https://github.com/opensearch-project/OpenSearch)
