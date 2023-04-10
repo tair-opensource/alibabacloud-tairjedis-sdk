@@ -23,6 +23,7 @@ public class ExincrbyParams extends Params {
 
     private static final String DEF = "def";
     private static final String NONEGATIVE = "nonegative";
+    private static final String KEEPTTL = "keepttl";
 
     public ExincrbyParams() {
     }
@@ -130,6 +131,15 @@ public class ExincrbyParams extends Params {
         return this;
     }
 
+    /**
+     * do not update ttl
+     * @return the params
+     */
+    public ExincrbyParams keepttl() {
+        addParam(KEEPTTL);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -165,6 +175,10 @@ public class ExincrbyParams extends Params {
         addParamWithValue(byteParams, MAX);
 
         addParamWithValue(byteParams, DEF);
+
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
+        }
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

@@ -52,6 +52,35 @@ public class TairStringTest extends TairStringTestBase {
     }
 
     @Test
+    public void exsetKeepTTLTest() throws Exception{
+        ExsetParams params = new ExsetParams();
+        params.keepttl();
+        ExsetParams params_ex = new ExsetParams();
+        params_ex.ex(2);
+
+        // String
+        String ret = tairString.exset(key, value, params_ex);
+        assertEquals("OK", ret);
+        ret = tairString.exset(key, value);
+        assertEquals("OK", ret);
+        Thread.sleep(3000);
+        ExgetResult<String> getRet = tairString.exget(key);
+        assertEquals(value, getRet.getValue());
+        assertEquals(2, getRet.getVersion());
+
+        ret = tairString.exset(key, value, params_ex);
+        assertEquals("OK", ret);
+        ret = tairString.exset(key, value, params);
+        assertEquals("OK", ret);
+        getRet = tairString.exget(key);
+        assertEquals(value, getRet.getValue());
+        assertEquals(4, getRet.getVersion());
+        Thread.sleep(3000);
+        getRet = tairString.exget(key);
+        assertNull(getRet);
+    }
+
+    @Test
     public void exsetParamsTest() {
         ExsetParams params_nx = new ExsetParams();
         params_nx.nx();

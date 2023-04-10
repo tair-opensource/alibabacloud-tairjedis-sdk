@@ -19,6 +19,9 @@ public class ExincrbyFloatParams extends Params {
 
     private static final String MAX = "MAX";
     private static final String MIN = "MIN";
+
+    private static final String KEEPTTL = "keepttl";
+
     public ExincrbyFloatParams() {
     }
 
@@ -114,6 +117,15 @@ public class ExincrbyFloatParams extends Params {
         return this;
     }
 
+    /**
+     * do not update ttl
+     * @return the params
+     */
+    public ExincrbyFloatParams keepttl() {
+        addParam(KEEPTTL);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -145,6 +157,10 @@ public class ExincrbyFloatParams extends Params {
 
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, MAX);
+
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
+        }
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

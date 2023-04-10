@@ -22,6 +22,7 @@ public class ExsetParams extends Params {
     private static final String MAX = "max";
 
     private static final String FLAGS = "flags";
+    private static final String KEEPTTL = "keepttl";
 
     /**
      * MEMCACHED: flags
@@ -109,6 +110,15 @@ public class ExsetParams extends Params {
         return this;
     }
 
+    /**
+     * do not update ttl
+     * @return the params
+     */
+    public ExsetParams keepttl() {
+        addParam(KEEPTTL);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -142,6 +152,10 @@ public class ExsetParams extends Params {
 
         addParamWithValue(byteParams, FLAGS);
 
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
+        }
+
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
 
@@ -170,6 +184,10 @@ public class ExsetParams extends Params {
         addParamWithValue(byteParams, MAX);
 
         addParamWithValue(byteParams, FLAGS);
+
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
+        }
 
         return byteParams.toArray(new byte[byteParams.size()][]);
     }
