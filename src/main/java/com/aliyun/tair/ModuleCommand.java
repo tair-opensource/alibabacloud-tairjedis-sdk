@@ -293,6 +293,7 @@ public enum ModuleCommand implements ProtocolCommand {
     TFTINCRFLOATDOCFIELD("tft.incrfloatdocfield"),
     TFTDELDOCFIELD("tft.deldocfield"),
     TFTANALYZER("tft.analyzer"),
+    TFTEXPLAINCOST("tft.explaincost"),
     TFTADDSUG("tft.addsug"),
     TFTDELSUG("tft.delsug"),
     TFTSUGNUM("tft.sugnum"),

@@ -1,24 +1,26 @@
 package com.aliyun.tair.tests.tairsearch;
 
 import com.aliyun.tair.tairsearch.action.search.MSearchResponse;
-import com.aliyun.tair.tairsearch.action.search.SearchResponse;
 import com.aliyun.tair.tairsearch.index.query.*;
 import com.aliyun.tair.tairsearch.params.*;
 import com.aliyun.tair.tairsearch.search.AuxInfo;
-import com.aliyun.tair.tairsearch.search.TotalHits;
 import com.aliyun.tair.tairsearch.search.aggregations.AggregationBuilders;
-import com.aliyun.tair.tairsearch.search.aggregations.BucketOrder;
-import com.aliyun.tair.tairsearch.search.aggregations.InternalAggregation;
-import com.aliyun.tair.tairsearch.search.aggregations.bucket.filter.Filter;
 import com.aliyun.tair.tairsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
-import com.aliyun.tair.tairsearch.search.aggregations.bucket.terms.IncludeExclude;
-import com.aliyun.tair.tairsearch.search.aggregations.bucket.terms.Terms;
 import com.aliyun.tair.tairsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import com.aliyun.tair.tairsearch.search.aggregations.metrics.*;
 import com.aliyun.tair.tairsearch.search.builder.KeyCursors;
 import com.aliyun.tair.tairsearch.search.builder.MSearchSourceBuilder;
 import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
 import com.aliyun.tair.tairsearch.search.sort.SortOrder;
+import com.aliyun.tair.tairsearch.action.search.SearchResponse;
+import com.aliyun.tair.tairsearch.search.TotalHits;
+import com.aliyun.tair.tairsearch.search.aggregations.BucketOrder;
+import com.aliyun.tair.tairsearch.search.aggregations.InternalAggregation;
+import com.aliyun.tair.tairsearch.search.aggregations.bucket.filter.Filter;
+import com.aliyun.tair.tairsearch.search.aggregations.bucket.terms.IncludeExclude;
+import com.aliyun.tair.tairsearch.search.aggregations.bucket.terms.Terms;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -1653,4 +1655,23 @@ public class TairSearchClusterTest extends TairSearchTestBase {
                 sr.toString());
     }
 
+    @Test
+    public void tftexplaincosttest() {
+        jedisCluster.del("tftkey");
+        String ret = tairSearchCluster.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
+        assertEquals(ret, "OK");
+
+        tairSearchCluster.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+                tairSearchCluster.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
+        tairSearchCluster.tftadddoc("tftkey", "{\"f0\":\"redis is an in-memory database that persists on disk\"}", "2");
+        tairSearchCluster.tftadddoc("tftkey", "{\"f0\":\"redis supports many different kind of values\"}", "3");
+
+        TermQueryBuilder qb = QueryBuilders.termQuery("f0", "redis");
+        SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb).sort("_score");
+
+        String response = tairSearchCluster.tftexplaincost("tftkey", ssb);
+        JsonObject result = JsonParser.parseString(response).getAsJsonObject();
+        TestCase.assertTrue(result.get("QUERY_COST") != null);
+    }
 }

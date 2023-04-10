@@ -1,13 +1,15 @@
 package com.aliyun.tair.tests.tairsearch;
 
-import com.aliyun.tair.tairsearch.action.search.SearchResponse;
-import com.aliyun.tair.tairsearch.index.query.QueryBuilders;
-import com.aliyun.tair.tairsearch.index.query.TermsQueryBuilder;
 import com.aliyun.tair.tairsearch.params.DocInfo;
+import com.aliyun.tair.tairsearch.params.DocInfoByte;
 import com.aliyun.tair.tairsearch.params.TFTGetIndexParams;
 import com.aliyun.tair.tairsearch.params.TFTGetSugParams;
-import com.aliyun.tair.tairsearch.search.TotalHits;
 import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
+import com.aliyun.tair.tairsearch.index.query.QueryBuilders;
+import com.aliyun.tair.tairsearch.index.query.TermsQueryBuilder;
+import com.aliyun.tair.tairsearch.action.search.SearchResponse;
+import com.aliyun.tair.tairsearch.search.TotalHits;
+import com.google.gson.JsonParser;
 import org.junit.Test;
 
 import java.util.*;
@@ -282,6 +284,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
                 ssb.toString());
         tairSearchPipeline.tftsearch("tftkey", ssb);
+        tairSearchPipeline.tftexplaincost("tftkey", ssb);
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
                 ssb.toString());
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
@@ -303,5 +306,8 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals("{\"f0\":\"redis is a nosql database\"}",result.getHits().getAt(0).getSourceAsString());
         Map<String,Object> tmp = result.getHits().getAt(0).getSourceAsMap();
         assertEquals("redis is a nosql database",tmp.get("f0"));
+
+        String response = objs.get(5).toString();
+        assertTrue(JsonParser.parseString(response).getAsJsonObject().get("QUERY_COST") != null);
     }
 }

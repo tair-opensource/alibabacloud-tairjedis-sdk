@@ -302,6 +302,23 @@ public class TairSearchPipeline extends Pipeline {
         return getResponse(BuilderFactory.STRING);
     }
 
+    public Response<String> tftexplaincost(String index, SearchSourceBuilder ssb) {
+        return tftexplaincost(SafeEncoder.encode(index), SafeEncoder.encode(ssb.toString()));
+    }
+
+    public Response<String> tftexplaincost(byte[] index, SearchSourceBuilder ssb) {
+        return tftexplaincost(index, SafeEncoder.encode(ssb.toString()));
+    }
+
+    public Response<String> tftexplaincost(String index, String request) {
+        return tftexplaincost(SafeEncoder.encode(index), SafeEncoder.encode(request));
+    }
+
+    public Response<String> tftexplaincost(byte[] index, byte[] request) {
+        getClient("").sendCommand(ModuleCommand.TFTEXPLAINCOST, index, request);
+        return getResponse(BuilderFactory.STRING);
+    }
+
     /**
      * Add suggestions in index.
      *

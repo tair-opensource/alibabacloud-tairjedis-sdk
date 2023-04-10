@@ -386,6 +386,37 @@ public class TairSearchCluster {
     }
 
     /**
+     * explain the cost of every query phase.
+     *
+     * @param index the index name
+     * @param ssb the SearchSourceBuilder
+     * @return Success: Token information
+     */
+    public String tftexplaincost(String index, SearchSourceBuilder ssb) {
+        return tftexplaincost(SafeEncoder.encode(index), SafeEncoder.encode(ssb.toString()));
+    }
+
+    public String tftexplaincost(byte[] index, SearchSourceBuilder ssb) {
+        return tftexplaincost(index, SafeEncoder.encode(ssb.toString()));
+    }
+
+    /**
+     * explain the cost of every query phase.
+     *
+     * @param index the index name
+     * @param request the query clause
+     * @return Success: Token information
+     */
+    public String tftexplaincost(String index, String request) {
+        return tftexplaincost(SafeEncoder.encode(index), SafeEncoder.encode(request));
+    }
+
+    public String tftexplaincost(byte[] index, byte[] request) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TFTEXPLAINCOST, index, request);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    /**
      * Add suggestions in index.
      *
      * @param index the index name
