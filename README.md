@@ -52,3 +52,6 @@ Refer to the complete example under [tests/example/*](https://github.com/alibaba
 
 # Dependency
 The TairSearch module in tairjedis depends on: [OpenSearch](https://github.com/opensearch-project/OpenSearch)
+
+
+test cla
