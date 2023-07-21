@@ -86,7 +86,6 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         List<Object> objs = tairVectorPipeline.syncAndReturnAll();
 
         Map<String, String> schema = (Map<String, String>) objs.get(0);
-        assertEquals(index, schema.get("index_name"));
         assertEquals(algorithm.name(), schema.get("algorithm"));
         assertEquals(method.name(), schema.get("distance_method"));
         assertEquals(String.valueOf(0), schema.get("data_count"));

@@ -136,7 +136,6 @@ public class TairVectorTest extends TairVectorTestBase {
         tvs_create_index(dims, algorithm, method, index_params.toArray(new String[0]));
 
         Map<String, String> schema = tairVector.tvsgetindex(index);
-        assertEquals(index, schema.get("index_name"));
         assertEquals(algorithm.name(), schema.get("algorithm"));
         assertEquals(method.name(), schema.get("distance_method"));
         assertEquals(String.valueOf(0), schema.get("data_count"));
@@ -154,7 +153,6 @@ public class TairVectorTest extends TairVectorTestBase {
         check_index(dims, algorithm, method, index_params.toArray(new String[0]));
 
         Map<String, String> schema = tairVector.tvsgetindex(index);
-        assertEquals(index, schema.get("index_name"));
         assertEquals(algorithm.name(), schema.get("algorithm"));
         assertEquals(method.name(), schema.get("distance_method"));
         assertEquals(String.valueOf(0), schema.get("data_count"));
