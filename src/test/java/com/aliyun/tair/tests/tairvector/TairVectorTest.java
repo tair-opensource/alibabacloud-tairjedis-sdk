@@ -8,13 +8,12 @@ import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import org.junit.Test;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -527,6 +526,9 @@ public class TairVectorTest extends TairVectorTestBase {
             indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn,
             SafeEncoder.encode(vector), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
         assertEquals(2, result_byte.getKnnResults().size());
+
+        tairVector.tvsdelindex("index1");
+        tairVector.tvsdelindex("index2");
     }
 
     @Test
@@ -559,6 +561,9 @@ public class TairVectorTest extends TairVectorTestBase {
         result_byte.forEach(res -> {
             assertEquals(2, res.getKnnResults().size());
         });
+
+        tairVector.tvsdelindex("index1");
+        tairVector.tvsdelindex("index2");
     }
 
     @Test
@@ -645,10 +650,100 @@ public class TairVectorTest extends TairVectorTestBase {
 
         double tvshincrbyfloat = tairVector.tvshincrbyfloat(index_name, "entityid2", "field1", 1.5d);
         assertEquals(Double.compare(1.5d, tvshincrbyfloat), 0);
-        tvshincrbyfloat =  tairVector.tvshincrbyfloat(SafeEncoder.encode(index_name), SafeEncoder.encode("entityid2"), SafeEncoder.encode("field1"), 1.5d);
+        tvshincrbyfloat = tairVector.tvshincrbyfloat(SafeEncoder.encode(index_name), SafeEncoder.encode("entityid2"), SafeEncoder.encode("field1"), 1.5d);
         assertEquals(Double.compare(3.0d, tvshincrbyfloat), 0);
         tairVector.tvsdelindex(index_name);
     }
 
 
+    public void tvs_getdistance() {
+        final String index_name = "getdistance_test";
+        check_and_create_index(index_name, 2, algorithm, DistanceMethod.L2);
+
+        for (int i = 0; i < test_data.size(); ++i) {
+            String[] args = test_data.get(i);
+            Long ret = tairVector.tvshset(index_name, String.format("key-%d", i), args[1],
+                    Arrays.copyOfRange(args, 2, 6));
+            assertEquals(3, ret.longValue());
+        }
+
+        List<String> keys = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            String key = "key-" + i;
+            keys.add(key);
+        }
+
+        // getdistance
+        {
+            VectorBuilderFactory.Knn<String> result = tairVector.tvsgetdistance(index_name, "[0,0]", keys, null, null, null);
+            assertEquals(10, result.getKnnResults().size());
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVector.tvsgetdistance(SafeEncoder.encode(index_name), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), null, null, null);
+            assertEquals(10, result.getKnnResults().size());
+        }
+
+        // getdistance with TOPN
+        {
+            VectorBuilderFactory.Knn<String> result = tairVector.tvsgetdistance(index_name, "[0,0]", keys, Long.valueOf(5), null, null);
+            assertEquals(5, result.getKnnResults().size());
+            KnnItem<String> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length - 1; ++i) {
+                assertTrue(items[i].getScore() <= items[i + 1].getScore());
+            }
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVector.tvsgetdistance(SafeEncoder.encode(index_name), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), Long.valueOf(5), null, null);
+            assertEquals(5, result.getKnnResults().size());
+            KnnItem<byte[]> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length - 1; ++i) {
+                assertTrue(items[i].getScore() <= items[i + 1].getScore());
+            }
+        }
+
+        // getdistance with MAX_DIST
+        {
+            VectorBuilderFactory.Knn<String> result = tairVector.tvsgetdistance(index_name, "[0,0]", keys, null, Float.valueOf(50), null);
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<String> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(items[i].getScore() < 50);
+            }
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVector.tvsgetdistance(SafeEncoder.encode(index_name), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), null, Float.valueOf(50), null);
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<byte[]> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(items[i].getScore() < 50);
+            }
+        }
+
+        // getdistance with FILTER
+        {
+            VectorBuilderFactory.Knn<String> result = tairVector.tvsgetdistance(index_name, "[0,0]", keys, null, null, "name>\"H\"");
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<String> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(items[i].getId().equals("key-7") || items[i].getId().equals("key-8") || items[i].getId().equals("key-9"));
+            }
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVector.tvsgetdistance(SafeEncoder.encode(index_name), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), null, null, SafeEncoder.encode("name>\"H\""));
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<byte[]> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(SafeEncoder.encode((byte[]) items[i].getId()).equals("key-7") ||
+                        SafeEncoder.encode((byte[]) items[i].getId()).equals("key-8") ||
+                        SafeEncoder.encode((byte[]) items[i].getId()).equals("key-9"));
+            }
+        }
+
+        tairVector.tvsdelindex(index_name);
+    }
 }

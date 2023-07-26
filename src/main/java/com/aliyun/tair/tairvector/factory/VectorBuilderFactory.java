@@ -1,19 +1,21 @@
 package com.aliyun.tair.tairvector.factory;
 
+import redis.clients.jedis.Builder;
+import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.util.SafeEncoder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.ScanResult;
-import redis.clients.jedis.util.SafeEncoder;
-
 public class VectorBuilderFactory {
     public static final String VECTOR_TAG = "VECTOR";
+
     public static class KnnItem<T> {
         private T id;
         private double score;
+
         public KnnItem(T id, double score) {
             this.id = id;
             this.score = score;
@@ -39,6 +41,7 @@ public class VectorBuilderFactory {
         public void add(KnnItem item) {
             knnItems.add(item);
         }
+
         public Collection<KnnItem<T>> getKnnResults() {
             return knnItems;
         }
@@ -123,18 +126,17 @@ public class VectorBuilderFactory {
         }
     };
 
-    public static final Builder<ScanResult<String>> SCAN_CURSOR_STRING
-            = new Builder<ScanResult<String>>() {
+    public static final Builder<ScanResult<String>> SCAN_CURSOR_STRING = new Builder<ScanResult<String>>() {
         @Override
         @SuppressWarnings("unchecked")
         public ScanResult<String> build(Object data) {
             if (data == null) {
                 return null;
             }
-            List<Object> result = (List<Object>)data;
-            String newcursor = new String((byte[])result.get(0));
+            List<Object> result = (List<Object>) data;
+            String newcursor = new String((byte[]) result.get(0));
             List<String> results = new ArrayList<>();
-            List<byte[]> rawResults = (List<byte[]>)result.get(1);
+            List<byte[]> rawResults = (List<byte[]>) result.get(1);
             Iterator<byte[]> iterator = rawResults.iterator();
             while (iterator.hasNext()) {
                 results.add(SafeEncoder.encode(iterator.next()));
@@ -148,17 +150,16 @@ public class VectorBuilderFactory {
         }
     };
 
-    public static final Builder<ScanResult<byte[]>> SCAN_CURSOR_BYTE
-            = new Builder<ScanResult<byte[]>>() {
+    public static final Builder<ScanResult<byte[]>> SCAN_CURSOR_BYTE = new Builder<ScanResult<byte[]>>() {
         @Override
         @SuppressWarnings("unchecked")
         public ScanResult<byte[]> build(Object data) {
             if (data == null) {
                 return null;
             }
-            List<Object> result = (List<Object>)data;
-            byte[] newcursor = (byte[])result.get(0);
-            return new ScanResult<>(newcursor, (List<byte[]>)result.get(1));
+            List<Object> result = (List<Object>) data;
+            byte[] newcursor = (byte[]) result.get(0);
+            return new ScanResult<>(newcursor, (List<byte[]>) result.get(1));
         }
 
         @Override

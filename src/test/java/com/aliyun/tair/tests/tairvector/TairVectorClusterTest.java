@@ -4,9 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
+import com.aliyun.tair.tairvector.factory.VectorBuilderFactory.KnnItem;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,6 +29,18 @@ public class TairVectorClusterTest extends TairVectorTestBase {
     final DistanceMethod method = DistanceMethod.IP;
     final List<String> ef_params = Arrays.asList("ef_search", "100");
 
+    final List<String[]> test_data = Arrays.asList(
+            new String[] { "VECTOR", "[7,3]", "name", "Aaron", "age", "12" }, // dist 58
+            new String[] { "VECTOR", "[9,2]", "name", "Bob", "age", "33" }, // dist 85
+            new String[] { "VECTOR", "[6,6]", "name", "Charlie", "age", "29" }, // dist 72
+            new String[] { "VECTOR", "[3,5]", "name", "Daniel", "age", "23" }, // dist 34
+            new String[] { "VECTOR", "[3,7]", "name", "Eason", "age", "22" }, // dist 58
+            new String[] { "VECTOR", "[3,6]", "name", "Fabian", "age", "35" }, // dist 45
+            new String[] { "VECTOR", "[5,2]", "name", "George", "age", "12" }, // dist 29
+            new String[] { "VECTOR", "[8,9]", "name", "Henry", "age", "30" }, // dist 145
+            new String[] { "VECTOR", "[5,5]", "name", "Ivan", "age", "16" }, // dist 50
+            new String[] { "VECTOR", "[2,7]", "name", "James", "age", "12" }); // dist 53
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -37,15 +51,14 @@ public class TairVectorClusterTest extends TairVectorTestBase {
     private void tvs_create_index_and_load_data() {
         tvs_create_index(dims, algorithm, method);
         tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
-        tvs_hset(
-            SafeEncoder.encode("second_entity"),
-            SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
-            SafeEncoder.encode("name"),
-            SafeEncoder.encode("tiddy"));
+        tvs_hset(SafeEncoder.encode("second_entity"),
+                SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
+                SafeEncoder.encode("name"),
+                SafeEncoder.encode("tiddy"));
     }
 
     private void tvs_hset(
-        final String entityid, final String vector, final String param_k, final String param_v) {
+            final String entityid, final String vector, final String param_k, final String param_v) {
         long result = tairVectorCluster.tvshset(index, entityid, vector, param_k, param_v);
         assertEquals(result, 2);
     }
@@ -102,8 +115,8 @@ public class TairVectorClusterTest extends TairVectorTestBase {
         while (entries.hasNext()) {
             Map.Entry<byte[], byte[]> entry = entries.next();
             assertEquals(
-                schema.get(SafeEncoder.encode(entry.getKey())),
-                SafeEncoder.encode(entry.getValue()));
+                    schema.get(SafeEncoder.encode(entry.getKey())),
+                    SafeEncoder.encode(entry.getValue()));
         }
 
         tairVectorCluster.tvsdelindex(index);
@@ -116,10 +129,10 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
         tvs_hset(
-            SafeEncoder.encode("second_entity"),
-            SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
-            SafeEncoder.encode("name"),
-            SafeEncoder.encode("tiddy"));
+                SafeEncoder.encode("second_entity"),
+                SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
+                SafeEncoder.encode("name"),
+                SafeEncoder.encode("tiddy"));
 
         tairVectorCluster.tvsdelindex(index);
     }
@@ -131,16 +144,16 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         Map<String, String> entity_string = tairVectorCluster.tvshgetall(index, "first_entity");
         assertEquals(
-            "[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]",
-            entity_string.get(VectorBuilderFactory.VECTOR_TAG));
+                "[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]",
+                entity_string.get(VectorBuilderFactory.VECTOR_TAG));
         assertEquals("sammy", entity_string.get("name"));
 
         Map<byte[], byte[]> entity_byte = tairVectorCluster.tvshgetall(SafeEncoder.encode(index),
-            SafeEncoder.encode("first_entity"));
+                SafeEncoder.encode("first_entity"));
         assertEquals(
-            "[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]",
-            SafeEncoder.encode(
-                entity_byte.get(SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG))));
+                "[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]",
+                SafeEncoder.encode(
+                        entity_byte.get(SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG))));
         assertEquals("sammy", SafeEncoder.encode(entity_byte.get(SafeEncoder.encode("name"))));
 
         tairVectorCluster.tvsdelindex(index);
@@ -152,17 +165,17 @@ public class TairVectorClusterTest extends TairVectorTestBase {
         tvs_create_index_and_load_data();
 
         List<String> entity_string = tairVectorCluster.tvshmget(index, "first_entity",
-            VectorBuilderFactory.VECTOR_TAG, "name");
+                VectorBuilderFactory.VECTOR_TAG, "name");
         assertEquals("[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]", entity_string.get(0));
         assertEquals("sammy", entity_string.get(1));
 
         List<byte[]> entity_byte = tairVectorCluster.tvshmget(
-            SafeEncoder.encode(index),
-            SafeEncoder.encode("first_entity"),
-            SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG),
-            SafeEncoder.encode("name"));
+                SafeEncoder.encode(index),
+                SafeEncoder.encode("first_entity"),
+                SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG),
+                SafeEncoder.encode("name"));
         assertEquals(
-            "[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]", SafeEncoder.encode(entity_byte.get(0)));
+                "[0.12,0.23,0.56,0.67,0.78,0.89,0.01,0.89]", SafeEncoder.encode(entity_byte.get(0)));
         assertEquals("sammy", SafeEncoder.encode(entity_byte.get(1)));
 
         tairVectorCluster.tvsdelindex(index);
@@ -193,13 +206,13 @@ public class TairVectorClusterTest extends TairVectorTestBase {
         assertTrue(entity_string.size() == 1 && (!entity_string.containsKey("name")));
 
         long count_byte = tairVectorCluster.tvshdel(
-            SafeEncoder.encode(index),
-            SafeEncoder.encode("second_entity"),
-            SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG));
+                SafeEncoder.encode(index),
+                SafeEncoder.encode("second_entity"),
+                SafeEncoder.encode(VectorBuilderFactory.VECTOR_TAG));
         assertEquals(1, count_byte);
         Map<String, String> entity_byte = tairVectorCluster.tvshgetall(index, "second_entity");
         assertTrue(
-            entity_byte.size() == 1 && (!entity_byte.containsKey(VectorBuilderFactory.VECTOR_TAG)));
+                entity_byte.size() == 1 && (!entity_byte.containsKey(VectorBuilderFactory.VECTOR_TAG)));
 
         tairVectorCluster.tvsdelindex(index);
     }
@@ -217,7 +230,7 @@ public class TairVectorClusterTest extends TairVectorTestBase {
         assert (result_string.getResult().size() >= 1);
 
         ScanResult<byte[]> entity_byte = tairVectorCluster.tvsscan(SafeEncoder.encode(index), cursor,
-            exhscanParams);
+                exhscanParams);
         assert (entity_byte.getResult().size() >= 1);
 
         tairVectorCluster.tvsdelindex(index);
@@ -230,13 +243,13 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long topn = 10L;
         VectorBuilderFactory.Knn<String> result_string = tairVectorCluster.tvsknnsearch(
-            index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]");
+                index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]");
         assertEquals(2, result_string.getKnnResults().size());
 
         VectorBuilderFactory.Knn<byte[]> entity_byte = tairVectorCluster.tvsknnsearch(
-            SafeEncoder.encode(index),
-            topn,
-            SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"));
+                SafeEncoder.encode(index),
+                topn,
+                SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"));
         assertEquals(2, entity_byte.getKnnResults().size());
 
         tairVectorCluster.tvsdelindex(index);
@@ -249,14 +262,14 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long topn = 10L;
         VectorBuilderFactory.Knn<String> result_string = tairVectorCluster.tvsknnsearchfilter(
-            index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name == \"sammy\"");
+                index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name == \"sammy\"");
         assertEquals(1, result_string.getKnnResults().size());
 
         VectorBuilderFactory.Knn<byte[]> entity_byte = tairVectorCluster.tvsknnsearchfilter(
-            SafeEncoder.encode(index),
-            topn,
-            SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
-            SafeEncoder.encode("name == \"sammy\""));
+                SafeEncoder.encode(index),
+                topn,
+                SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
+                SafeEncoder.encode("name == \"sammy\""));
         assertEquals(1, entity_byte.getKnnResults().size());
 
         tairVectorCluster.tvsdelindex(index);
@@ -269,17 +282,17 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long topn = 10L;
         VectorBuilderFactory.Knn<String> result_string = tairVectorCluster.tvsknnsearch(
-            index,
-            topn,
-            "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
-            ef_params.toArray(new String[0]));
+                index,
+                topn,
+                "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
+                ef_params.toArray(new String[0]));
         assertEquals(2, result_string.getKnnResults().size());
 
         VectorBuilderFactory.Knn<byte[]> entity_byte = tairVectorCluster.tvsknnsearch(
-            SafeEncoder.encode(index),
-            topn,
-            SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
-            SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+                SafeEncoder.encode(index),
+                topn,
+                SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
+                SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
         assertEquals(2, entity_byte.getKnnResults().size());
         tairVectorCluster.tvsdelindex(index);
     }
@@ -291,17 +304,17 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long topn = 10L;
         List<String> vectors = Arrays.asList(
-            "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
-            "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
+                "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
+                "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
         Collection<VectorBuilderFactory.Knn<String>> result_string = tairVectorCluster.tvsmknnsearch(index,
-            topn, vectors);
+                topn, vectors);
         assertEquals(2, result_string.size());
         result_string.forEach(one -> System.out.printf("string: %s\n", one.toString()));
 
         Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte = tairVectorCluster.tvsmknnsearch(
-            SafeEncoder.encode(index),
-            topn,
-            vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()));
+                SafeEncoder.encode(index),
+                topn,
+                vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()));
         assertEquals(2, entity_byte.size());
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
 
@@ -315,20 +328,20 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long topn = 10L;
         List<String> vectors = Arrays.asList(
-            "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
-            "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
+                "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
+                "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
         String pattern = "name == \"no-sammy\"";
         Collection<VectorBuilderFactory.Knn<String>> result_string = tairVectorCluster.tvsmknnsearchfilter(
-            index, topn,
-            vectors, pattern);
+                index, topn,
+                vectors, pattern);
         assertEquals(2, result_string.size());
         result_string.forEach(one -> System.out.printf("string: %s\n", one.toString()));
 
         Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte = tairVectorCluster.tvsmknnsearchfilter(
-            SafeEncoder.encode(index),
-            topn,
-            vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),
-            SafeEncoder.encode(pattern));
+                SafeEncoder.encode(index),
+                topn,
+                vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),
+                SafeEncoder.encode(pattern));
         assertEquals(2, entity_byte.size());
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
 
@@ -342,18 +355,18 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long topn = 10L;
         List<String> vectors = Arrays.asList(
-            "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
-            "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
+                "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
+                "[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]");
         Collection<VectorBuilderFactory.Knn<String>> result_string = tairVectorCluster.tvsmknnsearch(index,
-            topn, vectors, ef_params.toArray(new String[0]));
+                topn, vectors, ef_params.toArray(new String[0]));
         assertEquals(2, result_string.size());
         result_string.forEach(one -> System.out.printf("string: %s\n", one.toString()));
 
         Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte = tairVectorCluster.tvsmknnsearch(
-            SafeEncoder.encode(index),
-            topn,
-            vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),
-            SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+                SafeEncoder.encode(index),
+                topn,
+                vectors.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()),
+                SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
         assertEquals(2, entity_byte.size());
         result_string.forEach(one -> System.out.printf("byte: %s\n", one.toString()));
 
@@ -381,11 +394,100 @@ public class TairVectorClusterTest extends TairVectorTestBase {
         assertEquals(2, tvshincrby);
         tvshincrby = tairVectorCluster.tvshincrby(SafeEncoder.encode(index), SafeEncoder.encode("first_entity"), SafeEncoder.encode("field"), 2);
         assertEquals(4, tvshincrby);
-        
+
         double tvshincrbyfloat = tairVectorCluster.tvshincrbyfloat(index, "second_entity", "field", 1.5d);
         assertEquals(Double.compare(1.5d, tvshincrbyfloat), 0);
-        tvshincrbyfloat =  tairVector.tvshincrbyfloat(SafeEncoder.encode(index), SafeEncoder.encode("second_entity"), SafeEncoder.encode("field"), 1.5d);
+        tvshincrbyfloat = tairVector.tvshincrbyfloat(SafeEncoder.encode(index), SafeEncoder.encode("second_entity"), SafeEncoder.encode("field"), 1.5d);
         assertEquals(Double.compare(3.0d, tvshincrbyfloat), 0);
     }
 
+    public void tvs_getdistance() {
+        tvs_create_index(2, algorithm, DistanceMethod.L2);
+
+        for (int i = 0; i < test_data.size(); ++i) {
+            String[] args = test_data.get(i);
+            Long ret = tairVectorCluster.tvshset(index, String.format("key-%d", i), args[1],
+                    Arrays.copyOfRange(args, 2, 6));
+            assertEquals(3, ret.longValue());
+        }
+
+        List<String> keys = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            String key = "key-" + i;
+            keys.add(key);
+        }
+
+        // getdistance
+        {
+            VectorBuilderFactory.Knn<String> result = tairVectorCluster.tvsgetdistance(index, "[0,0]", keys, null, null, null);
+            assertEquals(10, result.getKnnResults().size());
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVectorCluster.tvsgetdistance(SafeEncoder.encode(index), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), null, null, null);
+            assertEquals(10, result.getKnnResults().size());
+        }
+
+        // getdistance with TOPN
+        {
+            VectorBuilderFactory.Knn<String> result = tairVectorCluster.tvsgetdistance(index, "[0,0]", keys, Long.valueOf(5), null, null);
+            assertEquals(5, result.getKnnResults().size());
+            KnnItem<String> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length - 1; ++i) {
+                assertTrue(items[i].getScore() <= items[i + 1].getScore());
+            }
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVectorCluster.tvsgetdistance(SafeEncoder.encode(index), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), Long.valueOf(5), null, null);
+            assertEquals(5, result.getKnnResults().size());
+            KnnItem<byte[]> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length - 1; ++i) {
+                assertTrue(items[i].getScore() <= items[i + 1].getScore());
+            }
+        }
+
+        // getdistance with MAX_DIST
+        {
+            VectorBuilderFactory.Knn<String> result = tairVectorCluster.tvsgetdistance(index, "[0,0]", keys, null, Float.valueOf(50), null);
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<String> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(items[i].getScore() < 50);
+            }
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVectorCluster.tvsgetdistance(SafeEncoder.encode(index), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), null, Float.valueOf(50), null);
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<byte[]> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(items[i].getScore() < 50);
+            }
+        }
+
+        // getdistance with FILTER
+        {
+            VectorBuilderFactory.Knn<String> result = tairVectorCluster.tvsgetdistance(index, "[0,0]", keys, null, null, "name>\"H\"");
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<String> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(items[i].getId().equals("key-7") || items[i].getId().equals("key-8") || items[i].getId().equals("key-9"));
+            }
+        }
+        {
+            VectorBuilderFactory.Knn<byte[]> result = tairVectorCluster.tvsgetdistance(SafeEncoder.encode(index), SafeEncoder.encode("[0,0]"),
+                    keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()), null, null, SafeEncoder.encode("name>\"H\""));
+            assertEquals(3, result.getKnnResults().size());
+            KnnItem<byte[]> items[] = result.getKnnResults().toArray(new KnnItem[0]);
+            for (int i = 0; i < items.length; ++i) {
+                assertTrue(SafeEncoder.encode((byte[]) items[i].getId()).equals("key-7") ||
+                        SafeEncoder.encode((byte[]) items[i].getId()).equals("key-8") ||
+                        SafeEncoder.encode((byte[]) items[i].getId()).equals("key-9"));
+            }
+        }
+
+        tairVectorCluster.tvsdelindex(index);
+    }
 }

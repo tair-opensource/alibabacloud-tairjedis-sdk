@@ -418,6 +418,50 @@ public class TairVectorCluster {
         return BuilderFactory.DOUBLE.build(obj);
     }
 
+    public VectorBuilderFactory.Knn<String> tvsgetdistance(String index, String vector, Collection<String> keys, Long topn, Float max_dist, String filter) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(SafeEncoder.encode(index));
+        args.add(SafeEncoder.encode(vector));
+        args.add(toByteArray(keys.size()));
+        args.addAll(keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()));
+        if (topn != null) {
+            args.add(SafeEncoder.encode("TOPN"));
+            args.add(toByteArray(topn));
+        }
+        if (max_dist != null) {
+            args.add(SafeEncoder.encode("MAX_DIST"));
+            args.add(toByteArray(max_dist));
+        }
+        if (filter != null) {
+            args.add(SafeEncoder.encode("FILTER"));
+            args.add(SafeEncoder.encode(filter));
+        }
 
+        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSGETDISTANCE, args.toArray(new byte[args.size()][]));
+        return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+    }
+
+    public VectorBuilderFactory.Knn<byte[]> tvsgetdistance(byte[] index, byte[] vector, Collection<byte[]> keys, Long topn, Float max_dist, byte[] filter) {
+        final List<byte[]> args = new ArrayList<byte[]>();
+        args.add(index);
+        args.add(vector);
+        args.add(toByteArray(keys.size()));
+        args.addAll(keys);
+        if (topn != null) {
+            args.add(SafeEncoder.encode("TOPN"));
+            args.add(toByteArray(topn));
+        }
+        if (max_dist != null) {
+            args.add(SafeEncoder.encode("MAX_DIST"));
+            args.add(toByteArray(max_dist));
+        }
+        if (filter != null) {
+            args.add(SafeEncoder.encode("FILTER"));
+            args.add(filter);
+        }
+
+        Object obj = jc.sendCommand(index, ModuleCommand.TVSGETDISTANCE, args.toArray(new byte[args.size()][]));
+        return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
+    }
 }
 

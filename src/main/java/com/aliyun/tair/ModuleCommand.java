@@ -317,6 +317,7 @@ public enum ModuleCommand implements ProtocolCommand {
     TVSMINDEXMKNNSEARCH("tvs.mindexmknnsearch"),
     TVSHINCRBY("tvs.hincrby"),
     TVSHINCRBYFLOAT("tvs.hincrbyfloat"),
+    TVSGETDISTANCE("tvs.getdistance"),
 
     // Aliyun Commands
     IINFO("iinfo"),
@@ -336,3 +337,4 @@ public enum ModuleCommand implements ProtocolCommand {
         return raw;
     }
 }
+

@@ -46,6 +46,12 @@ public class TairVector {
         }
     }
 
+    public void quit() {
+        if (jedis != null) {
+            jedis.quit();
+        }
+    }
+
     /**
      * TVS.CREATEINDEX  TVS.CREATEINDEX index_name dims algorithm distance_method  [(attribute_key attribute_value) ... ]
      * <p>
@@ -397,8 +403,7 @@ public class TairVector {
     public VectorBuilderFactory.Knn<String> tvsknnsearchfilter(final String index, Long topn, final String vector, final String pattern, final String... params) {
         Jedis jedis = getJedis();
         try {
-            Object obj = jedis.sendCommand(ModuleCommand.TVSKNNSEARCH, JoinParameters.joinParameters(SafeEncoder.encode(index),
-                    toByteArray(topn), SafeEncoder.encode(vector), SafeEncoder.encode(pattern), SafeEncoder.encodeMany(params)));
+            Object obj = jedis.sendCommand(ModuleCommand.TVSKNNSEARCH, JoinParameters.joinParameters(SafeEncoder.encode(index), toByteArray(topn), SafeEncoder.encode(vector), SafeEncoder.encode(pattern), SafeEncoder.encodeMany(params)));
             return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
         } finally {
             releaseJedis(jedis);
@@ -479,6 +484,7 @@ public class TairVector {
         }
     }
 
+
     public VectorBuilderFactory.Knn<String> tvsmindexknnsearch(Collection<String> indexs, Long topn, String vector, String... params) {
         return tvsmindexknnsearchfilter(indexs, topn, vector, "", params);
     }
@@ -514,7 +520,7 @@ public class TairVector {
             args.add(vector);
             args.add(pattern);
             args.addAll(Arrays.stream(params).collect(Collectors.toList()));
-            Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
+            Object obj = jedis.sendCommand(ModuleCommand.TVSMINDEXKNNSEARCH, args.toArray(new byte[args.size()][]));
             return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
         } finally {
             releaseJedis(jedis);
@@ -558,8 +564,64 @@ public class TairVector {
             args.addAll(vectors);
             args.add(pattern);
             args.addAll(Arrays.stream(params).collect(Collectors.toList()));
-            Object obj = getJedis().sendCommand(ModuleCommand.TVSMINDEXMKNNSEARCH, args.toArray(new byte[args.size()][]));
+            Object obj = jedis.sendCommand(ModuleCommand.TVSMINDEXMKNNSEARCH, args.toArray(new byte[args.size()][]));
             return VectorBuilderFactory.BYTE_KNN_BATCH_RESULT.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public VectorBuilderFactory.Knn<String> tvsgetdistance(String index, String vector, Collection<String> keys, Long topn, Float max_dist, String filter) {
+        Jedis jedis = getJedis();
+        try {
+            final List<byte[]> args = new ArrayList<byte[]>();
+            args.add(SafeEncoder.encode(index));
+            args.add(SafeEncoder.encode(vector));
+            args.add(toByteArray(keys.size()));
+            args.addAll(keys.stream().map(key -> SafeEncoder.encode(key)).collect(Collectors.toList()));
+            if (topn != null) {
+                args.add(SafeEncoder.encode("TOPN"));
+                args.add(toByteArray(topn));
+            }
+            if (max_dist != null) {
+                args.add(SafeEncoder.encode("MAX_DIST"));
+                args.add(toByteArray(max_dist));
+            }
+            if (filter != null) {
+                args.add(SafeEncoder.encode("FILTER"));
+                args.add(SafeEncoder.encode(filter));
+            }
+
+            Object obj = jedis.sendCommand(ModuleCommand.TVSGETDISTANCE, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.STRING_KNN_RESULT.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public VectorBuilderFactory.Knn<byte[]> tvsgetdistance(byte[] index, byte[] vector, Collection<byte[]> keys, Long topn, Float max_dist, byte[] filter) {
+        Jedis jedis = getJedis();
+        try {
+            final List<byte[]> args = new ArrayList<byte[]>();
+            args.add(index);
+            args.add(vector);
+            args.add(toByteArray(keys.size()));
+            args.addAll(keys);
+            if (topn != null) {
+                args.add(SafeEncoder.encode("TOPN"));
+                args.add(toByteArray(topn));
+            }
+            if (max_dist != null) {
+                args.add(SafeEncoder.encode("MAX_DIST"));
+                args.add(toByteArray(max_dist));
+            }
+            if (filter != null) {
+                args.add(SafeEncoder.encode("FILTER"));
+                args.add(filter);
+            }
+
+            Object obj = getJedis().sendCommand(ModuleCommand.TVSGETDISTANCE, args.toArray(new byte[args.size()][]));
+            return VectorBuilderFactory.BYTE_KNN_RESULT.build(obj);
         } finally {
             releaseJedis(jedis);
         }
