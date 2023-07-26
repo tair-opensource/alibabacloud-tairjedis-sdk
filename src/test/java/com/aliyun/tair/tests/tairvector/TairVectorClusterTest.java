@@ -372,4 +372,20 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         assertEquals((long) tairVectorCluster.tvsdelindex(index), 1L);
     }
+
+    @Test
+    public void tvs_hincrby_tvs_hincrbyfloat() {
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+        long tvshincrby = tairVectorCluster.tvshincrby(index, "first_entity", "field", 2);
+        assertEquals(2, tvshincrby);
+        tvshincrby = tairVectorCluster.tvshincrby(SafeEncoder.encode(index), SafeEncoder.encode("first_entity"), SafeEncoder.encode("field"), 2);
+        assertEquals(4, tvshincrby);
+        
+        double tvshincrbyfloat = tairVectorCluster.tvshincrbyfloat(index, "second_entity", "field", 1.5d);
+        assertEquals(Double.compare(1.5d, tvshincrbyfloat), 0);
+        tvshincrbyfloat =  tairVector.tvshincrbyfloat(SafeEncoder.encode(index), SafeEncoder.encode("second_entity"), SafeEncoder.encode("field"), 1.5d);
+        assertEquals(Double.compare(3.0d, tvshincrbyfloat), 0);
+    }
+
 }

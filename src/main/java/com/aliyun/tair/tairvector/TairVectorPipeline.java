@@ -404,4 +404,47 @@ public class TairVectorPipeline extends Pipeline {
         getClient("").sendCommand(ModuleCommand.TVSMINDEXMKNNSEARCH, args.toArray(new byte[args.size()][]));
         return getResponse(VectorBuilderFactory.BYTE_KNN_BATCH_RESULT);
     }
+
+    /**
+     * TVS.HINCRBY index entityid field value
+     * Increment the long value of a tairvector field by the given amount, not support VECTOR
+     *
+     * @param index  index name
+     * @param entityid entity id
+     * @param field  the field type: key
+     * @param value  the increment type: long
+     * @return Long integer-reply the value at {@code field} after the increment operation.
+     */
+    public Response<Long> tvshincrby(final String index, final String entityid, final String field, final long value) {
+        getClient(index).sendCommand(ModuleCommand.TVSHINCRBY, SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(field), toByteArray(value));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> tvshincrby(byte[] index, byte[] entityid, byte[] field, long value) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHINCRBY, index, entityid, field, toByteArray(value));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+
+    /**
+     * TVS.HINCRBYFOLAT index entityid field value
+     * Increment the float value of a tairvector field by the given amount, not support VECTOR
+     *
+     * @param index index name
+     * @param entityid entity id
+     * @param field the field type: key
+     * @param value the increment type: double
+     * @return Double bulk-string-reply the value of {@code field} after the increment.
+     */
+    public Response<Double> tvshincrbyfloat(final String index, final String entityid, final String field, final double value) {
+        getClient(index).sendCommand(ModuleCommand.TVSHINCRBYFLOAT, SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(field), toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+    public Response<Double> tvshincrbyfloat(byte[] index, byte[] entityid, byte[] field, double value) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHINCRBYFLOAT, index, entityid, field, toByteArray(value));
+        return getResponse(BuilderFactory.DOUBLE);
+    }
+
+
 }

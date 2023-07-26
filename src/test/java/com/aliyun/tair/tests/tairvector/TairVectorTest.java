@@ -633,4 +633,22 @@ public class TairVectorTest extends TairVectorTestBase {
 
         tairVector.tvsdelindex(index_name);
     }
+
+    @Test
+    public void tvs_hincrby_tvs_hincrbyfloat() {
+        final String index_name = "tvs_hincrby_test";
+        check_and_create_index(index_name, 2, algorithm, DistanceMethod.L2);
+        long tvshincrby = tairVector.tvshincrby(index_name, "entityid1", "field1", 2);
+        assertEquals(2, tvshincrby);
+        tvshincrby = tairVector.tvshincrby(SafeEncoder.encode(index_name), SafeEncoder.encode("entityid1"), SafeEncoder.encode("field1"), 2);
+        assertEquals(4, tvshincrby);
+
+        double tvshincrbyfloat = tairVector.tvshincrbyfloat(index_name, "entityid2", "field1", 1.5d);
+        assertEquals(Double.compare(1.5d, tvshincrbyfloat), 0);
+        tvshincrbyfloat =  tairVector.tvshincrbyfloat(SafeEncoder.encode(index_name), SafeEncoder.encode("entityid2"), SafeEncoder.encode("field1"), 1.5d);
+        assertEquals(Double.compare(3.0d, tvshincrbyfloat), 0);
+        tairVector.tvsdelindex(index_name);
+    }
+
+
 }

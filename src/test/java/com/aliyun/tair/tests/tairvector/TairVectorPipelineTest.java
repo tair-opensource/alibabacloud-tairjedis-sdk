@@ -492,4 +492,24 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         Collection<VectorBuilderFactory.Knn<byte[]>> entity_byte = (Collection<VectorBuilderFactory.Knn<byte[]>>) objs.get(5);
         assertEquals(2, entity_byte.size());
     }
+
+    @Test
+    public void tvs_hincrby_tvs_hincrbyfloat() {
+        tvs_check_index(dims, index, algorithm, method);
+        tvs_del_entity("first_entity");
+        tvs_del_entity("second_entity");
+        tairVectorPipeline.tvshincrby(index, "first_entity", "field", 2);
+        tairVectorPipeline.tvshincrby(SafeEncoder.encode(index), SafeEncoder.encode("first_entity"), SafeEncoder.encode("field"), 2);
+
+        tairVectorPipeline.tvshincrbyfloat(index, "second_entity", "field", 1.5d);
+        tairVectorPipeline.tvshincrbyfloat(SafeEncoder.encode(index), SafeEncoder.encode("second_entity"), SafeEncoder.encode("field"), 1.5d);
+
+        List<Object> objs = tairVectorPipeline.syncAndReturnAll();
+        assertEquals(2L, (long) objs.get(2));
+        assertEquals(4L, (long) objs.get(3));
+        assertEquals(Double.compare(1.5d, (double) objs.get(4)), 0);
+        assertEquals(Double.compare(3.0d, (double) objs.get(5)), 0);
+    }
+
 }
+

@@ -564,4 +564,65 @@ public class TairVector {
             releaseJedis(jedis);
         }
     }
+
+    /**
+     * TVS.HINCRBY index entityid field value
+     * Increment the long value of a tairvector field by the given amount， not support VECTOR
+     *
+     * @param index  index name
+     * @param entityid entity id
+     * @param field  the field type: key
+     * @param value  the increment type: long
+     * @return Long integer-reply the value at {@code field} after the increment operation.
+     */
+    public Long tvshincrby(final String index, final String entityid, final String field, final long value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHINCRBY, SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(field), toByteArray(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public Long tvshincrby(byte[] index, byte[] entityid, byte[] field, long value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHINCRBY, index, entityid, field, toByteArray(value));
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * TVS.HINCRBYFOLAT index entityid field value
+     * Increment the float value of a tairvector field by the given amount.
+     *
+     * @param index index name
+     * @param entityid entity id
+     * @param field the field type: key
+     * @param value the increment type: double
+     * @return Double bulk-string-reply the value of {@code field} after the increment, not support VECTOR
+     */
+    public Double tvshincrbyfloat(final String index, final String entityid, final String field, final double value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHINCRBYFLOAT, SafeEncoder.encode(index), SafeEncoder.encode(entityid), SafeEncoder.encode(field), toByteArray(value));
+            return BuilderFactory.DOUBLE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public Double tvshincrbyfloat(byte[] index, byte[] entityid, byte[] field, double value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHINCRBYFLOAT, index, entityid, field, toByteArray(value));
+            return BuilderFactory.DOUBLE.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
 }
