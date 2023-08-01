@@ -492,4 +492,136 @@ public class TairVectorPipeline extends Pipeline {
         getClient(index).sendCommand(ModuleCommand.TVSGETDISTANCE, args.toArray(new byte[args.size()][]));
         return getResponse(VectorBuilderFactory.BYTE_KNN_RESULT);
     }
+
+    /**
+     * Set expire time (seconds).
+     *
+     * @param index   index name
+     * @param key     the key
+     * @param seconds time is seconds
+     * @return Success: true, fail: false.
+     */
+    public Response<Boolean> tvshexpire(final String index, final String key, final int seconds) {
+        return tvshexpire(SafeEncoder.encode(index), SafeEncoder.encode(key), seconds);
+    }
+
+    public Response<Boolean> tvshexpire(final byte[] index, final byte[] key, final int seconds) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHEXPIRE, index, key, toByteArray(seconds));
+        return getResponse(BuilderFactory.BOOLEAN);
+    }
+
+    /**
+     * Set expire time (seconds).
+     *
+     * @param index        index name
+     * @param key          the key
+     * @param milliseconds time is milliseconds
+     * @return Success: true, fail: false.
+     */
+    public Response<Boolean> tvshpexpire(final String index, final String key, final int milliseconds) {
+        return tvshpexpire(SafeEncoder.encode(index), SafeEncoder.encode(key), milliseconds);
+    }
+
+    public Response<Boolean> tvshpexpire(final byte[] index, final byte[] key, final int milliseconds) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHPEXPIRE, index, key, toByteArray(milliseconds));
+        return getResponse(BuilderFactory.BOOLEAN);
+    }
+
+    /**
+     * Set the expiration for a key as a UNIX timestamp (seconds).
+     *
+     * @param index    the index name
+     * @param key      the key
+     * @param unixTime timestamp the timestamp type: posix time, time is seconds
+     * @return Success: true, fail: false.
+     */
+    public Response<Boolean> tvshexpireAt(final String index, final String key, final long unixTime) {
+        return tvshexpireAt(SafeEncoder.encode(index), SafeEncoder.encode(key), unixTime);
+    }
+
+    public Response<Boolean> tvshexpireAt(final byte[] index, final byte[] key, final long unixTime) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHEXPIREAT, index, key, toByteArray(unixTime));
+        return getResponse(BuilderFactory.BOOLEAN);
+    }
+
+    /**
+     * Set the expiration for a key as a UNIX timestamp (milliseconds).
+     *
+     * @param index    the index name
+     * @param key      the key
+     * @param unixTime timestamp the timestamp type: posix time, time is milliseconds
+     * @return Success: true, fail: false.
+     */
+    public Response<Boolean> tvshpexpireAt(final String index, final String key, final long unixTime) {
+        return tvshpexpireAt(SafeEncoder.encode(index), SafeEncoder.encode(key), unixTime);
+    }
+
+    public Response<Boolean> tvshpexpireAt(final byte[] index, final byte[] key, final long unixTime) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHPEXPIREAT, index, key, toByteArray(unixTime));
+        return getResponse(BuilderFactory.BOOLEAN);
+    }
+
+    /**
+     * Get ttl (seconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return ttl
+     */
+    public Response<Long> tvshttl(final String index, final String key) {
+        return tvshttl(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Response<Long> tvshttl(final byte[] index, final byte[] key) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHTTL, index, key);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Get ttl (milliseconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return ttl
+     */
+    public Response<Long> tvshpttl(final String index, final String key) {
+        return tvshpttl(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Response<Long> tvshpttl(final byte[] index, final byte[] key) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHPTTL, index, key);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Get abs expire time  (seconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return abs expire time
+     */
+    public Response<Long> tvshexpiretime(final String index, final String key) {
+        return tvshexpiretime(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Response<Long> tvshexpiretime(final byte[] index, final byte[] key) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHEXPIRETIME, index, key);
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    /**
+     * Get abs expire time  (milliseconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return abs expire time
+     */
+    public Response<Long> tvshpexpiretime(final String index, final String key) {
+        return tvshpexpiretime(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Response<Long> tvshpexpiretime(final byte[] index, final byte[] key) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSHPEXPIRETIME, index, key);
+        return getResponse(BuilderFactory.LONG);
+    }
 }

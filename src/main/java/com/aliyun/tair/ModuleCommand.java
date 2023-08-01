@@ -318,6 +318,15 @@ public enum ModuleCommand implements ProtocolCommand {
     TVSHINCRBY("tvs.hincrby"),
     TVSHINCRBYFLOAT("tvs.hincrbyfloat"),
     TVSGETDISTANCE("tvs.getdistance"),
+    TVSHEXPIRE("tvs.hexpire"),
+    TVSHPEXPIRE("tvs.hpexpire"),
+    TVSHEXPIREAT("tvs.hexpireat"),
+    TVSHPEXPIREAT("tvs.hpexpireat"),
+    TVSHTTL("tvs.httl"),
+    TVSHPTTL("tvs.hpttl"),
+    TVSHEXPIRETIME("tvs.hexpiretime"),
+    TVSHPEXPIRETIME("tvs.hpexpiretime"),
+
 
     // Aliyun Commands
     IINFO("iinfo"),

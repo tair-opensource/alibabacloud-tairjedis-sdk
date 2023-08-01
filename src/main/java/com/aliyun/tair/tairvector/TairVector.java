@@ -631,10 +631,10 @@ public class TairVector {
      * TVS.HINCRBY index entityid field value
      * Increment the long value of a tairvector field by the given amount， not support VECTOR
      *
-     * @param index  index name
+     * @param index    index name
      * @param entityid entity id
-     * @param field  the field type: key
-     * @param value  the increment type: long
+     * @param field    the field type: key
+     * @param value    the increment type: long
      * @return Long integer-reply the value at {@code field} after the increment operation.
      */
     public Long tvshincrby(final String index, final String entityid, final String field, final long value) {
@@ -661,10 +661,10 @@ public class TairVector {
      * TVS.HINCRBYFOLAT index entityid field value
      * Increment the float value of a tairvector field by the given amount.
      *
-     * @param index index name
+     * @param index    index name
      * @param entityid entity id
-     * @param field the field type: key
-     * @param value the increment type: double
+     * @param field    the field type: key
+     * @param value    the increment type: double
      * @return Double bulk-string-reply the value of {@code field} after the increment, not support VECTOR
      */
     public Double tvshincrbyfloat(final String index, final String entityid, final String field, final double value) {
@@ -687,4 +687,175 @@ public class TairVector {
         }
     }
 
+    /**
+     * Set expire time (seconds).
+     *
+     * @param index   index name
+     * @param key     the key
+     * @param seconds time is seconds
+     * @return Success: true, fail: false.
+     */
+    public Boolean tvshexpire(final String index, final String key, final int seconds) {
+        return tvshexpire(SafeEncoder.encode(index), SafeEncoder.encode(key), seconds);
+    }
+
+    public Boolean tvshexpire(final byte[] index, final byte[] key, final int seconds) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHEXPIRE, index, key, toByteArray(seconds));
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * Set expire time (seconds).
+     *
+     * @param index        index name
+     * @param key          the key
+     * @param milliseconds time is milliseconds
+     * @return Success: true, fail: false.
+     */
+    public Boolean tvshpexpire(final String index, final String key, final int milliseconds) {
+        return tvshpexpire(SafeEncoder.encode(index), SafeEncoder.encode(key), milliseconds);
+    }
+
+    public Boolean tvshpexpire(final byte[] index, final byte[] key, final int milliseconds) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHPEXPIRE, index, key, toByteArray(milliseconds));
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * Set the expiration for a key as a UNIX timestamp (seconds).
+     *
+     * @param index    the index name
+     * @param key      the key
+     * @param unixTime timestamp the timestamp type: posix time, time is seconds
+     * @return Success: true, fail: false.
+     */
+    public Boolean tvshexpireAt(final String index, final String key, final long unixTime) {
+        return tvshexpireAt(SafeEncoder.encode(index), SafeEncoder.encode(key), unixTime);
+    }
+
+    public Boolean tvshexpireAt(final byte[] index, final byte[] key, final long unixTime) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHEXPIREAT, index, key, toByteArray(unixTime));
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * Set the expiration for a key as a UNIX timestamp (milliseconds).
+     *
+     * @param index    the index name
+     * @param key      the key
+     * @param unixTime timestamp the timestamp type: posix time, time is milliseconds
+     * @return Success: true, fail: false.
+     */
+    public Boolean tvshpexpireAt(final String index, final String key, final long unixTime) {
+        return tvshpexpireAt(SafeEncoder.encode(index), SafeEncoder.encode(key), unixTime);
+    }
+
+    public Boolean tvshpexpireAt(final byte[] index, final byte[] key, final long unixTime) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHPEXPIREAT, index, key, toByteArray(unixTime));
+            return BuilderFactory.BOOLEAN.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * Get ttl (seconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return ttl
+     */
+    public Long tvshttl(final String index, final String key) {
+        return tvshttl(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Long tvshttl(final byte[] index, final byte[] key) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHTTL, index, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * Get ttl (milliseconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return ttl
+     */
+    public Long tvshpttl(final String index, final String key) {
+        return tvshpttl(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Long tvshpttl(final byte[] index, final byte[] key) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHPTTL, index, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * Get abs expire time  (seconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return abs expire time
+     */
+    public Long tvshexpiretime(final String index, final String key) {
+        return tvshexpiretime(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Long tvshexpiretime(final byte[] index, final byte[] key) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHEXPIRETIME, index, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * Get abs expire time  (milliseconds).
+     *
+     * @param index index name
+     * @param key   the key
+     * @return abs expire time
+     */
+    public Long tvshpexpiretime(final String index, final String key) {
+        return tvshpexpiretime(SafeEncoder.encode(index), SafeEncoder.encode(key));
+    }
+
+    public Long tvshpexpiretime(final byte[] index, final byte[] key) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TVSHPEXPIRETIME, index, key);
+            return BuilderFactory.LONG.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
 }

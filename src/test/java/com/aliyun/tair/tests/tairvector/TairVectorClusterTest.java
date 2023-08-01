@@ -8,13 +8,10 @@ import com.aliyun.tair.tairvector.factory.VectorBuilderFactory.KnnItem;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,16 +27,16 @@ public class TairVectorClusterTest extends TairVectorTestBase {
     final List<String> ef_params = Arrays.asList("ef_search", "100");
 
     final List<String[]> test_data = Arrays.asList(
-            new String[] { "VECTOR", "[7,3]", "name", "Aaron", "age", "12" }, // dist 58
-            new String[] { "VECTOR", "[9,2]", "name", "Bob", "age", "33" }, // dist 85
-            new String[] { "VECTOR", "[6,6]", "name", "Charlie", "age", "29" }, // dist 72
-            new String[] { "VECTOR", "[3,5]", "name", "Daniel", "age", "23" }, // dist 34
-            new String[] { "VECTOR", "[3,7]", "name", "Eason", "age", "22" }, // dist 58
-            new String[] { "VECTOR", "[3,6]", "name", "Fabian", "age", "35" }, // dist 45
-            new String[] { "VECTOR", "[5,2]", "name", "George", "age", "12" }, // dist 29
-            new String[] { "VECTOR", "[8,9]", "name", "Henry", "age", "30" }, // dist 145
-            new String[] { "VECTOR", "[5,5]", "name", "Ivan", "age", "16" }, // dist 50
-            new String[] { "VECTOR", "[2,7]", "name", "James", "age", "12" }); // dist 53
+            new String[]{"VECTOR", "[7,3]", "name", "Aaron", "age", "12"}, // dist 58
+            new String[]{"VECTOR", "[9,2]", "name", "Bob", "age", "33"}, // dist 85
+            new String[]{"VECTOR", "[6,6]", "name", "Charlie", "age", "29"}, // dist 72
+            new String[]{"VECTOR", "[3,5]", "name", "Daniel", "age", "23"}, // dist 34
+            new String[]{"VECTOR", "[3,7]", "name", "Eason", "age", "22"}, // dist 58
+            new String[]{"VECTOR", "[3,6]", "name", "Fabian", "age", "35"}, // dist 45
+            new String[]{"VECTOR", "[5,2]", "name", "George", "age", "12"}, // dist 29
+            new String[]{"VECTOR", "[8,9]", "name", "Henry", "age", "30"}, // dist 145
+            new String[]{"VECTOR", "[5,5]", "name", "Ivan", "age", "16"}, // dist 50
+            new String[]{"VECTOR", "[2,7]", "name", "James", "age", "12"}); // dist 53
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -388,6 +385,9 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
     @Test
     public void tvs_hincrby_tvs_hincrbyfloat() {
+        tairVectorCluster.tvsdelindex(index);
+        tvs_create_index_and_load_data();
+
         tvs_del_entity("first_entity");
         tvs_del_entity("second_entity");
         long tvshincrby = tairVectorCluster.tvshincrby(index, "first_entity", "field", 2);
@@ -397,7 +397,7 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         double tvshincrbyfloat = tairVectorCluster.tvshincrbyfloat(index, "second_entity", "field", 1.5d);
         assertEquals(Double.compare(1.5d, tvshincrbyfloat), 0);
-        tvshincrbyfloat = tairVector.tvshincrbyfloat(SafeEncoder.encode(index), SafeEncoder.encode("second_entity"), SafeEncoder.encode("field"), 1.5d);
+        tvshincrbyfloat = tairVectorCluster.tvshincrbyfloat(SafeEncoder.encode(index), SafeEncoder.encode("second_entity"), SafeEncoder.encode("field"), 1.5d);
         assertEquals(Double.compare(3.0d, tvshincrbyfloat), 0);
     }
 
@@ -490,4 +490,64 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         tairVectorCluster.tvsdelindex(index);
     }
+
+    @Test
+    public void tvs_expire() throws InterruptedException {
+        tairVectorCluster.tvsdelindex(index);
+        tvs_create_index_and_load_data();
+
+        List<String> keys = new ArrayList<>();
+        int keySize = 10;
+        for (int i = 0; i < keySize; ++i) {
+            String key = UUID.randomUUID().toString();
+            String vector = generateVector(dims);
+            assertEquals(3, tairVectorCluster.tvshset(index, key, vector,
+                    "name", "tom", "age", String.valueOf(random.nextInt(100))).longValue());
+            keys.add(key);
+        }
+
+        int expireSecond = 10;
+        long unixTime = System.currentTimeMillis() + expireSecond * 1000;
+        Map<String, Integer> keyCommands = new HashMap<>();
+        for (String key : keys) {
+            int rate = random.nextInt(4);
+            if (rate == 0) {
+                assertTrue(tairVectorCluster.tvshexpire(index, key, expireSecond));
+            } else if (rate == 1) {
+                assertTrue(tairVectorCluster.tvshpexpire(index, key, expireSecond * 1000));
+            } else if (rate == 2) {
+                assertTrue(tairVectorCluster.tvshexpireAt(index, key, unixTime / 1000));
+            } else {
+                assertTrue(tairVectorCluster.tvshpexpireAt(index, key, unixTime));
+            }
+            keyCommands.put(key, rate);
+        }
+
+        for (String key : keys) {
+            int rate = keyCommands.get(key);
+            if (rate == 0) {
+                long ttl = tairVectorCluster.tvshttl(index, key);
+                assertTrue(0 < ttl && ttl <= expireSecond);
+            } else if (rate == 1) {
+                long ttl = tairVectorCluster.tvshpttl(index, key);
+                assertTrue(0 < ttl && ttl <= expireSecond * 1000);
+            } else if (rate == 2) {
+                assertEquals(unixTime / 1000, tairVectorCluster.tvshexpiretime(index, key).longValue());
+            } else {
+                assertEquals(unixTime, tairVectorCluster.tvshpexpiretime(index, key).longValue());
+            }
+        }
+
+        // update all key expire after 100 milliseconds
+        for (String key : keys) {
+            assertTrue(tairVectorCluster.tvshpexpire(index, key, 100));
+        }
+
+        Thread.sleep(500);
+
+        for (String key : keys) {
+            assertTrue(tairVectorCluster.tvshgetall(index, key).isEmpty());
+        }
+    }
+
 }

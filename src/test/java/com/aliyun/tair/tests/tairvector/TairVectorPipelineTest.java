@@ -8,12 +8,8 @@ import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import org.junit.Test;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -30,16 +26,16 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
     final List<String> index_params = Arrays.asList("ef_construct", "100", "M", "16");
     final List<String> ef_params = Arrays.asList("ef_search", "100");
     final List<String[]> test_data = Arrays.asList(
-            new String[] { "VECTOR", "[7,3]", "name", "Aaron", "age", "12" }, // dist 58
-            new String[] { "VECTOR", "[9,2]", "name", "Bob", "age", "33" }, // dist 85
-            new String[] { "VECTOR", "[6,6]", "name", "Charlie", "age", "29" }, // dist 72
-            new String[] { "VECTOR", "[3,5]", "name", "Daniel", "age", "23" }, // dist 34
-            new String[] { "VECTOR", "[3,7]", "name", "Eason", "age", "22" }, // dist 58
-            new String[] { "VECTOR", "[3,6]", "name", "Fabian", "age", "35" }, // dist 45
-            new String[] { "VECTOR", "[5,2]", "name", "George", "age", "12" }, // dist 29
-            new String[] { "VECTOR", "[8,9]", "name", "Henry", "age", "30" }, // dist 145
-            new String[] { "VECTOR", "[5,5]", "name", "Ivan", "age", "16" }, // dist 50
-            new String[] { "VECTOR", "[2,7]", "name", "James", "age", "12" }); // dist 53
+            new String[]{"VECTOR", "[7,3]", "name", "Aaron", "age", "12"}, // dist 58
+            new String[]{"VECTOR", "[9,2]", "name", "Bob", "age", "33"}, // dist 85
+            new String[]{"VECTOR", "[6,6]", "name", "Charlie", "age", "29"}, // dist 72
+            new String[]{"VECTOR", "[3,5]", "name", "Daniel", "age", "23"}, // dist 34
+            new String[]{"VECTOR", "[3,7]", "name", "Eason", "age", "22"}, // dist 58
+            new String[]{"VECTOR", "[3,6]", "name", "Fabian", "age", "35"}, // dist 45
+            new String[]{"VECTOR", "[5,2]", "name", "George", "age", "12"}, // dist 29
+            new String[]{"VECTOR", "[8,9]", "name", "Henry", "age", "30"}, // dist 145
+            new String[]{"VECTOR", "[5,5]", "name", "Ivan", "age", "16"}, // dist 50
+            new String[]{"VECTOR", "[2,7]", "name", "James", "age", "12"}); // dist 53
 
     private void tvs_del_index(String index) {
         tairVectorPipeline.tvsdelindex(index);
@@ -643,5 +639,92 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
 
         tvs_del_index(index_name);
     }
+
+    @Test
+    public void tvs_expire() throws InterruptedException {
+        tvs_create_index(dims, index, algorithm, method);
+        List<String> keys = new ArrayList<>();
+        int keySize = 10;
+        for (int i = 0; i < keySize; ++i) {
+            String key = UUID.randomUUID().toString();
+            String vector = generateVector(dims);
+            tairVectorPipeline.tvshset(index, key, vector,
+                    "name", "tom", "age", String.valueOf(random.nextInt(100)));
+            keys.add(key);
+        }
+        tairVectorPipeline.sync();
+
+        int expireSecond = 10;
+        long unixTime = System.currentTimeMillis() + expireSecond * 1000;
+        Map<String, Integer> keyCommands = new HashMap<>();
+        for (String key : keys) {
+            int rate = random.nextInt(4);
+            if (rate == 0) {
+                tairVectorPipeline.tvshexpire(index, key, expireSecond);
+            } else if (rate == 1) {
+                tairVectorPipeline.tvshpexpire(index, key, expireSecond * 1000);
+            } else if (rate == 2) {
+                tairVectorPipeline.tvshexpireAt(index, key, unixTime / 1000);
+            } else {
+                tairVectorPipeline.tvshpexpireAt(index, key, unixTime);
+            }
+            keyCommands.put(key, rate);
+        }
+
+        for (String key : keys) {
+            int rate = keyCommands.get(key);
+            if (rate == 0) {
+                tairVectorPipeline.tvshttl(index, key);
+            } else if (rate == 1) {
+                tairVectorPipeline.tvshpttl(index, key);
+            } else if (rate == 2) {
+                tairVectorPipeline.tvshexpiretime(index, key);
+            } else {
+                tairVectorPipeline.tvshpexpiretime(index, key);
+            }
+        }
+        List<Object> objs = tairVectorPipeline.syncAndReturnAll();
+        assertEquals(keySize * 2, objs.size());
+        int pos = 0;
+
+        while(pos < keySize) {
+            assertTrue(Boolean.parseBoolean(objs.get(pos++).toString()));
+        }
+
+        for (String key : keys) {
+            int rate = keyCommands.get(key);
+            if (rate == 0) {
+                long ttl = (long) objs.get(pos++);
+                assertTrue(0 < ttl && ttl <= expireSecond);
+            } else if (rate == 1) {
+                long ttl = (long) objs.get(pos++);
+                assertTrue(0 < ttl && ttl <= expireSecond * 1000);
+            } else if (rate == 2) {
+                assertEquals(unixTime / 1000, objs.get(pos++));
+            } else {
+                assertEquals(unixTime, objs.get(pos++));
+            }
+        }
+
+        // update all key expire after 100 milliseconds
+        for (String key : keys) {
+            tairVectorPipeline.tvshpexpire(index, key, 100);
+        }
+        objs = tairVectorPipeline.syncAndReturnAll();
+        for (Object obj : objs) {
+            assertTrue(Boolean.parseBoolean(obj.toString()));
+        }
+        Thread.sleep(500);
+
+        for (String key : keys) {
+            tairVectorPipeline.tvshgetall(index, key);
+        }
+
+        objs = tairVectorPipeline.syncAndReturnAll();
+        for (Object obj : objs) {
+            assertTrue(((Map<?, ?>)obj).isEmpty());
+        }
+    }
+
 }
 

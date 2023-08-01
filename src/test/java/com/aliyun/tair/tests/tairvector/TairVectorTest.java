@@ -8,12 +8,8 @@ import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import org.junit.Test;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -51,12 +47,7 @@ public class TairVectorTest extends TairVectorTestBase {
     }
 
     private void check_index(int dims, IndexAlgorithm algorithm, DistanceMethod method, final String... attr) {
-        Map<String, String> objs = tairVector.tvsgetindex(index);
-        if (!objs.isEmpty()) {
-            long result = tairVector.tvsdelindex(index);
-            assertEquals(result, 1);
-        }
-        assertEquals("OK", tairVector.tvscreateindex(index, dims, algorithm, method, attr));
+        check_and_create_index(this.index, dims, algorithm, method, attr);
     }
 
     private void check_and_create_index(String index, int dims, IndexAlgorithm algorithm, DistanceMethod method,
@@ -745,5 +736,57 @@ public class TairVectorTest extends TairVectorTestBase {
         }
 
         tairVector.tvsdelindex(index_name);
+    }
+
+    @Test
+    public void tvs_hexpire() {
+        check_and_create_index(index, dims, algorithm, method);
+        String key = UUID.randomUUID().toString();
+        String vector = generateVector(dims);
+        assertEquals(3, tairVector.tvshset(index, key, vector,
+                "name", "tom", "age", String.valueOf(random.nextInt(100))).intValue());
+        assertTrue(tairVector.tvshexpire(index, key, 100));
+        Long ttl = tairVector.tvshttl(index, key);
+        assertTrue(0 < ttl && ttl <= 100);
+    }
+
+    @Test
+    public void tvs_hpexpire() {
+        check_and_create_index(index, dims, algorithm, method);
+        String key = UUID.randomUUID().toString();
+        String vector = generateVector(dims);
+        assertEquals(3, tairVector.tvshset(index, key, vector,
+                "name", "tom", "age", String.valueOf(random.nextInt(100))).intValue());
+        assertTrue(tairVector.tvshpexpire(index, key, 100));
+        Long ttl = tairVector.tvshpttl(index, key);
+        assertTrue(0 < ttl && ttl <= 100);
+    }
+
+    @Test
+    public void tvs_hexpireat() {
+        check_and_create_index(index, dims, algorithm, method);
+        String key = UUID.randomUUID().toString();
+        String vector = generateVector(dims);
+        assertEquals(3, tairVector.tvshset(index, key, vector,
+                "name", "tom", "age", String.valueOf(random.nextInt(100))).intValue());
+        Long unixTime = System.currentTimeMillis() / 1000 + 100;
+        assertTrue(tairVector.tvshexpireAt(index, key, unixTime));
+        Long ttl = tairVector.tvshttl(index, key);
+        assertTrue(0 < ttl && ttl <= 100);
+        assertEquals(tairVector.tvshexpiretime(index, key), unixTime);
+    }
+
+    @Test
+    public void tvs_hpexpireat() {
+        check_and_create_index(index, dims, algorithm, method);
+        String key = UUID.randomUUID().toString();
+        String vector = generateVector(dims);
+        assertEquals(3, tairVector.tvshset(index, key, vector,
+                "name", "tom", "age", String.valueOf(random.nextInt(100))).intValue());
+        Long unixTime = System.currentTimeMillis() + 100;
+        assertTrue(tairVector.tvshpexpireAt(index, key, unixTime));
+        Long ttl = tairVector.tvshpttl(index, key);
+        assertTrue(0 < ttl && ttl <= 100);
+        assertEquals(tairVector.tvshpexpiretime(index, key), unixTime);
     }
 }
