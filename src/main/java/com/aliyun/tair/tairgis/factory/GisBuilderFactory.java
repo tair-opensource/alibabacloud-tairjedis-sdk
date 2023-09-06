@@ -69,11 +69,12 @@ public class GisBuilderFactory {
         @Override
         @SuppressWarnings("unchecked")
         public List<String> build(Object data) {
-            if (null == data) {
+            List<Object> objectList = (List<Object>)data;
+            if (objectList == null || objectList.isEmpty()) {
                 return null;
             }
 
-            List<byte[]> l = (List)((List<Object>)data).get(1);
+            List<byte[]> l = (List) objectList.get(1);
             final ArrayList<String> result = new ArrayList<String>(l.size());
             for (final byte[] barray : l) {
                 if (barray == null) {
