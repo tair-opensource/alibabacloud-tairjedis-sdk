@@ -41,10 +41,10 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 objs.get(6));
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 objs.get(7));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}", objs.get(8));
@@ -81,10 +81,10 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 objs.get(2));
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 objs.get(3));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}", objs.get(4));
@@ -92,7 +92,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals(null, objs.get(6));
 
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", objs.get(7));
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.287682,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aux_info\":{\"index_crc64\":52600736426816810}}", objs.get(8));
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.658125,\"total\":{\"relation\":\"eq\",\"value\":2}},\"aux_info\":{\"index_crc64\":52600736426816810}}", objs.get(8));
     }
 
     @Test
@@ -119,10 +119,10 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.287682,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.658125,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
                 objs.get(2));
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.287682,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.658125,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
                 objs.get(3));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}", objs.get(4));
@@ -130,7 +130,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         assertEquals(null, objs.get(6));
 
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"},\"f1\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", objs.get(7));
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.405465,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.405465,\"total\":{\"relation\":\"eq\",\"value\":1}},\"aux_info\":{\"index_crc64\":52600736426816810}}", objs.get(8));
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.975332,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.975332,\"total\":{\"relation\":\"eq\",\"value\":1}},\"aux_info\":{\"index_crc64\":52600736426816810}}", objs.get(8));
     }
 
     @Test
@@ -285,16 +285,18 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
                 ssb.toString());
         tairSearchPipeline.tftsearch("tftkey", ssb);
         tairSearchPipeline.tftexplaincost("tftkey", ssb);
+        tairSearchPipeline.tftexplainscore("tftkey", ssb);
+        tairSearchPipeline.tftexplainscore("tftkey", ssb, "0", "1", "2");
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
                 ssb.toString());
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
 
         assertEquals((String) objs.get(0), "OK");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 (String) objs.get(2));
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.21745,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.21745,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 ((SearchResponse) objs.get(3)).toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.21745,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.21745,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 ((SearchResponse) objs.get(4)).toString());
         SearchResponse result = (SearchResponse) objs.get(4);
         assertEquals(1,result.getHits().getTotalHits().value);
@@ -309,5 +311,11 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
         String response = objs.get(5).toString();
         assertTrue(JsonParser.parseString(response).getAsJsonObject().get("QUERY_COST") != null);
+
+        response = objs.get(6).toString();
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.21745,\"_source\":{\"f0\":\"redis is a nosql database\"},\"_explanation\":{\"score\":0.21745,\"description\":\"coord times sum of:\",\"coord\":1.0,\"coord_description\":\"coord, computed as (must_clause + match_should_clause) / (must_clause + should_clause):\",\"details\":[{\"score\":0.108725,\"description\":\"score, computed as query_boost * idf * idf * tf\",\"field\":\"f0\",\"term\":\"redis\",\"query_boost\":2.0,\"details\":[{\"value\":0.306853,\"description\":\"idf, computed as 1 + log(N / (n + 1))\",\"details\":[{\"value\":1,\"description\":\"n, number of documents containing term\"},{\"value\":1,\"description\":\"N, total number of documents\"}]},{\"value\":0.57735,\"description\":\"tf, computed as sqrt(freq) / sqrt(dl)\",\"details\":[{\"value\":1,\"description\":\"freq, occurrences of term within document\"},{\"value\":3,\"description\":\"dl, length of field\"}]}]},{\"score\":0.108725,\"description\":\"score, computed as query_boost * idf * idf * tf\",\"field\":\"f0\",\"term\":\"database\",\"query_boost\":2.0,\"details\":[{\"value\":0.306853,\"description\":\"idf, computed as 1 + log(N / (n + 1))\",\"details\":[{\"value\":1,\"description\":\"n, number of documents containing term\"},{\"value\":1,\"description\":\"N, total number of documents\"}]},{\"value\":0.57735,\"description\":\"tf, computed as sqrt(freq) / sqrt(dl)\",\"details\":[{\"value\":1,\"description\":\"freq, occurrences of term within document\"},{\"value\":3,\"description\":\"dl, length of field\"}]}]}]}}],\"max_score\":0.21745,\"total\":{\"relation\":\"eq\",\"value\":1}}}", response);
+
+        String score_result = objs.get(7).toString();
+        assertEquals(response, score_result);
     }
 }

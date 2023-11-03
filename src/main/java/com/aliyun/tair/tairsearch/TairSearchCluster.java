@@ -8,6 +8,7 @@ import com.aliyun.tair.tairsearch.search.builder.MSearchSourceBuilder;
 import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
@@ -413,6 +414,43 @@ public class TairSearchCluster {
 
     public String tftexplaincost(byte[] index, byte[] request) {
         Object obj = jc.sendCommand(index, ModuleCommand.TFTEXPLAINCOST, index, request);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    /**
+     * explain the score of query.
+     *
+     * @param index the index name
+     * @param ssb the SearchSourceBuilder
+     * @param docId the document id(s)
+     * @return Success: Search result with score explanation
+     */
+    public String tftexplainscore(String index, SearchSourceBuilder ssb, String... docId) {
+        return tftexplainscore(index, ssb.toString(), docId);
+    }
+
+    public String tftexplainscore(byte[] index, SearchSourceBuilder ssb, byte[]... docId) {
+        return tftexplainscore(index, SafeEncoder.encode(ssb.toString()), docId);
+    }
+
+    /**
+     * explain the score of query.
+     *
+     * @param index the index name
+     * @param request the query clause
+     * @param docId the document id(s)
+     * @return Success: Search result with score explanation
+     */
+    public String tftexplainscore(String index, String request, String... docId) {
+        TFTExplainScoreParams params = new TFTExplainScoreParams();
+        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TFTEXPLAINSCORE, params.getByteParams(index, request, docId));
+        return BuilderFactory.STRING.build(obj);
+
+    }
+
+    public String tftexplainscore(byte[] index, byte[] request, byte[]... docId) {
+        TFTExplainScoreParams params = new TFTExplainScoreParams();
+        Object obj = jc.sendCommand(index, ModuleCommand.TFTEXPLAINSCORE, params.getByteParams(index, request, docId));
         return BuilderFactory.STRING.build(obj);
     }
 

@@ -793,6 +793,52 @@ public class TairSearch {
     }
 
     /**
+     * explain the score of query.
+     *
+     * @param index the index name
+     * @param ssb the SearchSourceBuilder
+     * @param docId the document id(s)
+     * @return Success: Search result with score explanation
+     */
+    public String tftexplainscore(String index, SearchSourceBuilder ssb, String... docId) {
+        return tftexplainscore(index, ssb.toString(), docId);
+    }
+
+    public String tftexplainscore(byte[] index, SearchSourceBuilder ssb, byte[]... docId) {
+        return tftexplainscore(index, SafeEncoder.encode(ssb.toString()), docId);
+    }
+
+    /**
+     * explain the score of query.
+     *
+     * @param index the index name
+     * @param request the query clause
+     * @param docId the document id(s)
+     * @return Success: Search result with score explanation
+     */
+    public String tftexplainscore(String index, String request, String... docId) {
+        TFTExplainScoreParams params = new TFTExplainScoreParams();
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTEXPLAINSCORE, params.getByteParams(index, request, docId));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    public String tftexplainscore(byte[] index, byte[] request, byte[]... docId) {
+        TFTExplainScoreParams params = new TFTExplainScoreParams();
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.TFTEXPLAINSCORE, params.getByteParams(index, request, docId));
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
      * Add suggestions in index.
      *
      * @param index the index name

@@ -99,7 +99,7 @@ public class TairSearchTest extends TairSearchTestBase {
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v3\",\"f1\":\"4\"}", "4");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v3\",\"f1\":\"5\"}", "5");
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}"));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}", tairSearch.tftgetdoc("tftkey", "3"));
@@ -116,14 +116,14 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         ret = tairSearch.tftupdateindex("tftkey", "{\"mappings\":{\"properties\":{\"f1\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
         tairSearch.tftupdatedocfield("tftkey", "1", "{\"f1\":\"mysql is a dbms\"}");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.191783,\"_source\":{\"f1\":\"mysql is a dbms\",\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.191783,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.06658,\"_source\":{\"f1\":\"mysql is a dbms\",\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.06658,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f1\":\"mysql\"}}}"));
     }
 
@@ -267,7 +267,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals("{\"tokens\":[{\"token\":\"tair\",\"start_offset\":0,\"end_offset\":4,\"position\":0},{\"token\":\"nosql\",\"start_offset\":10,\"end_offset\":15,\"position\":3},{\"token\":\"database\",\"start_offset\":16,\"end_offset\":24,\"position\":4}]}", res);
 
         res = tairSearch.tftanalyzer("standard", "tair is a nosql database", new TFTAnalyzerParams().showTime());
-        Assert.assertTrue(res.contains("consuming time (ms)"));
+        Assert.assertTrue(res.contains("consuming time (us)"));
 
         tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"my_jieba_analyzer\"}}},\"settings\":{\"analysis\":{\"analyzer\":{\"my_jieba_analyzer\":{\"type\":\"jieba\",\"userwords\":[\"key-value数据结构存储\"],\"use_hmm\":true}}}}}");
 
@@ -380,7 +380,7 @@ public class TairSearchTest extends TairSearchTestBase {
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"chinese\", \"search_analyzer\":\"chinese\"}}}}");
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"analyzer\":\"chinese\",\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\",\"search_analyzer\":\"chinese\"}}}}}", tairSearch.tftgetindexmappings("tftkey"));
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"夏天是一个很热的季节\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.077948,\"_source\":{\"f0\":\"夏天是一个很热的季节\"}}],\"max_score\":0.077948,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.089327,\"_source\":{\"f0\":\"夏天是一个很热的季节\"}}],\"max_score\":0.089327,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f0\":\"夏天冬天\"}}}"));
     }
 
@@ -391,23 +391,23 @@ public class TairSearchTest extends TairSearchTestBase {
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.594535,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.594535,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":0.594535,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.353472,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.353472,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":0.353472,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}", true));
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v3\",\"f1\":\"3\"}", "3");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v3\",\"f1\":\"4\"}", "4");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v3\",\"f1\":\"5\"}", "5");
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.594535,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.594535,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":0.594535,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.353472,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.353472,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":0.353472,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}", true));
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}"));
 
         // wait for LRU cache expired
         Thread.sleep(10000);
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}", true));
     }
 
@@ -437,7 +437,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
         tairSearch.tftmadddoc("tftkey", docs);
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}"));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}", tairSearch.tftgetdoc("tftkey", "3"));
@@ -460,7 +460,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
         tairSearch.tftmadddoc("tftkey".getBytes(), docs);
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.223144,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.223144,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v0\",\"f1\":\"3\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.49608,\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}],\"max_score\":1.49608,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}"));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v3\",\"f1\":\"3\"}}", tairSearch.tftgetdoc("tftkey", "3"));
@@ -483,7 +483,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
         tairSearch.tftmadddoc("tftkey", docs);
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.287682,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.658125,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}"));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}", tairSearch.tftgetdoc("tftkey", "3"));
@@ -506,7 +506,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
         tairSearch.tftmadddoc("tftkey".getBytes(), docs);
 
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.287682,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.287682,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":1.658125,\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}],\"max_score\":1.658125,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"match\":{\"f1\":\"3\"}}}"));
 
         assertEquals("{\"_id\":\"3\",\"_source\":{\"f0\":\"v1\",\"f1\":\"3\"}}", tairSearch.tftgetdoc("tftkey", "3"));
@@ -629,7 +629,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         TermQueryBuilder qb = QueryBuilders.termQuery("f0","redis").boost(2.0F);
@@ -640,16 +640,16 @@ public class TairSearchTest extends TairSearchTestBase {
         SearchResponse result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"term\":{\"f0\":{\"boost\":2.0,\"value\":\"redis\"}}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.108725,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.108725,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
         assertEquals("{\"relation\":\"eq\",\"value\":1}", result.getHits().getTotalHits().toString());
-        assertEquals("{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}", result.getHits().toString());
-        assertEquals("[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}]",Arrays.toString(result.getHits().getHits()));
-        assertEquals("{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}", result.getHits().getAt(0).toString());
+        assertEquals("{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.108725,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.108725,\"total\":{\"relation\":\"eq\",\"value\":1}}", result.getHits().toString());
+        assertEquals("[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.108725,\"_source\":{\"f0\":\"redis is a nosql database\"}}]",Arrays.toString(result.getHits().getHits()));
+        assertEquals("{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.108725,\"_source\":{\"f0\":\"redis is a nosql database\"}}", result.getHits().getAt(0).toString());
         assertEquals(1,result.getHits().getTotalHits().value);
         assertEquals(TotalHits.Relation.EQUAL_TO,result.getHits().getTotalHits().relation);
-        assertEquals(0.153426,result.getHits().getMaxScore(),0.01);
-        assertEquals(0.153426,result.getHits().getAt(0).getScore(),0.01);
+        assertEquals(0.108725,result.getHits().getMaxScore(),0.01);
+        assertEquals(0.108725,result.getHits().getAt(0).getScore(),0.01);
         assertEquals("1",result.getHits().getAt(0).getId());
         assertEquals("tftkey",result.getHits().getAt(0).getIndex());
         assertEquals("{\"f0\":\"redis is a nosql database\"}",result.getHits().getAt(0).getSourceAsString());
@@ -664,7 +664,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(false, qb.lowercase());
         ssb = new SearchSourceBuilder().query(qb);
         result = tairSearch.tftsearch("tftkey", ssb);
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.134248,\"_source\":{\"f0\":\"Redis is a nosql database\"}}],\"max_score\":0.134248,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.042109,\"_source\":{\"f0\":\"Redis is a nosql database\"}}],\"max_score\":0.042109,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
     }
 
@@ -675,7 +675,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0.f1\":\"redis\"}}}"));
 
         TermQueryBuilder qb = QueryBuilders.termQuery("f0.f1","redis").boost(2.0F);
@@ -686,12 +686,12 @@ public class TairSearchTest extends TairSearchTestBase {
         SearchResponse result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"term\":{\"f0.f1\":{\"boost\":2.0,\"value\":\"redis\"}}}}",
                 ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.108725,\"_source\":{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}}],\"max_score\":0.108725,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
         assertEquals(1,result.getHits().getTotalHits().value);
         assertEquals(TotalHits.Relation.EQUAL_TO,result.getHits().getTotalHits().relation);
-        assertEquals(0.153426,result.getHits().getMaxScore(),0.01);
-        assertEquals(0.153426,result.getHits().getAt(0).getScore(),0.01);
+        assertEquals(0.108725,result.getHits().getMaxScore(),0.01);
+        assertEquals(0.108725,result.getHits().getAt(0).getScore(),0.01);
         assertEquals("1",result.getHits().getAt(0).getId());
         assertEquals("tftkey",result.getHits().getAt(0).getIndex());
         assertEquals("{\"f0\":{\"f1\":\"redis is a nosql database\"},\"f2\":1,\"f3\":1.0,\"f4\":10}",result.getHits().getAt(0).getSourceAsString());
@@ -732,7 +732,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         List<String> values = new ArrayList<>();
@@ -747,7 +747,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.21745,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.21745,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
 
         qb = QueryBuilders.termsQuery("f0",values).boost(2.0F);
@@ -759,7 +759,7 @@ public class TairSearchTest extends TairSearchTestBase {
         result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"terms\":{\"f0\":[\"redis\",\"database\"],\"boost\":2.0}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.21745,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.21745,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
 
         jedis.del("tftkey");
@@ -770,7 +770,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(false, qb.lowercase());
         ssb = new SearchSourceBuilder().query(qb);
         result = tairSearch.tftsearch("tftkey", ssb);
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.019691,\"_source\":{\"f0\":\"Redis is a nosql database\"}}],\"max_score\":0.019691,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.021055,\"_source\":{\"f0\":\"Redis is a nosql database\"}}],\"max_score\":0.021055,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 result.toString());
     }
 
@@ -781,7 +781,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         WildcardQueryBuilder qb = QueryBuilders.wildcardQuery("f0","redis*").boost(2.0F);
@@ -803,7 +803,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         PrefixQueryBuilder qb = QueryBuilders.prefixQuery("f0","redi");
@@ -826,7 +826,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         MatchAllQueryBuilder qb = QueryBuilders.matchAllQuery().boost(2.0F);
@@ -845,7 +845,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         RangeQueryBuilder qb = QueryBuilders.rangeQuery("f0").gt("ra").lt("rf").boost(2.0F);
@@ -913,7 +913,7 @@ public class TairSearchTest extends TairSearchTestBase {
         SearchResponse result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"match\":{\"f0\":{\"query\":\"nosql\",\"fuzziness\":1,\"prefix_length\":1}}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
 
         qb = QueryBuilders.matchQuery("f0","redis nosql").boost(2.0F).analyzer("standard").minimumShouldMatch(1);
@@ -923,7 +923,7 @@ public class TairSearchTest extends TairSearchTestBase {
         result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"match\":{\"f0\":{\"query\":\"redis nosql\",\"analyzer\":\"standard\",\"minimum_should_match\":1}}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.108725,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.108725,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
         Operator and = Operator.fromString("and");
         qb = QueryBuilders.matchQuery("f0","redis nosql").boost(2.0F).analyzer("standard").operator(and);
@@ -933,7 +933,7 @@ public class TairSearchTest extends TairSearchTestBase {
         result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"match\":{\"f0\":{\"query\":\"redis nosql\",\"analyzer\":\"standard\",\"operator\":\"and\"}}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.216978,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.216978,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.108725,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.108725,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
 
     }
@@ -945,7 +945,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         TermQueryBuilder termqb = QueryBuilders.termQuery("f0","redis").boost(2.0F);
@@ -966,7 +966,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
 
         TermQueryBuilder termqb = QueryBuilders.termQuery("f0","redis");
@@ -980,7 +980,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals("{\"query\":{\"dis_max\":{\"tie_breaker\":0.5,\"queries\":[{\"term\":{\"f0\":{\"boost\":1.0,"
                 + "\"value\":\"redis\"}}}]}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
     }
 
@@ -991,7 +991,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql kvstore\"}", "2");
 
@@ -1011,7 +1011,7 @@ public class TairSearchTest extends TairSearchTestBase {
         SearchResponse result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"bool\":{\"must\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}}],\"must_not\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"kvstore\"}}}],\"should\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"nosql\"}}}],\"minimum_should_match\":1}}}",
             ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.140133,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.140133,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.408154,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.408154,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
 
         qb = QueryBuilders.boolQuery();
@@ -1022,7 +1022,7 @@ public class TairSearchTest extends TairSearchTestBase {
         result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"bool\":{\"must\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}}],\"should\":[{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"nosql\"}}}],\"minimum_should_match\":1}}}",
                 ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.2102,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.2102,\"_source\":{\"f0\":\"redis is a nosql kvstore\"}}],\"max_score\":0.2102,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.408154,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.408154,\"_source\":{\"f0\":\"redis is a nosql kvstore\"}}],\"max_score\":0.408154,\"total\":{\"relation\":\"eq\",\"value\":2}}}",
                 result.toString());
     }
 
@@ -1033,7 +1033,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is an in-memory database that persists on disk\"}", "2");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis supports many different kind of values\"}", "3");
@@ -1048,7 +1048,7 @@ public class TairSearchTest extends TairSearchTestBase {
         SearchResponse result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"sort\":[{\"_score\":{\"order\":\"desc\"}}]}",
                 ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.356159,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.267119,\"_source\":{\"f0\":\"redis supports many different kind of values\"}}],\"max_score\":0.356159,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.292946,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.226915,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.207144,\"_source\":{\"f0\":\"redis supports many different kind of values\"}}],\"max_score\":0.292946,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
 
 
@@ -1069,7 +1069,7 @@ public class TairSearchTest extends TairSearchTestBase {
         result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"track_total_hits\":true,\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"_source\":{\"includes\":[\"f0\"],\"excludes\":[]}}",
                 ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.356159,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.267119,\"_source\":{\"f0\":\"redis supports many different kind of values\"}}],\"max_score\":0.356159,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.292946,\"_source\":{\"f0\":\"redis is a nosql database\"}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.226915,\"_source\":{\"f0\":\"redis is an in-memory database that persists on disk\"}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.207144,\"_source\":{\"f0\":\"redis supports many different kind of values\"}}],\"max_score\":0.292946,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
 
         ssb = new SearchSourceBuilder().query(qb).trackTotalHits(true).fetchSource(null, "f0");
@@ -1077,7 +1077,7 @@ public class TairSearchTest extends TairSearchTestBase {
         result = tairSearch.tftsearch("tftkey", ssb);
         assertEquals("{\"track_total_hits\":true,\"query\":{\"term\":{\"f0\":{\"boost\":1.0,\"value\":\"redis\"}}},\"_source\":{\"includes\":[],\"excludes\":[\"f0\"]}}",
                 ssb.toString());
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.356159,\"_source\":{}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.311639,\"_source\":{}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.267119,\"_source\":{}}],\"max_score\":0.356159,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.292946,\"_source\":{}},{\"_id\":\"2\",\"_index\":\"tftkey\",\"_score\":0.226915,\"_source\":{}},{\"_id\":\"3\",\"_index\":\"tftkey\",\"_score\":0.207144,\"_source\":{}}],\"max_score\":0.292946,\"total\":{\"relation\":\"eq\",\"value\":3}}}",
                 result.toString());
     }
 
@@ -1660,7 +1660,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals(ret, "OK");
 
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
-        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.153426,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.153426,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
                 tairSearch.tftsearch("tftkey", "{\"query\":{\"term\":{\"f0\":\"redis\"}}}"));
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is an in-memory database that persists on disk\"}", "2");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis supports many different kind of values\"}", "3");
@@ -1671,5 +1671,23 @@ public class TairSearchTest extends TairSearchTestBase {
         String response = tairSearch.tftexplaincost("tftkey", ssb);
         JsonObject result = JsonParser.parseString(response).getAsJsonObject();
         assertTrue(result.get("QUERY_COST") != null);
+    }
+
+    @Test
+    public void tftexplainscoretest() {
+        jedis.del("tftkey");
+        String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
+        assertEquals(ret, "OK");
+
+        tairSearch.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");
+
+        TermQueryBuilder qb = QueryBuilders.termQuery("f0", "redis");
+        SearchSourceBuilder ssb = new SearchSourceBuilder().query(qb);
+
+        String response = tairSearch.tftexplainscore("tftkey", ssb);
+        assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.054363,\"_source\":{\"f0\":\"redis is a nosql database\"},\"_explanation\":{\"score\":0.054363,\"description\":\"score, computed as query_boost * idf * idf * tf\",\"field\":\"f0\",\"term\":\"redis\",\"query_boost\":1.0,\"details\":[{\"value\":0.306853,\"description\":\"idf, computed as 1 + log(N / (n + 1))\",\"details\":[{\"value\":1,\"description\":\"n, number of documents containing term\"},{\"value\":1,\"description\":\"N, total number of documents\"}]},{\"value\":0.57735,\"description\":\"tf, computed as sqrt(freq) / sqrt(dl)\",\"details\":[{\"value\":1,\"description\":\"freq, occurrences of term within document\"},{\"value\":3,\"description\":\"dl, length of field\"}]}]}}],\"max_score\":0.054363,\"total\":{\"relation\":\"eq\",\"value\":1}}}", response);
+
+        String result = tairSearch.tftexplainscore("tftkey", ssb, "0", "1", "2");
+        assertEquals(result, response);
     }
 }
