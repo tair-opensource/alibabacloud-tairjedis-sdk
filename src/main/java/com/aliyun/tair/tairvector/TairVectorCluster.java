@@ -197,6 +197,26 @@ public class TairVectorCluster {
     }
 
     /**
+     * TVS.DEL TVS.DEL index entityid1 entityi2
+     * <p>
+     * delete entity from tair-vector module
+     *
+     * @param index    index name
+     * @param entityids entity id
+     * @return Long integer-reply the number of fields that were removed from the tair-vector
+     * not including specified but non existing fields.
+     */
+    public Long tvsdel(final String index, final String... entityids) {
+        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSDEL, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encodeMany(entityids)));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    public Long tvsdel(byte[] index, byte[]... entityids) {
+        Object obj = jc.sendCommand(index, ModuleCommand.TVSDEL, JoinParameters.joinParameters(index, entityids));
+        return BuilderFactory.LONG.build(obj);
+    }
+
+    /**
      * TVS.HDEL TVS.HDEL index entityid attribute_key [attribute_key ...]
      * <p>
      * delete entity attrs from tair-vector module

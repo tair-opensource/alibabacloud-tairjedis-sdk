@@ -70,6 +70,14 @@ public class TairVectorTest extends TairVectorTestBase {
         assertTrue(result <= 2);
     }
 
+    private long tvs_del_entity(String... entity) {
+        return tairVector.tvsdel(index, entity);
+    }
+
+    private long tvs_del_entity(byte[]... entity) {
+        return tairVector.tvsdel(SafeEncoder.encode(index), entity);
+    }
+
     private long tvs_del_entity(String entity) {
         return tairVector.tvsdel(index, entity);
     }
@@ -263,11 +271,15 @@ public class TairVectorTest extends TairVectorTestBase {
             SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
             SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
 
-        long count_string = tvs_del_entity("first_entity_knn");
-        assertEquals(1, count_string);
+        long count_string = tvs_del_entity("first_entity_knn", "second_entity_knn");
+        assertEquals(2, count_string);
 
-        long count_byte = tvs_del_entity(SafeEncoder.encode("second_entity_knn"));
-        assertEquals(1, count_byte);
+        tvs_hset("first_entity_knn", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity_knn"),
+          SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
+          SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+        long  count_byte = tvs_del_entity(SafeEncoder.encode("first_entity_knn"), SafeEncoder.encode("second_entity_knn"));
+        assertEquals(2, count_byte);
     }
 
     @Test

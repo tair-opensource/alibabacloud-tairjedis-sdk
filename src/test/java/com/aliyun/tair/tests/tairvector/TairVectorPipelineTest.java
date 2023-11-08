@@ -66,6 +66,14 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         tairVectorPipeline.tvshset(SafeEncoder.encode(index), entityid, vector, param_k, param_v);
     }
 
+    private void tvs_del_entity(String... entity) {
+        tairVectorPipeline.tvsdel(index, entity);
+    }
+
+    private void tvs_del_entity(byte[]... entity) {
+        tairVectorPipeline.tvsdel(SafeEncoder.encode(index), entity);
+    }
+
     private void tvs_del_entity(String entity) {
         tairVectorPipeline.tvsdel(index, entity);
     }
@@ -218,6 +226,20 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         List<Object> objs = tairVectorPipeline.syncAndReturnAll();
         assertEquals(1L, (long) objs.get(4));
         assertEquals(1L, (long) objs.get(5));
+
+        tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity"), SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
+          SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+        tvs_del_entity("first_entity", "second_entity");
+        objs = tairVectorPipeline.syncAndReturnAll();
+        assertEquals(2L, (long) objs.get(2));
+
+        tvs_hset("first_entity", "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name", "sammy");
+        tvs_hset(SafeEncoder.encode("second_entity"), SafeEncoder.encode("[0.22, 0.33, 0.66, 0.77, 0.88, 0.89, 0.11, 0.89]"),
+          SafeEncoder.encode("name"), SafeEncoder.encode("tiddy"));
+        tvs_del_entity(SafeEncoder.encodeMany("first_entity", "second_entity"));
+        objs = tairVectorPipeline.syncAndReturnAll();
+        assertEquals(2L, (long) objs.get(2));
     }
 
     @Test

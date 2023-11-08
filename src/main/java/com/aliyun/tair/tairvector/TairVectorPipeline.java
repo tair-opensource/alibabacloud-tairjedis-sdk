@@ -189,6 +189,27 @@ public class TairVectorPipeline extends Pipeline {
         return getResponse(BuilderFactory.LONG);
     }
 
+
+    /**
+     * TVS.DEL TVS.DEL index entityid1 entityi2
+     * <p>
+     * delete entity from tair-vector module
+     *
+     * @param index    index name
+     * @param entityids entity id
+     * @return Long integer-reply the number of fields that were removed from the tair-vector
+     * not including specified but non existing fields.
+     */
+    public Response<Long> tvsdel(final String index, final String... entityids) {
+        getClient(index).sendCommand(ModuleCommand.TVSDEL, JoinParameters.joinParameters(SafeEncoder.encode(index), SafeEncoder.encodeMany(entityids)));
+        return getResponse(BuilderFactory.LONG);
+    }
+
+    public Response<Long> tvsdel(byte[] index, byte[]... entityids) {
+        getClient(SafeEncoder.encode(index)).sendCommand(ModuleCommand.TVSDEL, JoinParameters.joinParameters(index, entityids));
+        return getResponse(BuilderFactory.LONG);
+    }
+
     /**
      * TVS.HDEL TVS.HDEL index entityid attribute_key [attribute_key ...]
      * <p>

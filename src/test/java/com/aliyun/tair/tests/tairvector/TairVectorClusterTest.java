@@ -65,6 +65,14 @@ public class TairVectorClusterTest extends TairVectorTestBase {
         assertEquals(result, 2);
     }
 
+    private long tvs_del_entity(String... entity) {
+        return tairVectorCluster.tvsdel(index, entity);
+    }
+
+    private long tvs_del_entity(byte[]... entity) {
+        return tairVectorCluster.tvsdel(SafeEncoder.encode(index), entity);
+    }
+
     private long tvs_del_entity(String entity) {
         return tairVectorCluster.tvsdel(index, entity);
     }
@@ -188,6 +196,16 @@ public class TairVectorClusterTest extends TairVectorTestBase {
 
         long count_byte = tvs_del_entity(SafeEncoder.encode("second_entity"));
         assertEquals(1, count_byte);
+
+        tairVectorCluster.tvsdelindex(index);
+        tvs_create_index_and_load_data();
+        count_string = tvs_del_entity("first_entity", "second_entity");
+        assertEquals(2, count_string);
+
+        tairVectorCluster.tvsdelindex(index);
+        tvs_create_index_and_load_data();
+        count_byte = tvs_del_entity(SafeEncoder.encode("first_entity"), SafeEncoder.encode("second_entity"));
+        assertEquals(2, count_byte);
 
         tairVectorCluster.tvsdelindex(index);
     }
