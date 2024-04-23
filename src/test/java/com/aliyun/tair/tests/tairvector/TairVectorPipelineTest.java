@@ -314,6 +314,8 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         long topn = 10L;
         tairVectorPipeline.tvsknnsearch(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]");
         tairVectorPipeline.tvsknnsearch(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"));
+        tairVectorPipeline.tvsknnsearchfield(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", Collections.singletonList("name"));
+        tairVectorPipeline.tvsknnsearchfield(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"), Collections.singletonList(SafeEncoder.encode("name")));
 
         tvs_del_entity("first_entity");
         tvs_del_entity("second_entity");
@@ -324,6 +326,10 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         assertEquals(2, result_string.getKnnResults().size());
         VectorBuilderFactory.Knn<byte[]> entity_byte = (VectorBuilderFactory.Knn<byte[]>) objs.get(5);
         assertEquals(2, entity_byte.getKnnResults().size());
+        VectorBuilderFactory.KnnField<String> result_string_field = (VectorBuilderFactory.KnnField<String>) objs.get(6);
+        assertEquals(2, result_string_field.getKnnResults().size());
+        VectorBuilderFactory.KnnField<byte[]> entity_byte_field = (VectorBuilderFactory.KnnField<byte[]>) objs.get(7);
+        assertEquals(2, entity_byte_field.getKnnResults().size());
     }
 
     @Test
@@ -341,6 +347,10 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         tairVectorPipeline.tvsknnsearchfilter(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", "name == \"sammy\"");
         tairVectorPipeline.tvsknnsearchfilter(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
                 SafeEncoder.encode("name == \"sammy\""));
+        tairVectorPipeline.tvsknnsearchfilterfield(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
+                Collections.singletonList("name"), "name == \"sammy\"");
+        tairVectorPipeline.tvsknnsearchfilterfield(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
+                Collections.singletonList(SafeEncoder.encode("name")), SafeEncoder.encode("name == \"sammy\""));
 
         tvs_del_entity("first_entity");
         tvs_del_entity("second_entity");
@@ -351,6 +361,10 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         assertEquals(1, result_string.getKnnResults().size());
         VectorBuilderFactory.Knn<byte[]> entity_byte = (VectorBuilderFactory.Knn<byte[]>) objs.get(5);
         assertEquals(1, entity_byte.getKnnResults().size());
+        VectorBuilderFactory.KnnField<String> result_string_field = (VectorBuilderFactory.KnnField<String>) objs.get(6);
+        assertEquals(1, result_string_field.getKnnResults().size());
+        VectorBuilderFactory.KnnField<byte[]> entity_byte_field = (VectorBuilderFactory.KnnField<byte[]>) objs.get(7);
+        assertEquals(1, entity_byte_field.getKnnResults().size());
     }
 
     @Test
@@ -368,6 +382,10 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         tairVectorPipeline.tvsknnsearch(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]", ef_params.toArray(new String[0]));
         tairVectorPipeline.tvsknnsearch(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
                 SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        tairVectorPipeline.tvsknnsearchfield(index, topn, "[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]",
+                Collections.singletonList("name"), ef_params.toArray(new String[0]));
+        tairVectorPipeline.tvsknnsearchfield(SafeEncoder.encode(index), topn, SafeEncoder.encode("[0.12, 0.23, 0.56, 0.67, 0.78, 0.89, 0.01, 0.89]"),
+                Collections.singletonList(SafeEncoder.encode("name")), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
 
         tvs_del_entity("first_entity");
         tvs_del_entity("second_entity");
@@ -378,6 +396,10 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         assertEquals(2, result_string.getKnnResults().size());
         VectorBuilderFactory.Knn<byte[]> entity_byte = (VectorBuilderFactory.Knn<byte[]>) objs.get(5);
         assertEquals(2, entity_byte.getKnnResults().size());
+        VectorBuilderFactory.KnnField<String> result_string_field = (VectorBuilderFactory.KnnField<String>) objs.get(6);
+        assertEquals(2, result_string_field.getKnnResults().size());
+        VectorBuilderFactory.KnnField<byte[]> entity_byte_field = (VectorBuilderFactory.KnnField<byte[]>) objs.get(7);
+        assertEquals(2, entity_byte_field.getKnnResults().size());
     }
 
     @Test
@@ -492,14 +514,19 @@ public class TairVectorPipelineTest extends TairVectorTestBase {
         String vector = "[0, 0, 0, 0, 0, 0, 0, 0]";
         tairVectorPipeline.tvsmindexknnsearch(indexs, topn, vector, ef_params.toArray(new String[0]));
         tairVectorPipeline.tvsmindexknnsearch(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn, SafeEncoder.encode(vector), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
-        tairVectorPipeline.tvsmindexknnsearchfilter(indexs, topn, vector, "", ef_params.toArray(new String[0]));
-        tairVectorPipeline.tvsmindexknnsearchfilter(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn, SafeEncoder.encode(vector), SafeEncoder.encode(""), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
+        tairVectorPipeline.tvsmindexknnsearchField(indexs, topn, vector, Collections.singletonList("name"), ef_params.toArray(new String[0]));
+        tairVectorPipeline.tvsmindexknnsearchField(indexs.stream().map(item -> SafeEncoder.encode(item)).collect(Collectors.toList()), topn, SafeEncoder.encode(vector),
+                Collections.singletonList(SafeEncoder.encode("name")), SafeEncoder.encodeMany(ef_params.toArray(new String[0])));
 
         List<Object> objs = tairVectorPipeline.syncAndReturnAll();
         VectorBuilderFactory.Knn<String> result_string = (VectorBuilderFactory.Knn<String>) objs.get(4);
         assertEquals(2, result_string.getKnnResults().size());
         VectorBuilderFactory.Knn<byte[]> entity_byte = (VectorBuilderFactory.Knn<byte[]>) objs.get(5);
         assertEquals(2, entity_byte.getKnnResults().size());
+        VectorBuilderFactory.KnnField<String> result_string_field = (VectorBuilderFactory.KnnField<String>) objs.get(6);
+        assertEquals(2, result_string_field.getKnnResults().size());
+        VectorBuilderFactory.KnnField<byte[]> entity_byte_field = (VectorBuilderFactory.KnnField<byte[]>) objs.get(7);
+        assertEquals(2, entity_byte_field.getKnnResults().size());
     }
 
     @Test

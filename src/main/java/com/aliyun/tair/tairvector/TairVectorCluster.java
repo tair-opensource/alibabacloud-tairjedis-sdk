@@ -15,6 +15,7 @@ import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
@@ -314,6 +315,71 @@ public class TairVectorCluster {
     }
 
     /**
+     * TVS.KNNSEARCHFIELD index_name topn vector
+     * <p>
+     * query entity by vector
+     *
+     * @param index  index name
+     * @param topn   topn result
+     * @param vector query vector
+     * @param fields field list
+     * @param params for HNSW, params include:
+     *               ef_search     range [0, 1000]
+     * @return VectorBuilderFactory.KnnField<>
+     */
+    public VectorBuilderFactory.KnnField<String> tvsknnsearchfield(final String index, Long topn, final String vector, Collection<String> fields, final String... params) {
+        return tvsknnsearchfilterfield(index, topn, vector, fields, "", params);
+    }
+
+    public VectorBuilderFactory.KnnField<byte[]> tvsknnsearchfield(byte[] index, Long topn, byte[] vector, Collection<byte[]> fields, final byte[]... params) {
+        return tvsknnsearchfilterfield(index, topn, vector, fields, SafeEncoder.encode(""), params);
+    }
+
+    /**
+     * TVS.KNNSEARCHFIELD index_name topn vector pattern
+     * <p>
+     * query entity by vector and scalar pattern
+     *
+     * @param index   index name
+     * @param topn    topn result
+     * @param vector  query vector
+     * @param fields field list
+     * @param pattern support +, -，>, <, !=， ,()，&&, ||, !, ==
+     * @param params  for HNSW, params include:
+     *                ef_search     range [0, 1000]
+     * @return VectorBuilderFactory.KnnField<>
+     */
+    public VectorBuilderFactory.KnnField<String> tvsknnsearchfilterfield(final String index, Long topn, final String vector, Collection<String> fields, final String pattern, final String... params) {
+        final List<byte[]> args = new ArrayList<>();
+        args.add(SafeEncoder.encode(index));
+        args.add(toByteArray(topn));
+        args.add(SafeEncoder.encode(vector));
+        args.add(toByteArray(fields.size()));
+        if (!fields.isEmpty()) {
+            args.addAll(fields.stream().map(SafeEncoder::encode).collect(Collectors.toList()));
+        }
+        args.add(SafeEncoder.encode(pattern));
+        args.addAll(Arrays.stream(params).map(SafeEncoder::encode).collect(Collectors.toList()));
+        Object obj = jc.sendCommand(SafeEncoder.encode(index), ModuleCommand.TVSKNNSEARCHFIELD, args.toArray(new byte[args.size()][]));
+        return VectorBuilderFactory.STRING_KNNFIELD_RESULT.build(obj);
+    }
+
+    public VectorBuilderFactory.KnnField<byte[]> tvsknnsearchfilterfield(byte[] index, Long topn, byte[] vector,  Collection<byte[]> fields, byte[] pattern, final byte[]... params) {
+        final List<byte[]> args = new ArrayList<>();
+        args.add(index);
+        args.add(toByteArray(topn));
+        args.add(vector);
+        args.add(toByteArray(fields.size()));
+        if (!fields.isEmpty()) {
+            args.addAll(fields);
+        }
+        args.add(pattern);
+        args.addAll(Arrays.stream(params).collect(Collectors.toList()));
+        Object obj = jc.sendCommand(index, ModuleCommand.TVSKNNSEARCHFIELD, args.toArray(new byte[args.size()][]));
+        return VectorBuilderFactory.BYTE_KNNFIELD_RESULT.build(obj);
+    }
+
+    /**
      * TVS.MKNNSEARCH TVS.MKNNSEARCH index_name topn vector [vector...]
      *
      * @param index   index name
@@ -395,6 +461,22 @@ public class TairVectorCluster {
     }
 
     public Collection<VectorBuilderFactory.Knn<byte[]>> tvsmindexmknnsearchfilter(Collection<byte[]> indexs, Long topn, Collection<byte[]> vectors, byte[] pattern, byte[]... params) {
+        return null;
+    }
+
+    public VectorBuilderFactory.KnnField<String> tvsmindexknnsearchField(Collection<String> indexs, Long topn, String vector, Collection<String> fields, String... params) {
+        return null;
+    }
+
+    public VectorBuilderFactory.KnnField<byte[]> tvsmindexknnsearchField(Collection<byte[]> indexs, Long topn, byte[] vector, Collection<byte[]> fields, byte[]... params) {
+        return null;
+    }
+
+    public VectorBuilderFactory.KnnField<String> tvsmindexknnsearchfilterfield(Collection<String> indexs, Long topn, String vector, Collection<String> fields, String pattern, String... params) {
+        return null;
+    }
+
+    public VectorBuilderFactory.KnnField<byte[]> tvsmindexknnsearchfilterfield(Collection<byte[]> indexs, Long topn, byte[] vector, Collection<byte[]> fields, byte[] pattern, final byte[]... params) {
         return null;
     }
 

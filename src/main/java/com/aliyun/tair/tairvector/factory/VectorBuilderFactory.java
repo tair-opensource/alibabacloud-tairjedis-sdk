@@ -5,9 +5,14 @@ import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class VectorBuilderFactory {
     public static final String VECTOR_TAG = "VECTOR";
@@ -88,8 +93,6 @@ public class VectorBuilderFactory {
         }
     };
 
-
-
     public static final Builder<Collection<Knn<String>>> STRING_KNN_BATCH_RESULT = new Builder<Collection<Knn<String>>>() {
         @Override
         @SuppressWarnings("unchecked")
@@ -125,6 +128,127 @@ public class VectorBuilderFactory {
             return "Collection<Knn<String>>";
         }
     };
+
+    public static class KnnFieldItem<T> {
+        private T id;
+        private double score;
+        private T index;
+
+        private Map<T, T> fields;
+        public KnnFieldItem(T id, double score, T index, Map<T, T> fields) {
+            this.id = id;
+            this.score = score;
+            this.index = index;
+            this.fields = fields;
+        }
+        public T getId() {
+            return id;
+        }
+        public double getScore() {
+            return score;
+        }
+
+        public T getIndex() {
+            return index;
+        }
+
+        public Map<T, T> getFields() {
+            return fields;
+        }
+
+        @Override
+        public String toString() {
+            return "id =" + id + ", score =" + score + ", index=" + index + ", fields=" + fields + ";";
+        }
+    }
+
+    public static class KnnField<T> {
+        private Collection<KnnFieldItem<T>> knnFieldItems = new ArrayList<>();
+
+        public void add(KnnFieldItem item) {
+            knnFieldItems.add(item);
+        }
+
+        public Collection<KnnFieldItem<T>> getKnnResults() {
+            return knnFieldItems;
+        }
+
+        @Override
+        public String toString() {
+            return knnFieldItems.toString();
+        }
+    }
+
+    public static final Builder<KnnField<String>> STRING_KNNFIELD_RESULT = new Builder<KnnField<String>>() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public KnnField<String> build(Object data) {
+            final KnnField<String> results = new KnnField<>();
+            List<Object> resp = (List<Object>) data;
+            resp.forEach(knnField -> {
+                final List<byte[]> knnFieldByte = (List<byte[]>) knnField;
+                final Iterator<byte[]> iterator = knnFieldByte.iterator();
+                String id = SafeEncoder.encode(iterator.next());
+                double score = Double.parseDouble(SafeEncoder.encode(iterator.next()));
+                String index = knnFieldByte.size() % 2 == 0 ? "" : SafeEncoder.encode(iterator.next());
+                Map<String, String> fields = new TreeMap<>();
+                while (iterator.hasNext()) {
+                    fields.put(SafeEncoder.encode(iterator.next()), SafeEncoder.encode(iterator.next()));
+                }
+                results.add(new KnnFieldItem<>(id, score, index, fields));
+            });
+            return results;
+        }
+
+        @Override
+        public String toString() {
+            return "KnnField<String>";
+        }
+    };
+
+    static final Comparator<byte[]> byteArrComparator = new Comparator<byte[]>() {
+        @Override
+        public int compare(byte[] a, byte[] b) {
+            int minLength = Math.min(a.length, b.length);
+            for (int i = 0; i < minLength; i++) {
+                int aByte = a[i] & 0xFF; // 将byte转换成无符号的int进行比较
+                int bByte = b[i] & 0xFF;
+                if (aByte != bByte) {
+                    return aByte - bByte;
+                }
+            }
+            // 如果前面都相同，那就比较数组长度
+            return a.length - b.length;
+        }
+    };
+
+    public static final Builder<KnnField<byte[]>> BYTE_KNNFIELD_RESULT = new Builder<KnnField<byte[]>>() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public KnnField<byte[]> build(Object data) {
+            final KnnField<byte[]> results = new KnnField<>();
+            List<Object> resp = (List<Object>) data;
+            resp.forEach(knnField -> {
+                final List<byte[]> knnFieldByte = (List<byte[]>) knnField;
+                final Iterator<byte[]> iterator = knnFieldByte.iterator();
+                byte[] id = iterator.next();
+                double score = Double.parseDouble(SafeEncoder.encode(iterator.next()));
+                byte[] index = knnFieldByte.size() % 2 == 0 ?  SafeEncoder.encode("") : iterator.next();
+                Map<byte[], byte[]> fields = new TreeMap<>(byteArrComparator);
+                while (iterator.hasNext()) {
+                    fields.put(iterator.next(), iterator.next());
+                }
+                results.add(new KnnFieldItem<>(id, score, index, fields));
+            });
+            return results;
+        }
+
+        @Override
+        public String toString() {
+            return "KnnField<Byte[]>";
+        }
+    };
+
 
     public static final Builder<ScanResult<String>> SCAN_CURSOR_STRING = new Builder<ScanResult<String>>() {
         @Override
