@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
+import com.aliyun.tair.jedis3.ScanResult;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
 import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
@@ -15,9 +17,7 @@ import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import static redis.clients.jedis.Protocol.toByteArray;
@@ -54,7 +54,7 @@ public class TairVectorCluster {
 
     public byte[] tvscreateindex(byte[] index, int dims, IndexAlgorithm algorithm, DistanceMethod method, final byte[]... params) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(index, toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), params));
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     /**
@@ -72,7 +72,7 @@ public class TairVectorCluster {
 
     public Map<byte[], byte[]> tvsgetindex(byte[] index) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSGETINDEX, index);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
     }
 
     /**
@@ -153,7 +153,7 @@ public class TairVectorCluster {
 
     public Map<byte[], byte[]> tvshgetall(byte[] index, byte[] entityid) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSHGETALL, index, entityid);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
     }
 
     /**
@@ -173,7 +173,7 @@ public class TairVectorCluster {
 
     public List<byte[]> tvshmget(byte[] index, byte[] entityid, byte[]... attrs) {
         Object obj = jc.sendCommand(index, ModuleCommand.TVSHMGET, JoinParameters.joinParameters(index, entityid, attrs));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
 

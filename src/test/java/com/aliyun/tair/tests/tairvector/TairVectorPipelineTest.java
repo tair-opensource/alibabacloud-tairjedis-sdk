@@ -6,7 +6,7 @@ import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import org.junit.Test;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.*;

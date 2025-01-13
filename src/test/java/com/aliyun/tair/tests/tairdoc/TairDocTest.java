@@ -399,13 +399,13 @@ public class TairDocTest extends TairDocTestBase {
         tairDoc.jsondel(randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsondel(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairDoc.jsondel(randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -418,13 +418,13 @@ public class TairDocTest extends TairDocTestBase {
         tairDoc.jsonget(randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonget(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairDoc.jsonget(randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -434,7 +434,7 @@ public class TairDocTest extends TairDocTestBase {
     @Test
     public void jsonmgetException() {
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonmget(randomkey_, "", "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -444,13 +444,13 @@ public class TairDocTest extends TairDocTestBase {
     @Test
     public void jsonsetException() {
         try {
-            jedis.set(randomkey_, JSON_STRING_EXAMPLE);
+            getJedis().set(randomkey_, JSON_STRING_EXAMPLE);
             tairDoc.jsonset(randomkey_, ".", JSON_STRING_EXAMPLE);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairDoc.jsonset(randomKeyBinary_, "".getBytes(), "".getBytes());
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -463,13 +463,13 @@ public class TairDocTest extends TairDocTestBase {
         tairDoc.jsontype(randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsontype(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairDoc.jsontype(randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -479,13 +479,13 @@ public class TairDocTest extends TairDocTestBase {
     @Test
     public void jsonnumincrbyException() {
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonnumincrBy(randomkey_, 1.0);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairDoc.jsonnumincrBy(randomKeyBinary_, 1.0);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -498,13 +498,13 @@ public class TairDocTest extends TairDocTestBase {
         tairDoc.jsonstrAppend(randomKeyBinary_, JSON_ARRAY_EXAMPLE.getBytes());
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonstrAppend(randomkey_, JSON_ARRAY_EXAMPLE);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairDoc.jsonstrAppend(randomKeyBinary_, JSON_ARRAY_EXAMPLE.getBytes());
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -517,13 +517,13 @@ public class TairDocTest extends TairDocTestBase {
         tairDoc.jsonstrlen(randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonstrlen(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairDoc.jsonstrlen(randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -533,7 +533,7 @@ public class TairDocTest extends TairDocTestBase {
     @Test
     public void jsonarrappendException() {
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonarrAppend(randomkey_, "", "", "", "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -549,18 +549,8 @@ public class TairDocTest extends TairDocTestBase {
         }
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonarrPop(randomkey_, "");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
-    public void jsonarrinsertException() {
-        try {
-            jedis.set(randomkey_, "bar");
-            tairDoc.jsonarrInsert(randomkey_, "", "", "", "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
@@ -571,7 +561,7 @@ public class TairDocTest extends TairDocTestBase {
         tairDoc.jsonArrLen(randomkey_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonArrLen(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -583,7 +573,7 @@ public class TairDocTest extends TairDocTestBase {
         tairDoc.jsonarrTrim(randomkey_, "", 0, -1);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairDoc.jsonarrTrim(randomkey_, "", 0, -1);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));

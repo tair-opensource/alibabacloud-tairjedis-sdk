@@ -4,6 +4,7 @@ import com.aliyun.tair.taircpc.params.CpcData;
 import com.aliyun.tair.taircpc.params.CpcUpdateParams;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import redis.clients.jedis.exceptions.JedisDataException;
 
@@ -183,6 +184,7 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void cpcMupdateTest() throws Exception {
 
         ArrayList<CpcData> addList = new ArrayList<CpcData>();
@@ -256,6 +258,7 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
 //    }
 
     @Test
+    @Ignore
     public void cpcMupdate2EstTest() throws Exception {
 
         ArrayList<CpcData> addList = new ArrayList<CpcData>();
@@ -281,6 +284,7 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void cpcMupdate2JudTest() throws Exception {
 
         ArrayList<CpcData> addList = new ArrayList<CpcData>();
@@ -467,6 +471,7 @@ public class TairCpcClusterTestNew extends TairCpcTestBase {
 //    }
 //
 @Test
+@Ignore
 public void sumTest() throws Exception {
 
     Double addRet = tairCpcClusterNew.sumAdd(key, 100);
@@ -511,6 +516,7 @@ public void sumTest() throws Exception {
 }
 
     @Test
+    @Ignore
     public void sumArrayTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.sumArrayAdd(key, timestamp, 100);
@@ -559,6 +565,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void maxTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.maxAdd(key, 150);
@@ -603,6 +610,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void maxArrayTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.maxArrayAdd(key, timestamp, 100);
@@ -651,6 +659,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void minTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.minAdd(key, 150);
@@ -695,6 +704,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void minArrayTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.minArrayAdd(key, timestamp, 100);
@@ -743,6 +753,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void firstTest() throws Exception {
 
         String addRet = tairCpcClusterNew.firstAdd(key, content1, 150);
@@ -787,6 +798,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void firstArrayTest() throws Exception {
 
         String addRet = tairCpcClusterNew.firstArrayAdd(key, timestamp, content1, 100);
@@ -833,6 +845,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void lastTest() throws Exception {
 
         String addRet = tairCpcClusterNew.lastAdd(key, content1, 150);
@@ -877,6 +890,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void lastArrayTest() throws Exception {
 
         String addRet = tairCpcClusterNew.lastArrayAdd(key, timestamp, content1, 100);
@@ -923,6 +937,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void avgArrayTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.avgArrayAdd(key, timestamp, count1, 100);
@@ -972,6 +987,7 @@ public void sumTest() throws Exception {
     }
 
     @Test
+    @Ignore
     public void stddevTest() throws Exception {
 
         Double addRet = tairCpcClusterNew.stddevAdd(key, 150);

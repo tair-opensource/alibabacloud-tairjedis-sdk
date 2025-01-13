@@ -14,8 +14,7 @@ public class TairBloomTestBase extends TestBase {
     @BeforeClass
     public static void setUp() {
         tairBloom = new TairBloom(jedisPool);
-        tairBloomPipeline = new TairBloomPipeline();
-        tairBloomPipeline.setClient(jedis.getClient());
+        tairBloomPipeline = new TairBloomPipeline(getJedis());
         tairBloomCluster = new TairBloomCluster(jedisCluster);
     }
 }

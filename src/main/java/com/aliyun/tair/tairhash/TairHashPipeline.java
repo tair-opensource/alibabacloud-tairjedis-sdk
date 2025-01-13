@@ -8,50 +8,67 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.aliyun.tair.ModuleCommand;
-import com.aliyun.tair.tairhash.params.*;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
+import com.aliyun.tair.jedis3.ScanParams;
+import com.aliyun.tair.jedis3.ScanResult;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
-import com.aliyun.tair.util.JoinParameters;
+import com.aliyun.tair.tairhash.params.ExhgetwithverResult;
+import com.aliyun.tair.tairhash.params.ExhincrByFloatParams;
+import com.aliyun.tair.tairhash.params.ExhincrByParams;
+import com.aliyun.tair.tairhash.params.ExhmsetwithoptsParams;
+import com.aliyun.tair.tairhash.params.ExhsetParams;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.CommandArguments;
+import redis.clients.jedis.CommandObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairHashPipeline extends Pipeline {
-    
-    public Response<Long> exhset(final String key, final String field, final String value) {
-        getClient("").sendCommand(ModuleCommand.EXHSET, key, field, value);
-        return getResponse(BuilderFactory.LONG);
+    public TairHashPipeline(Jedis jedis) {
+        super(jedis);
     }
 
     public Response<Long> exhset(final byte[] key, final byte[] field, final byte[] value) {
-        getClient("").sendCommand(ModuleCommand.EXHSET, key, field, value);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSET)
+            .key(key)
+            .add(field)
+            .add(value), BuilderFactory.LONG));
     }
 
-    public Response<Long> exhset(final String key, final String field, final String value, final ExhsetParams params) {
-        getClient("").sendCommand(ModuleCommand.EXHSET,
-            params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(field), SafeEncoder.encode(value)));
-        return getResponse(BuilderFactory.LONG);
+    public Response<Long> exhset(final String key, final String field, final String value) {
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSET)
+            .key(key)
+            .add(field)
+            .add(value), BuilderFactory.LONG));
     }
 
     public Response<Long> exhset(final byte[] key, final byte[] field, final byte[] value, final ExhsetParams params) {
-        getClient("").sendCommand(ModuleCommand.EXHSET, params.getByteParams(key, field, value));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSET)
+            .addObjects(params.getByteParams(key, field, value)), BuilderFactory.LONG));
     }
 
-    public Response<Long> exhsetnx(final String key, final String field, final String value) {
-        getClient("").sendCommand(ModuleCommand.EXHSETNX, key, field, value);
-        return getResponse(BuilderFactory.LONG);
+    public Response<Long> exhset(final String key, final String field, final String value, final ExhsetParams params) {
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSET).addObjects(
+            params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(field), SafeEncoder.encode(value))),
+            BuilderFactory.LONG));
     }
 
     public Response<Long> exhsetnx(final byte[] key, final byte[] field, final byte[] value) {
-        getClient("").sendCommand(ModuleCommand.EXHSETNX, key, field, value);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSETNX)
+            .key(key)
+            .add(field)
+            .add(value), BuilderFactory.LONG));
+    }
+
+    public Response<Long> exhsetnx(final String key, final String field, final String value) {
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSETNX)
+            .key(key)
+            .add(field)
+            .add(value), BuilderFactory.LONG));
     }
 
     public Response<String> exhmset(final String key, final Map<String, String> hash) {
@@ -70,9 +87,8 @@ public class TairHashPipeline extends Pipeline {
             params.add(entry.getKey());
             params.add(entry.getValue());
         }
-
-        getClient("").sendCommand(ModuleCommand.EXHMSET, params.toArray(new byte[params.size()][]));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHMSET).addObjects(params),
+            BuilderFactory.STRING));
     }
 
     public Response<String> exhmsetwithopts(final String key, final List<ExhmsetwithoptsParams<String>> params) {
@@ -94,98 +110,94 @@ public class TairHashPipeline extends Pipeline {
             p.add(toByteArray(entry.getVer()));
             p.add(toByteArray(entry.getExp()));
         }
-
-        getClient("").sendCommand(ModuleCommand.EXHMSETWITHOPTS, p.toArray(new byte[params.size()][]));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHMSETWITHOPTS).addObjects(p),
+            BuilderFactory.STRING));
     }
 
     public Response<Boolean> exhpexpire(final String key, final String field, final int milliseconds) {
-        return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds);
+        return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds, false);
     }
 
-    public Response<Boolean> exhpexpire(final String key, final String field, final int milliseconds,boolean noactive) {
-        return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds,noactive);
+    public Response<Boolean> exhpexpire(final String key, final String field, final int milliseconds,
+        boolean noactive) {
+        return exhpexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), milliseconds, noactive);
     }
 
     public Response<Boolean> exhpexpire(final byte[] key, final byte[] field, final int milliseconds) {
-        getClient("").sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
-        return getResponse(BuilderFactory.BOOLEAN);
+        return exhpexpire(key, field, milliseconds, false);
     }
 
-    public Response<Boolean> exhpexpire(final byte[] key, final byte[] field, final int milliseconds,boolean noactive) {
-        if(noactive){
-            getClient("").sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds),SafeEncoder.encode("noactive"));
-        }else {
-            getClient("").sendCommand(ModuleCommand.EXHPEXPIRE, key, field, toByteArray(milliseconds));
+    public Response<Boolean> exhpexpire(final byte[] key, final byte[] field, final int milliseconds,
+        boolean noactive) {
+        CommandArguments args = new CommandArguments(ModuleCommand.EXHPEXPIRE);
+        args.add(key).add(field).add(milliseconds);
+        if (noactive) {
+            args.add("noactive");
         }
-
-        return getResponse(BuilderFactory.BOOLEAN);
+        return appendCommand(new CommandObject<>(args, BuilderFactory.BOOLEAN));
     }
 
     public Response<Boolean> exhpexpireAt(final String key, final String field, final long unixTime) {
-        return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime);
+        return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime, false);
     }
 
-    public Response<Boolean> exhpexpireAt(final String key, final String field, final long unixTime,boolean noactive) {
-        return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime,noactive);
+    public Response<Boolean> exhpexpireAt(final String key, final String field, final long unixTime, boolean noactive) {
+        return exhpexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime, noactive);
     }
 
     public Response<Boolean> exhpexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        getClient("").sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
-        return getResponse(BuilderFactory.BOOLEAN);
+        return exhpexpireAt(key, field, unixTime, false);
     }
 
-    public Response<Boolean> exhpexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
-        if(noactive) {
-            getClient("").sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime),SafeEncoder.encode("noactive"));
-        }else {
-            getClient("").sendCommand(ModuleCommand.EXHPEXPIREAT, key, field, toByteArray(unixTime));
+    public Response<Boolean> exhpexpireAt(final byte[] key, final byte[] field, final long unixTime, boolean noactive) {
+        CommandArguments args = new CommandArguments(ModuleCommand.EXHPEXPIREAT);
+        args.add(key).add(field).add(unixTime);
+        if (noactive) {
+            args.add("noactive");
         }
-        return getResponse(BuilderFactory.BOOLEAN);
+        return appendCommand(new CommandObject<>(args, BuilderFactory.BOOLEAN));
     }
 
     public Response<Boolean> exhexpire(final String key, final String field, final int seconds) {
-        return exhexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), seconds);
+        return exhexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), seconds, false);
     }
 
-    public Response<Boolean> exhexpire(final String key, final String field, final int seconds,boolean noactive) {
-        return exhexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), seconds,noactive);
+    public Response<Boolean> exhexpire(final String key, final String field, final int seconds, boolean noactive) {
+        return exhexpire(SafeEncoder.encode(key), SafeEncoder.encode(field), seconds, noactive);
     }
 
     public Response<Boolean> exhexpire(final byte[] key, final byte[] field, final int seconds) {
-        getClient("").sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
-        return getResponse(BuilderFactory.BOOLEAN);
+        return exhexpire(key, field, seconds, false);
     }
 
-    public Response<Boolean> exhexpire(final byte[] key, final byte[] field, final int seconds,boolean noactive) {
-        if(noactive) {
-            getClient("").sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds),SafeEncoder.encode("noactive"));
-        }else {
-            getClient("").sendCommand(ModuleCommand.EXHEXPIRE, key, field, toByteArray(seconds));
+    public Response<Boolean> exhexpire(final byte[] key, final byte[] field, final int seconds, boolean noactive) {
+        CommandArguments args = new CommandArguments(ModuleCommand.EXHEXPIRE);
+        args.add(key).add(field).add(seconds);
+        if (noactive) {
+            args.add("noactive");
         }
-        return getResponse(BuilderFactory.BOOLEAN);
+        return appendCommand(new CommandObject<>(args, BuilderFactory.BOOLEAN));
     }
 
     public Response<Boolean> exhexpireAt(final String key, final String field, final long unixTime) {
-        return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime);
+        return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime, false);
     }
 
-    public Response<Boolean> exhexpireAt(final String key, final String field, final long unixTime,boolean noactive) {
-        return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime,noactive);
+    public Response<Boolean> exhexpireAt(final String key, final String field, final long unixTime, boolean noactive) {
+        return exhexpireAt(SafeEncoder.encode(key), SafeEncoder.encode(field), unixTime, noactive);
     }
 
     public Response<Boolean> exhexpireAt(final byte[] key, final byte[] field, final long unixTime) {
-        getClient("").sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
-        return getResponse(BuilderFactory.BOOLEAN);
+        return exhexpireAt(key, field, unixTime, false);
     }
 
-    public Response<Boolean> exhexpireAt(final byte[] key, final byte[] field, final long unixTime,boolean noactive) {
-        if(noactive) {
-            getClient("").sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime),SafeEncoder.encode("noactive"));
-        }else {
-            getClient("").sendCommand(ModuleCommand.EXHEXPIREAT, key, field, toByteArray(unixTime));
+    public Response<Boolean> exhexpireAt(final byte[] key, final byte[] field, final long unixTime, boolean noactive) {
+        CommandArguments args = new CommandArguments(ModuleCommand.EXHEXPIREAT);
+        args.add(key).add(field).add(unixTime);
+        if (noactive) {
+            args.add("noactive");
         }
-        return getResponse(BuilderFactory.BOOLEAN);
+        return appendCommand(new CommandObject<>(args, BuilderFactory.BOOLEAN));
     }
 
     public Response<Long> exhpttl(final String key, final String field) {
@@ -193,8 +205,9 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Long> exhpttl(final byte[] key, final byte[] field) {
-        getClient("").sendCommand(ModuleCommand.EXHPTTL, key, field);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHPTTL)
+            .add(key)
+            .add(field), BuilderFactory.LONG));
     }
 
     public Response<Long> exhttl(final String key, final String field) {
@@ -202,8 +215,9 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Long> exhttl(final byte[] key, final byte[] field) {
-        getClient("").sendCommand(ModuleCommand.EXHTTL, key, field);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHTTL)
+            .add(key)
+            .add(field), BuilderFactory.LONG));
     }
 
     public Response<Long> exhver(final String key, final String field) {
@@ -211,8 +225,9 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Long> exhver(final byte[] key, final byte[] field) {
-        getClient("").sendCommand(ModuleCommand.EXHVER, key, field);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHVER)
+            .add(key)
+            .add(field), BuilderFactory.LONG));
     }
 
     public Response<Boolean> exhsetver(final String key, final String field, final long version) {
@@ -220,8 +235,10 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Boolean> exhsetver(final byte[] key, final byte[] field, final long version) {
-        getClient("").sendCommand(ModuleCommand.EXHSETVER, key, field, toByteArray(version));
-        return getResponse(BuilderFactory.BOOLEAN);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSETVER)
+            .add(key)
+            .add(field)
+            .add(version), BuilderFactory.BOOLEAN));
     }
 
     public Response<Long> exhincrBy(final String key, final String field, final long value) {
@@ -229,18 +246,21 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Long> exhincrBy(byte[] key, byte[] field, long value) {
-        getClient("").sendCommand(ModuleCommand.EXHINCRBY, key, field, toByteArray(value));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHINCRBY)
+            .add(key)
+            .add(field)
+            .add(value), BuilderFactory.LONG));
     }
 
-    public Response<Long> exhincrBy(final String key, final String field, final long value, final ExhincrByParams params) {
+    public Response<Long> exhincrBy(final String key, final String field, final long value,
+        final ExhincrByParams params) {
         return exhincrBy(SafeEncoder.encode(key), SafeEncoder.encode(field), value, params);
     }
 
-    public Response<Long> exhincrBy(final byte[] key, final byte[] field, final long value, final ExhincrByParams params) {
-        getClient("").sendCommand(ModuleCommand.EXHINCRBY,
-            params.getByteParams(key, field, toByteArray(value)));
-        return getResponse(BuilderFactory.LONG);
+    public Response<Long> exhincrBy(final byte[] key, final byte[] field, final long value,
+        final ExhincrByParams params) {
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHINCRBY).addObjects(
+            params.getByteParams(key, field, toByteArray(value))), BuilderFactory.LONG));
     }
 
     public Response<Double> exhincrByFloat(final String key, final String field, final double value) {
@@ -248,8 +268,10 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Double> exhincrByFloat(byte[] key, byte[] field, final double value) {
-        getClient("").sendCommand(ModuleCommand.EXHINCRBYFLOAT, key, field, toByteArray(value));
-        return getResponse(BuilderFactory.DOUBLE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHINCRBYFLOAT)
+            .add(key)
+            .add(field)
+            .add(value), BuilderFactory.DOUBLE));
     }
 
     public Response<Double> exhincrByFloat(final String key, final String field, final double value,
@@ -258,83 +280,89 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Double> exhincrByFloat(byte[] key, byte[] field, double value, ExhincrByFloatParams params) {
-        getClient("").sendCommand(ModuleCommand.EXHINCRBYFLOAT,
-            params.getByteParams(key, field, toByteArray(value)));
-        return getResponse(BuilderFactory.DOUBLE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHINCRBYFLOAT).addObjects(
+            params.getByteParams(key, field, toByteArray(value))), BuilderFactory.DOUBLE));
     }
 
     public Response<String> exhget(final String key, final String field) {
-        getClient("").sendCommand(ModuleCommand.EXHGET, key, field);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHGET)
+            .add(key)
+            .add(field), BuilderFactory.STRING));
     }
 
     public Response<byte[]> exhget(final byte[] key, final byte[] field) {
-        getClient("").sendCommand(ModuleCommand.EXHGET, key, field);
-        return getResponse(BuilderFactory.BYTE_ARRAY);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHGET)
+            .add(key)
+            .add(field), Jedis3BuilderFactory.BYTE_ARRAY));
     }
 
     public Response<ExhgetwithverResult<String>> exhgetwithver(final String key, final String field) {
-        getClient("").sendCommand(ModuleCommand.EXHGETWITHVER, key, field);
-        return getResponse(HashBuilderFactory.EXHGETWITHVER_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHGETWITHVER)
+            .add(key)
+            .add(field), HashBuilderFactory.EXHGETWITHVER_RESULT_STRING));
     }
 
     public Response<ExhgetwithverResult<byte[]>> exhgetwithver(byte[] key, byte[] field) {
-        getClient("").sendCommand(ModuleCommand.EXHGETWITHVER, key, field);
-        return getResponse(HashBuilderFactory.EXHGETWITHVER_RESULT_BYTE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHGETWITHVER)
+            .add(key)
+            .add(field), HashBuilderFactory.EXHGETWITHVER_RESULT_BYTE));
     }
 
     public Response<List<String>> exhmget(final String key, final String... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHMGET,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHMGET)
+            .add(key)
+            .addObjects(fields), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exhmget(byte[] key, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHMGET, JoinParameters.joinParameters(key, fields));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHMGET)
+            .add(key)
+            .addObjects(fields), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<List<ExhgetwithverResult<String>>> exhmgetwithver(final String key, final String... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHMGETWITHVER,
-            JoinParameters.joinParameters(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
-        return getResponse(HashBuilderFactory.EXHMGETWITHVER_RESULT_STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHMGETWITHVER)
+            .add(key)
+            .addObjects(fields), HashBuilderFactory.EXHMGETWITHVER_RESULT_STRING_LIST));
     }
 
     public Response<List<ExhgetwithverResult<byte[]>>> exhmgetwithver(byte[] key, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHMGETWITHVER, JoinParameters.joinParameters(key, fields));
-        return getResponse(HashBuilderFactory.EXHMGETWITHVER_RESULT_BYTE_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHMGETWITHVER)
+            .add(key)
+            .addObjects(fields), HashBuilderFactory.EXHMGETWITHVER_RESULT_BYTE_LIST));
     }
 
     public Response<Long> exhdel(final String key, final String... fields) {
-        return exhdel(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHDEL)
+            .add(key)
+            .addObjects(fields), BuilderFactory.LONG));
     }
 
     public Response<Long> exhdel(byte[] key, byte[]... fields) {
-        getClient("").sendCommand(ModuleCommand.EXHDEL, JoinParameters.joinParameters(key, fields));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHDEL)
+            .add(key)
+            .addObjects(fields), BuilderFactory.LONG));
     }
 
     public Response<Long> exhlen(final String key) {
-        return exhlen(SafeEncoder.encode(key));
+        return exhlen(SafeEncoder.encode(key), false);
     }
 
-    public Response<Long> exhlen(final String key,boolean noexp) {
-        return exhlen(SafeEncoder.encode(key),noexp);
+    public Response<Long> exhlen(final String key, boolean noexp) {
+        return exhlen(SafeEncoder.encode(key), noexp);
     }
 
     public Response<Long> exhlen(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXHLEN, key);
-        return getResponse(BuilderFactory.LONG);
+        return exhlen(key, false);
     }
 
-    public Response<Long> exhlen(byte[] key,boolean noexp) {
-        if(noexp){
-            getClient("").sendCommand(ModuleCommand.EXHLEN, key,SafeEncoder.encode("noexp"));
-        }else {
-            getClient("").sendCommand(ModuleCommand.EXHLEN, key);
+    public Response<Long> exhlen(byte[] key, boolean noexp) {
+        CommandArguments args = new CommandArguments(ModuleCommand.EXHLEN);
+        args.add(key);
+        if (noexp) {
+            args.add("noexp");
         }
-
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(args, BuilderFactory.LONG));
     }
 
     public Response<Boolean> exhexists(final String key, final String field) {
@@ -342,8 +370,9 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Boolean> exhexists(byte[] key, byte[] field) {
-        getClient("").sendCommand(ModuleCommand.EXHEXISTS, key, field);
-        return getResponse(BuilderFactory.BOOLEAN);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHEXISTS)
+            .add(key)
+            .add(field), BuilderFactory.BOOLEAN));
     }
 
     public Response<Long> exhstrlen(final String key, final String field) {
@@ -351,38 +380,39 @@ public class TairHashPipeline extends Pipeline {
     }
 
     public Response<Long> exhstrlen(byte[] key, byte[] field) {
-        getClient("").sendCommand(ModuleCommand.EXHSTRLEN, key, field);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSTRLEN)
+            .add(key)
+            .add(field), BuilderFactory.LONG));
     }
 
     public Response<Set<String>> exhkeys(final String key) {
-        getClient("").sendCommand(ModuleCommand.EXHKEYS, key);
-        return getResponse(BuilderFactory.STRING_ZSET);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHKEYS)
+            .add(key), Jedis3BuilderFactory.STRING_ZSET));
     }
 
     public Response<Set<byte[]>> exhkeys(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXHKEYS, key);
-        return getResponse(BuilderFactory.BYTE_ARRAY_ZSET);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHKEYS)
+            .add(key), Jedis3BuilderFactory.BYTE_ARRAY_ZSET));
     }
 
     public Response<List<String>> exhvals(final String key) {
-        getClient("").sendCommand(ModuleCommand.EXHVALS, key);
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHVALS)
+            .add(key), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exhvals(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXHVALS, key);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHVALS)
+            .add(key), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<Map<String, String>> exhgetAll(final String key) {
-        getClient("").sendCommand(ModuleCommand.EXHGETALL, key);
-        return getResponse(BuilderFactory.STRING_MAP);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHGETALL)
+            .add(key), BuilderFactory.STRING_MAP));
     }
 
     public Response<Map<byte[], byte[]>> exhgetAll(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXHGETALL, key);
-        return getResponse(BuilderFactory.BYTE_ARRAY_MAP);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHGETALL)
+            .add(key), Jedis3BuilderFactory.BYTE_ARRAY_MAP));
     }
 
     public Response<ScanResult<Entry<String, String>>> exhscan(final String key, final String op, final String subkey) {
@@ -397,8 +427,8 @@ public class TairHashPipeline extends Pipeline {
         args.add(SafeEncoder.encode(subkey));
         args.addAll(params.getParams());
 
-        getClient("").sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
-        return getResponse(HashBuilderFactory.EXHSCAN_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSCAN).addObjects(args),
+            HashBuilderFactory.EXHSCAN_RESULT_STRING));
     }
 
     public Response<ScanResult<Entry<byte[], byte[]>>> exhscan(final byte[] key, final byte[] op, final byte[] subkey) {
@@ -413,8 +443,8 @@ public class TairHashPipeline extends Pipeline {
         args.add(subkey);
         args.addAll(params.getParams());
 
-        getClient("").sendCommand(ModuleCommand.EXHSCAN, args.toArray(new byte[args.size()][]));
-        return getResponse(HashBuilderFactory.EXHSCAN_RESULT_BYTE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSCAN).addObjects(args),
+            HashBuilderFactory.EXHSCAN_RESULT_BYTE));
     }
 
     public Response<ScanResult<Entry<String, String>>> exhscanunorder(final String key, final String cursor) {
@@ -432,8 +462,8 @@ public class TairHashPipeline extends Pipeline {
         args.add(SafeEncoder.encode(cursor));
         args.addAll(params.getParams());
 
-        getClient("").sendCommand(ModuleCommand.EXHSCANUNORDER, args.toArray(new byte[args.size()][]));
-        return getResponse(HashBuilderFactory.EXHSCAN_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSCANUNORDER).addObjects(args),
+            HashBuilderFactory.EXHSCAN_RESULT_STRING));
     }
 
     public Response<ScanResult<Entry<byte[], byte[]>>> exhscanunorder(final byte[] key, final byte[] cursor,
@@ -443,7 +473,7 @@ public class TairHashPipeline extends Pipeline {
         args.add(cursor);
         args.addAll(params.getParams());
 
-        getClient("").sendCommand(ModuleCommand.EXHSCANUNORDER, args.toArray(new byte[args.size()][]));
-        return getResponse(HashBuilderFactory.EXHSCAN_RESULT_BYTE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXHSCANUNORDER).addObjects(args),
+            HashBuilderFactory.EXHSCAN_RESULT_BYTE));
     }
 }

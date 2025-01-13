@@ -336,7 +336,8 @@ public enum ModuleCommand implements ProtocolCommand {
     RIINFO("riinfo"),
     ISCAN("iscan"),
     IMONITOR("imonitor"),
-    RIMONITOR("rimonitor");
+    RIMONITOR("rimonitor"),
+    DEBUG("debug");
 
     private final byte[] raw;
 

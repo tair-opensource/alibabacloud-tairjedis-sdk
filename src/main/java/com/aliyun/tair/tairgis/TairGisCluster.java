@@ -1,13 +1,14 @@
 package com.aliyun.tair.tairgis;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairgis.factory.GisBuilderFactory;
 import com.aliyun.tair.tairgis.params.GisParams;
 import com.aliyun.tair.tairgis.params.GisSearchResponse;
 import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.GeoUnit;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.Protocol;
+import redis.clients.jedis.args.GeoUnit;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class TairGisCluster {
 
     public byte[] gisget(final byte[] key, final byte[] polygonName) {
         Object obj = jc.sendCommand(key, ModuleCommand.GISGET, key, polygonName);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public Map<String, String> gissearch(final String key, final String pointWktText) {
@@ -62,7 +63,7 @@ public class TairGisCluster {
             return new HashMap<byte[], byte[]>();
         } else {
             List<byte[]> rawResults = (List) result.get(1);
-            return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+            return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
         }
     }
 
@@ -71,7 +72,7 @@ public class TairGisCluster {
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.GISSEARCH,
             gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(GisParams.RADIUS),
                 Protocol.toByteArray(longitude), Protocol.toByteArray(latitude),
-                Protocol.toByteArray(radius), unit.raw));
+                Protocol.toByteArray(radius), unit.getRaw()));
         return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
     }
 
@@ -80,7 +81,7 @@ public class TairGisCluster {
         Object obj = jc.sendCommand(key, ModuleCommand.GISSEARCH,
             gisParams.getByteParams(key, SafeEncoder.encode(GisParams.RADIUS),
                 Protocol.toByteArray(longitude), Protocol.toByteArray(latitude),
-                Protocol.toByteArray(radius), unit.raw));
+                Protocol.toByteArray(radius), unit.getRaw()));
         return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
     }
 
@@ -88,7 +89,7 @@ public class TairGisCluster {
         final GeoUnit unit, final GisParams gisParams) {
         Object obj = jc.sendCommand(SafeEncoder.encode(key), ModuleCommand.GISSEARCH,
             gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(GisParams.MEMBER),
-                SafeEncoder.encode(member), Protocol.toByteArray(radius), unit.raw));
+                SafeEncoder.encode(member), Protocol.toByteArray(radius), unit.getRaw()));
         return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
     }
 
@@ -96,7 +97,7 @@ public class TairGisCluster {
         final GeoUnit unit, final GisParams gisParams) {
         Object obj = jc.sendCommand(key, ModuleCommand.GISSEARCH,
             gisParams.getByteParams(key, SafeEncoder.encode(GisParams.MEMBER), member,
-                Protocol.toByteArray(radius), unit.raw));
+                Protocol.toByteArray(radius), unit.getRaw()));
         return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
     }
 
@@ -130,7 +131,7 @@ public class TairGisCluster {
             return new HashMap<byte[], byte[]>();
         } else {
             List<byte[]> rawResults = (List) result.get(1);
-            return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+            return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
         }
     }
 
@@ -141,7 +142,7 @@ public class TairGisCluster {
             return new ArrayList<byte[]>();
         } else {
             List<byte[]> rawResults = (List) result.get(1);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
         }
     }
 
@@ -175,7 +176,7 @@ public class TairGisCluster {
             return new HashMap<byte[], byte[]>();
         } else {
             List<byte[]> rawResults = (List) result.get(1);
-            return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+            return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
         }
     }
 
@@ -186,7 +187,7 @@ public class TairGisCluster {
             return new ArrayList<byte[]>();
         } else {
             List<byte[]> rawResults = (List) result.get(1);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
         }
     }
 
@@ -208,7 +209,7 @@ public class TairGisCluster {
             return new HashMap<byte[], byte[]>();
         } else {
             List<byte[]> rawResults = (List) result.get(1);
-            return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+            return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
         }
     }
 
@@ -219,7 +220,7 @@ public class TairGisCluster {
 
     public byte[] gisdel(final byte[] key, final byte[] polygonName) {
         Object obj = jc.sendCommand(key, ModuleCommand.GISDEL, key, polygonName);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public Map<String, String> gisgetall(final String key) {
@@ -235,11 +236,11 @@ public class TairGisCluster {
 
     public Map<byte[], byte[]> gisgetall(final byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.GISGETALL, key);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
     }
 
     public List<byte[]> gisgetall(final byte[] key, final GisParams gisParams) {
         Object obj =jc.sendCommand(key, ModuleCommand.GISGETALL, gisParams.getByteParams(key));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 }

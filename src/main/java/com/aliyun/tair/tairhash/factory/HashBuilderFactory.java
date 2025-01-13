@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.aliyun.tair.jedis3.ScanResult;
 import com.aliyun.tair.tairhash.params.ExhgetwithverResult;
 import redis.clients.jedis.Builder;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 public class HashBuilderFactory {

@@ -1,12 +1,16 @@
 package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairsearch.action.search.SearchResponse;
 import com.aliyun.tair.tairsearch.factory.SearchBuilderFactory;
 import com.aliyun.tair.tairsearch.params.*;
 import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.CommandArguments;
+import redis.clients.jedis.CommandObject;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
@@ -18,13 +22,18 @@ import java.util.Map;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairSearchPipeline extends Pipeline {
+    public TairSearchPipeline(Jedis jedis) {
+        super(jedis);
+    }
+
     public Response<String> tftmappingindex(String key, String request) {
         return tftmappingindex(SafeEncoder.encode(key), SafeEncoder.encode(request));
     }
 
     public Response<String> tftmappingindex(byte[] key, byte[] request) {
-        getClient("").sendCommand(ModuleCommand.TFTMAPPINGINDEX, key, request);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTMAPPINGINDEX)
+            .key(key)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftcreateindex(String key, String request) {
@@ -32,37 +41,45 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<String> tftcreateindex(byte[] key, byte[] request) {
-        getClient("").sendCommand(ModuleCommand.TFTCREATEINDEX, key, request);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTCREATEINDEX)
+            .key(key)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftupdateindex(String index, String request) {
-        return tftupdateindex(SafeEncoder.encode(index), SafeEncoder.encode(request));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTUPDATEINDEX)
+            .key(index)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftupdateindex(byte[] index, byte[] request) {
-        getClient("").sendCommand(ModuleCommand.TFTUPDATEINDEX, index, request);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTUPDATEINDEX)
+            .key(index)
+            .add(request), BuilderFactory.STRING));
     }
 
     @Deprecated
     public Response<String> tftgetindexmappings(String key) {
-        return tftgetindexmappings(SafeEncoder.encode(key));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETINDEX)
+            .key(key)
+            .add("mappings"), BuilderFactory.STRING));
     }
 
     @Deprecated
     public Response<String> tftgetindexmappings(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, key, SafeEncoder.encode("mappings"));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETINDEX)
+            .key(key)
+            .add("mappings"), BuilderFactory.STRING));
     }
 
     public Response<String> tftgetindex(String index) {
-        return tftgetindex(SafeEncoder.encode(index));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETINDEX)
+            .key(index), BuilderFactory.STRING));
     }
 
     public Response<String> tftgetindex(byte[] index) {
-        getClient("").sendCommand(ModuleCommand.TFTGETINDEX, index);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETINDEX)
+            .key(index), BuilderFactory.STRING));
     }
 
     public Response<String> tftgetindex(String index, final TFTGetIndexParams params) {
@@ -70,21 +87,26 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<String> tftgetindex(byte[] index, final TFTGetIndexParams params) {
-        if(params.getParams() == null){
-            getClient("").sendCommand(ModuleCommand.TFTGETINDEX, index);
+        if (params.getParams() == null) {
+            return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETINDEX)
+                .key(index), BuilderFactory.STRING));
         } else {
-            getClient("").sendCommand(ModuleCommand.TFTGETINDEX, index, params.getParams());
+            return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETINDEX)
+                .key(index)
+                .add(params.getParams()), BuilderFactory.STRING));
         }
-        return getResponse(BuilderFactory.STRING);
     }
 
     public Response<String> tftadddoc(String key, String request) {
-        return tftadddoc(SafeEncoder.encode(key), SafeEncoder.encode(request));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTADDDOC)
+            .key(key)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftadddoc(byte[] key, byte[] request) {
-        getClient("").sendCommand(ModuleCommand.TFTADDDOC, key, request);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTADDDOC)
+            .key(key)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftadddoc(String key, String request, String docId) {
@@ -92,45 +114,53 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<String> tftadddoc(byte[] key, byte[] request, byte[] docId) {
-        getClient("").sendCommand(ModuleCommand.TFTADDDOC, key, request, SafeEncoder.encode("WITH_ID"), docId);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTADDDOC)
+            .key(key)
+            .add(request)
+            .add("WITH_ID")
+            .add(docId), BuilderFactory.STRING));
     }
 
     @Deprecated
     public Response<String> tftmadddoc(String key, Map<String /* docId */, String /* docContent */> docs) {
         TFTAddDocParams params = new TFTAddDocParams();
-        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTMADDDOC)
+            .addObjects(params.getByteParams(key, docs)), BuilderFactory.STRING));
     }
 
     @Deprecated
     public Response<String> tftmadddoc(byte[] key, Map<byte[] /* docId */, byte[] /* docContent */> docs) {
         TFTAddDocParams params = new TFTAddDocParams();
-        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTMADDDOC)
+            .addObjects(params.getByteParams(key, docs)), BuilderFactory.STRING));
     }
 
     public Response<String> tftmadddoc(String key, List<DocInfo> docs) {
         TFTMaddDocParams params = new TFTMaddDocParams();
-        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTMADDDOC)
+            .addObjects(params.getByteParams(key, docs)), BuilderFactory.STRING));
     }
 
     public Response<String> tftmadddoc(byte[] key, List<DocInfoByte> docs) {
         TFTMaddDocParams params = new TFTMaddDocParams();
-        getClient("").sendCommand(ModuleCommand.TFTMADDDOC, params.getByteParams(key, docs));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTMADDDOC)
+            .addObjects(params.getByteParams(key, docs)), BuilderFactory.STRING));
     }
 
     @Deprecated
     public Response<String> tftupdatedoc(String index, String docId, String docContent) {
-        return tftupdatedoc(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(docContent));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTUPDATEDOC)
+            .key(index)
+            .add(docId)
+            .add(docContent), BuilderFactory.STRING));
     }
 
     @Deprecated
     public Response<String> tftupdatedoc(byte[] index, byte[] docId, byte[] docContent) {
-        getClient("").sendCommand(ModuleCommand.TFTUPDATEDOC, index, docId, docContent);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTUPDATEDOC)
+            .key(index)
+            .add(docId)
+            .add(docContent), BuilderFactory.STRING));
     }
 
     public Response<String> tftupdatedocfield(String index, String docId, String docContent) {
@@ -138,65 +168,88 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<String> tftupdatedocfield(byte[] index, byte[] docId, byte[] docContent) {
-        getClient("").sendCommand(ModuleCommand.TFTUPDATEDOCFIELD, index, docId, docContent);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTUPDATEDOCFIELD)
+            .key(index)
+            .add(docId)
+            .add(docContent), BuilderFactory.STRING));
     }
 
     public Response<Long> tftincrlongdocfield(String index, String docId, final String field, final long value) {
-        return tftincrlongdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field), value);
+        return tftincrlongdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field),
+            value);
     }
 
     public Response<Long> tftincrlongdocfield(byte[] index, byte[] docId, byte[] field, long value) {
-        getClient("").sendCommand(ModuleCommand.TFTINCRLONGDOCFIELD, index, docId, field, toByteArray(value));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTINCRLONGDOCFIELD)
+            .key(index)
+            .add(docId)
+            .add(field)
+            .add(value), BuilderFactory.LONG));
     }
 
     public Response<Double> tftincrfloatdocfield(String index, String docId, final String field, final double value) {
-        return tftincrfloatdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field), value);
+        return tftincrfloatdocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encode(field),
+            value);
     }
 
     public Response<Double> tftincrfloatdocfield(byte[] index, byte[] docId, byte[] field, double value) {
-        getClient("").sendCommand(ModuleCommand.TFTINCRFLOATDOCFIELD, index, docId, field, toByteArray(value));
-        return getResponse(BuilderFactory.DOUBLE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTINCRFLOATDOCFIELD)
+            .key(index)
+            .add(docId)
+            .add(field)
+            .add(value), BuilderFactory.DOUBLE));
     }
 
     public Response<Long> tftdeldocfield(String index, String docId, final String... field) {
-        return tftdeldocfield(SafeEncoder.encode(index), SafeEncoder.encode(docId), SafeEncoder.encodeMany(field));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDELDOCFIELD)
+            .key(index)
+            .add(docId)
+            .addObjects((Object[])field), BuilderFactory.LONG));
     }
 
     public Response<Long> tftdeldocfield(byte[] index, byte[] docId, byte[]... field) {
-        getClient("").sendCommand(ModuleCommand.TFTDELDOCFIELD, JoinParameters.joinParameters(index, docId, field));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDELDOCFIELD)
+            .key(index)
+            .add(docId)
+            .addObjects((Object[])field), BuilderFactory.LONG));
     }
 
     public Response<String> tftgetdoc(String key, String docId) {
-        return tftgetdoc(SafeEncoder.encode(key), SafeEncoder.encode(docId));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETDOC)
+            .key(key)
+            .add(docId), BuilderFactory.STRING));
     }
 
     public Response<String> tftgetdoc(byte[] key, byte[] docId) {
-        getClient("").sendCommand(ModuleCommand.TFTGETDOC, key, docId);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETDOC)
+            .key(key)
+            .add(docId), BuilderFactory.STRING));
     }
 
     public Response<String> tftgetdoc(String key, String docId, String request) {
-        return tftgetdoc(SafeEncoder.encode(key), SafeEncoder.encode(docId), SafeEncoder.encode(request));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETDOC)
+            .key(key)
+            .add(docId)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftgetdoc(byte[] key, byte[] docId, byte[] request) {
-        getClient("").sendCommand(ModuleCommand.TFTGETDOC, key, docId, request);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETDOC)
+            .key(key)
+            .add(docId)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftdeldoc(String key, String... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
-        getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDELDOC)
+            .addObjects(params.getByteParams(key, docId)), BuilderFactory.STRING));
     }
 
     public Response<String> tftdeldoc(byte[] key, byte[]... docId) {
         TFTDelDocParams params = new TFTDelDocParams();
-        getClient("").sendCommand(ModuleCommand.TFTDELDOC, params.getByteParams(key, docId));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDELDOC)
+            .addObjects(params.getByteParams(key, docId)), BuilderFactory.STRING));
     }
 
     public Response<String> tftdelall(String index) {
@@ -204,17 +257,20 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<String> tftdelall(byte[] index) {
-        getClient("").sendCommand(ModuleCommand.TFTDELALL, index);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDELALL)
+            .key(index), BuilderFactory.STRING));
     }
 
     public Response<SearchResponse> tftsearch(String key, SearchSourceBuilder ssb) {
-        return tftsearch(SafeEncoder.encode(key), ssb);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTSEARCH)
+            .key(key)
+            .add(ssb.toString()), SearchBuilderFactory.SEARCH_RESPONSE));
     }
 
     public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb) {
-        getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()));
-        return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTSEARCH)
+            .key(key)
+            .add(ssb.toString()), SearchBuilderFactory.SEARCH_RESPONSE));
     }
 
     public Response<SearchResponse> tftsearch(String key, SearchSourceBuilder ssb, boolean use_cache) {
@@ -222,22 +278,25 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<SearchResponse> tftsearch(byte[] key, SearchSourceBuilder ssb, boolean use_cache) {
+        CommandArguments args = new CommandArguments(ModuleCommand.TFTSEARCH)
+            .key(key)
+            .add(ssb.toString());
         if (use_cache) {
-            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()), SafeEncoder.encode("use_cache"));
-        } else {
-            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, SafeEncoder.encode(ssb.toString()));
+            args.add("use_cache");
         }
-
-        return getResponse(SearchBuilderFactory.SEARCH_RESPONSE);
+        return appendCommand(new CommandObject<>(args, SearchBuilderFactory.SEARCH_RESPONSE));
     }
 
     public Response<String> tftsearch(String key, String request) {
-        return tftsearch(SafeEncoder.encode(key), SafeEncoder.encode(request));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTSEARCH)
+            .key(key)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftsearch(byte[] key, byte[] request) {
-        getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, request);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTSEARCH)
+            .key(key)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftsearch(String key, String request, boolean use_cache) {
@@ -245,52 +304,59 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<String> tftsearch(byte[] key, byte[] request, boolean use_cache) {
+        CommandArguments args = new CommandArguments(ModuleCommand.TFTSEARCH)
+            .key(key)
+            .add(request);
         if (use_cache) {
-            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, request, SafeEncoder.encode("use_cache"));
-        } else {
-            getClient("").sendCommand(ModuleCommand.TFTSEARCH, key, request);
+            args.add("use_cache");
         }
-
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(args, BuilderFactory.STRING));
     }
 
     public Response<String> tftmsearch(String request, String... indexes) {
         TFTMSearchParams params = new TFTMSearchParams();
-        getClient("").sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTMSEARCH)
+            .addObjects(params.getByteParams(request, indexes)), BuilderFactory.STRING));
     }
 
     public Response<String> tftmsearch(byte[] request, byte[]... indexes) {
         TFTMSearchParams params = new TFTMSearchParams();
-        getClient("").sendCommand(ModuleCommand.TFTMSEARCH, params.getByteParams(request, indexes));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTMSEARCH)
+            .addObjects(params.getByteParams(request, indexes)), BuilderFactory.STRING));
     }
 
     public Response<Long> tftexists(String index, String docId) {
-        return tftexists(SafeEncoder.encode(index), SafeEncoder.encode(docId));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXISTS)
+            .key(index)
+            .add(docId), BuilderFactory.LONG));
     }
 
     public Response<Long> tftexists(byte[] index, byte[] docId) {
-        getClient("").sendCommand(ModuleCommand.TFTEXISTS, index, docId);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXISTS)
+            .key(index)
+            .add(docId), BuilderFactory.LONG));
     }
 
     public Response<Long> tftdocnum(String index) {
-        return tftdocnum(SafeEncoder.encode(index));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDOCNUM)
+            .key(index), BuilderFactory.LONG));
     }
 
     public Response<Long> tftdocnum(byte[] index) {
-        getClient("").sendCommand(ModuleCommand.TFTDOCNUM, index);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDOCNUM)
+            .key(index), BuilderFactory.LONG));
     }
 
     public Response<String> tftanalyzer(String index_name, String text) {
-        return tftanalyzer(SafeEncoder.encode(index_name), SafeEncoder.encode(text));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTANALYZER)
+            .key(index_name)
+            .add(text), BuilderFactory.STRING));
     }
 
     public Response<String> tftanalyzer(byte[] index_name, byte[] text) {
-        getClient("").sendCommand(ModuleCommand.TFTANALYZER, index_name, text);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTANALYZER)
+            .key(index_name)
+            .add(text), BuilderFactory.STRING));
     }
 
     public Response<String> tftanalyzer(String index_name, String text, final TFTAnalyzerParams params) {
@@ -298,25 +364,32 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<String> tftanalyzer(byte[] index_name, byte[] text, final TFTAnalyzerParams params) {
-        getClient("").sendCommand(ModuleCommand.TFTANALYZER, params.getByteParams(index_name, text));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTANALYZER)
+            .addObjects(params.getByteParams(index_name, text)), BuilderFactory.STRING));
     }
 
     public Response<String> tftexplaincost(String index, SearchSourceBuilder ssb) {
-        return tftexplaincost(SafeEncoder.encode(index), SafeEncoder.encode(ssb.toString()));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXPLAINCOST)
+            .key(index)
+            .add(ssb.toString()), BuilderFactory.STRING));
     }
 
     public Response<String> tftexplaincost(byte[] index, SearchSourceBuilder ssb) {
-        return tftexplaincost(index, SafeEncoder.encode(ssb.toString()));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXPLAINCOST)
+            .key(index)
+            .add(ssb.toString()), BuilderFactory.STRING));
     }
 
     public Response<String> tftexplaincost(String index, String request) {
-        return tftexplaincost(SafeEncoder.encode(index), SafeEncoder.encode(request));
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXPLAINCOST)
+            .key(index)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftexplaincost(byte[] index, byte[] request) {
-        getClient("").sendCommand(ModuleCommand.TFTEXPLAINCOST, index, request);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXPLAINCOST)
+            .key(index)
+            .add(request), BuilderFactory.STRING));
     }
 
     public Response<String> tftexplainscore(String index, SearchSourceBuilder ssb, String... docId) {
@@ -329,15 +402,14 @@ public class TairSearchPipeline extends Pipeline {
 
     public Response<String> tftexplainscore(String index, String request, String... docId) {
         TFTExplainScoreParams params = new TFTExplainScoreParams();
-        getClient("").sendCommand(ModuleCommand.TFTEXPLAINSCORE, params.getByteParams(index, request, docId));
-        return getResponse(BuilderFactory.STRING);
-
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXPLAINSCORE)
+            .addObjects(params.getByteParams(index, request, docId)), BuilderFactory.STRING));
     }
 
     public Response<String> tftexplainscore(byte[] index, byte[] request, byte[]... docId) {
         TFTExplainScoreParams params = new TFTExplainScoreParams();
-        getClient("").sendCommand(ModuleCommand.TFTEXPLAINSCORE, params.getByteParams(index, request, docId));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTEXPLAINSCORE)
+            .addObjects(params.getByteParams(index, request, docId)), BuilderFactory.STRING));
     }
 
     /**
@@ -349,14 +421,14 @@ public class TairSearchPipeline extends Pipeline {
      */
     public Response<Long> tftaddsug(String index, Map<String /* suggestion */, Integer /* weight */> texts) {
         TFTAddSugParams params = new TFTAddSugParams();
-        getClient("").sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTADDSUG)
+            .addObjects(params.getByteParams(index, texts)), BuilderFactory.LONG));
     }
 
     public Response<Long> tftaddsug(byte[] index, Map<byte[] /* suggestion */, Integer /* weight */> texts) {
         TFTAddSugParams params = new TFTAddSugParams();
-        getClient("").sendCommand(ModuleCommand.TFTADDSUG, params.getByteParams(index, texts));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTADDSUG)
+            .addObjects(params.getByteParams(index, texts)), BuilderFactory.LONG));
     }
 
     /**
@@ -371,8 +443,9 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<Long> tftdelsug(byte[] index, byte[]... text) {
-        getClient("").sendCommand(ModuleCommand.TFTDELSUG, JoinParameters.joinParameters(index, text));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTDELSUG)
+            .key(index)
+            .addObjects((Object[])text), BuilderFactory.LONG));
     }
 
     /**
@@ -386,8 +459,8 @@ public class TairSearchPipeline extends Pipeline {
     }
 
     public Response<Long> tftsugnum(byte[] index) {
-        getClient("").sendCommand(ModuleCommand.TFTSUGNUM, index);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTSUGNUM)
+            .key(index), BuilderFactory.LONG));
     }
 
     /**
@@ -398,13 +471,15 @@ public class TairSearchPipeline extends Pipeline {
      * @return List of the suggestions in index.
      */
     public Response<List<String>> tftgetsug(String index, String prefix) {
-        getClient("").sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETSUG)
+            .key(index)
+            .add(prefix), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> tftgetsug(byte[] index, byte[] prefix) {
-        getClient("").sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETSUG)
+            .key(index)
+            .add(prefix), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -420,8 +495,8 @@ public class TairSearchPipeline extends Pipeline {
         args.add(SafeEncoder.encode(index));
         args.add(SafeEncoder.encode(prefix));
         args.addAll(params.getParams());
-        getClient("").sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETSUG)
+            .addObjects(args), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> tftgetsug(byte[] index, byte[] prefix, final TFTGetSugParams params) {
@@ -429,8 +504,8 @@ public class TairSearchPipeline extends Pipeline {
         args.add(index);
         args.add(prefix);
         args.addAll(params.getParams());
-        getClient("").sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETSUG)
+            .addObjects(args), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -440,13 +515,12 @@ public class TairSearchPipeline extends Pipeline {
      * @return List of the all suggestions in index.
      */
     public Response<List<String>> tftgetallsugs(String index) {
-        getClient("").sendCommand(ModuleCommand.TFTGETALLSUGS, SafeEncoder.encode(index));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETALLSUGS)
+            .key(index), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> tftgetallsugs(byte[] index) {
-        getClient("").sendCommand(ModuleCommand.TFTGETALLSUGS, index);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TFTGETALLSUGS)
+            .key(index), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
-
 }

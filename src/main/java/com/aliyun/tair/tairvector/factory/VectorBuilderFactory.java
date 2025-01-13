@@ -1,18 +1,16 @@
 package com.aliyun.tair.tairvector.factory;
 
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.ScanResult;
-import redis.clients.jedis.util.SafeEncoder;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.aliyun.tair.jedis3.ScanResult;
+import redis.clients.jedis.Builder;
+import redis.clients.jedis.util.SafeEncoder;
 
 public class VectorBuilderFactory {
     public static final String VECTOR_TAG = "VECTOR";

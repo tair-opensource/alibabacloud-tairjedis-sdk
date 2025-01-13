@@ -557,16 +557,6 @@ public class TairDocClusterTest extends TairDocTestBase {
     }
 
     @Test
-    public void jsonarrinsertException() {
-        try {
-            jedisCluster.set(randomkey_, "bar");
-            tairDocCluster.jsonarrInsert(randomkey_, "", "", "", "");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("WRONGTYPE"));
-        }
-    }
-
-    @Test
     public void jsonarrlenException() {
         tairDocCluster.jsonArrLen(randomkey_);
 

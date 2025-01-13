@@ -2,7 +2,7 @@ package com.aliyun.tair.tairdoc.params;
 
 import java.util.ArrayList;
 
-import redis.clients.jedis.params.Params;
+import com.aliyun.tair.jedis3.Params;
 import redis.clients.jedis.util.SafeEncoder;
 
 public class JsongetParams extends Params {

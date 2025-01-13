@@ -3,6 +3,7 @@ package com.aliyun.tair.tairdoc;
 import java.util.List;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairdoc.params.JsonsetParams;
 import com.aliyun.tair.tairdoc.params.JsongetParams;
 import redis.clients.jedis.BuilderFactory;
@@ -137,7 +138,7 @@ public class TairDoc {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONGET, key);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -147,7 +148,7 @@ public class TairDoc {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONGET, key, path);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -158,7 +159,7 @@ public class TairDoc {
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONGET,
                 params.getByteParams(key, path));
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -185,7 +186,7 @@ public class TairDoc {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONMGET, args);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -270,7 +271,7 @@ public class TairDoc {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONTYPE, key);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -280,7 +281,7 @@ public class TairDoc {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONTYPE, key, path);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -489,7 +490,7 @@ public class TairDoc {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONARRPOP, key, path);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -499,7 +500,7 @@ public class TairDoc {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.JSONARRPOP, key, path, toByteArray(index));
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }

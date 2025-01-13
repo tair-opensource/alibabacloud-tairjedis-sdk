@@ -1,7 +1,7 @@
 package com.aliyun.tair.tests.tairroaring;
 
 import org.junit.Test;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,9 +121,9 @@ public class TairRoaringClusterTest extends TairRoaringTestBase {
 
     @Test
     public  void trmultikeytest() throws Exception {
-        jedis.del("foo{tairroaring}");
-        jedis.del("bar{tairroaring}");
-        jedis.del("baz{tairroaring}");
+        getJedis().del("foo{tairroaring}");
+        getJedis().del("bar{tairroaring}");
+        getJedis().del("baz{tairroaring}");
 
         assertEquals(5, tairRoaring.trsetbits("foo{tairroaring}", 1, 3, 5, 7, 9));
         assertEquals(5, tairRoaring.trsetbits("bar{tairroaring}", 2, 4, 6, 8, 10));
@@ -136,8 +136,8 @@ public class TairRoaringClusterTest extends TairRoaringTestBase {
 
         assertEquals("OK", tairRoaring.trdiff("result{tairroaring","foo{tairroaring}", "bar{tairroaring}"));
 
-        jedis.del("foo{tairroaring}");
-        jedis.del("bar{tairroaring}");
-        jedis.del("baz{tairroaring}");
+        getJedis().del("foo{tairroaring}");
+        getJedis().del("bar{tairroaring}");
+        getJedis().del("baz{tairroaring}");
     }
 }

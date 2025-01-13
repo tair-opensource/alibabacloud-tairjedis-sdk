@@ -8,14 +8,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
+import com.aliyun.tair.jedis3.ScanResult;
+import com.aliyun.tair.jedis3.ScanParams;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
 import com.aliyun.tair.tairhash.params.*;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import static redis.clients.jedis.Protocol.toByteArray;
@@ -560,7 +561,7 @@ public class TairHash {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXHGET, key, field);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -617,7 +618,7 @@ public class TairHash {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXHMGET, JoinParameters.joinParameters(key, fields));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -766,7 +767,7 @@ public class TairHash {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXHKEYS, key);
-            return BuilderFactory.STRING_ZSET.build(obj);
+            return Jedis3BuilderFactory.STRING_ZSET.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -776,7 +777,7 @@ public class TairHash {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXHKEYS, key);
-            return BuilderFactory.BYTE_ARRAY_ZSET.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_ZSET.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -802,7 +803,7 @@ public class TairHash {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXHVALS, key);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -829,7 +830,7 @@ public class TairHash {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXHGETALL, key);
-            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
         } finally {
             releaseJedis(jedis);
         }

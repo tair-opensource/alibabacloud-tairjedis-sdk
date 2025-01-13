@@ -1,6 +1,7 @@
 package com.aliyun.tair.tairts;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairts.factory.TsBuilderFactory;
 import com.aliyun.tair.tairts.params.*;
 import com.aliyun.tair.tairts.results.ExtsDataPointResult;
@@ -267,7 +268,7 @@ public class TairTsCluster {
     public List<byte[]> extsquery(byte[] pkey, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsQueryParams addList = new ExtsQueryParams();
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSQUERYINDEX, addList.getByteParams(pkey, filters));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
 
@@ -798,7 +799,7 @@ public class TairTsCluster {
     public List<byte[]> extsquerystr(byte[] pkey, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsQueryParams addList = new ExtsQueryParams();
         Object obj = jc.sendCommand(pkey, ModuleCommand.TSSQUERYINDEXSTR, addList.getByteParams(pkey, filters));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**

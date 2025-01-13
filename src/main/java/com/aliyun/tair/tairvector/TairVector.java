@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
@@ -16,7 +17,7 @@ import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import static redis.clients.jedis.Protocol.toByteArray;
@@ -46,10 +47,9 @@ public class TairVector {
         }
     }
 
+    @Deprecated
     public void quit() {
-        if (jedis != null) {
-            jedis.quit();
-        }
+        // remove
     }
 
     /**
@@ -81,7 +81,7 @@ public class TairVector {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.TVSCREATEINDEX, JoinParameters.joinParameters(index, toByteArray(dims), SafeEncoder.encode(algorithm.name()), SafeEncoder.encode(method.name()), params));
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -109,7 +109,7 @@ public class TairVector {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.TVSGETINDEX, index);
-            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -226,7 +226,7 @@ public class TairVector {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.TVSHGETALL, index, entityid);
-            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -256,7 +256,7 @@ public class TairVector {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.TVSHMGET, JoinParameters.joinParameters(index, entityid, attrs));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }

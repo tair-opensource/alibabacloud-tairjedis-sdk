@@ -11,7 +11,7 @@ public class TairZsetPipelineTest extends TairZsetTestBase {
 
     @Before
     public void before() {
-        jedis.flushAll();
+        getJedis().flushAll();
     }
 
     @Test

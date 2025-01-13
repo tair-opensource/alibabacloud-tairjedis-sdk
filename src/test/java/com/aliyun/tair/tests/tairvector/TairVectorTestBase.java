@@ -6,7 +6,7 @@ import com.aliyun.tair.tairvector.TairVectorPipeline;
 import com.aliyun.tair.tests.TestBase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,15 +25,8 @@ public class TairVectorTestBase extends TestBase {
     @BeforeClass
     public static void setUp() {
         tairVector = new TairVector(jedisPool);
-        tairVectorPipeline = new TairVectorPipeline();
-        tairVectorPipeline.setClient(jedis.getClient());
+        tairVectorPipeline = new TairVectorPipeline(getJedis());
         tairVectorCluster = new TairVectorCluster(jedisCluster);
-    }
-
-    @AfterClass
-    public static void closeDown() {
-        tairVector.quit();
-        tairVectorCluster.quit();
     }
 
     public static void assertLongListEquals(List<Long> expected, List<Long> actual) {

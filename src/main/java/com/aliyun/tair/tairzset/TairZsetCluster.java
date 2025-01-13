@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairzset.params.ExzaddParams;
 import com.aliyun.tair.tairzset.params.ExzrangeParams;
 import com.aliyun.tair.util.JoinParameters;
@@ -173,7 +174,7 @@ public class TairZsetCluster {
 
     public byte[] exzincrBy(final byte[] key, final byte[] increment, final byte[] member) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZINCRBY, key, increment, member);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public String exzincrBy(final String key, final String member, final double... scores) {
@@ -184,7 +185,7 @@ public class TairZsetCluster {
     public byte[] exzincrBy(final byte[] key, final byte[] member, final double... scores) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZINCRBY, key,
             SafeEncoder.encode(joinScoresToString(scores)), member);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     /**
@@ -272,7 +273,7 @@ public class TairZsetCluster {
 
     public byte[] exzscore(final byte[] key, final byte[] member) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZSCORE, key, member);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     /**
@@ -290,7 +291,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrange(final byte[] key, final long min, final long max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<String> exzrangeWithScores(final String key, final long min, final long max) {
@@ -302,7 +303,7 @@ public class TairZsetCluster {
     public List<byte[]> exzrangeWithScores(final byte[] key, final long min, final long max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max),
             SafeEncoder.encode("WITHSCORES"));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**
@@ -321,7 +322,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrevrange(final byte[] key, final long min, final long max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<String> exzrevrangeWithScores(final String key, final long min, final long max) {
@@ -333,7 +334,7 @@ public class TairZsetCluster {
     public List<byte[]> exzrevrangeWithScores(final byte[] key, final long min, final long max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max),
             SafeEncoder.encode("WITHSCORES"));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**
@@ -351,7 +352,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZRANGEBYSCORE, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<String> exzrangeByScore(final String key, final String min, final String max, final ExzrangeParams params) {
@@ -362,7 +363,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrangeByScore(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**
@@ -381,7 +382,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrevrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<String> exzrevrangeByScore(final String key, final String min, final String max, final ExzrangeParams params) {
@@ -392,7 +393,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrevrangeByScore(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**
@@ -409,7 +410,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZRANGEBYLEX, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<String> exzrangeByLex(final String key, final String min, final String max, final ExzrangeParams params) {
@@ -420,7 +421,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrangeByLex(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZRANGEBYLEX, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**
@@ -437,7 +438,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrevrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<String> exzrevrangeByLex(final String key, final String min, final String max, final ExzrangeParams params) {
@@ -448,7 +449,7 @@ public class TairZsetCluster {
 
     public List<byte[]> exzrevrangeByLex(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(key, min, max));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**

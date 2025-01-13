@@ -1,13 +1,10 @@
 package com.aliyun.tair.tests.tairroaring;
 
-import com.aliyun.tair.tairstring.results.ExgetResult;
-import org.junit.Test;
-import redis.clients.jedis.ScanResult;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import com.aliyun.tair.jedis3.ScanResult;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +12,7 @@ public class TairRoaringPipelineTest extends TairRoaringTestBase {
 
     @Test
     public void tairroaringtest() throws Exception {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         tairRoaringPipeline.trsetbit("foo", 10, 1);
         tairRoaringPipeline.trsetbit("foo", 20, "1");
@@ -39,12 +36,12 @@ public class TairRoaringPipelineTest extends TairRoaringTestBase {
         assertEquals((long)10, objs.get(i++));
         assertEquals((long)20, objs.get(i++));
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public void trbitsrange_mixedtest() throws Exception {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         tairRoaringPipeline.trsetbits("foo", 1, 3, 5, 7, 9);
         tairRoaringPipeline.trbitcount("foo", 0, 3);
@@ -96,12 +93,12 @@ public class TairRoaringPipelineTest extends TairRoaringTestBase {
         assertEquals("01001010101", objs.get(i++).toString());
         assertEquals((long)5, (long)objs.get(i++));
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public void trbitoptest() throws Exception {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         tairRoaringPipeline.trappendintarray("foo", 1, 3, 5, 7, 9);
         tairRoaringPipeline.trappendintarray("bar", 2, 4, 6, 8, 10);
@@ -117,6 +114,6 @@ public class TairRoaringPipelineTest extends TairRoaringTestBase {
         assertEquals((long)10, objs.get(i++));
         assertEquals((long)10, objs.get(i++));
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 }

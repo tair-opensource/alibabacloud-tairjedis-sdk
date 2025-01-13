@@ -1,6 +1,6 @@
 package com.aliyun.tair.tairbloom.params;
 
-import redis.clients.jedis.params.Params;
+import com.aliyun.tair.jedis3.Params;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;

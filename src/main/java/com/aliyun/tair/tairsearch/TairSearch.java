@@ -1,6 +1,7 @@
 package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairsearch.action.search.MSearchResponse;
 import com.aliyun.tair.tairsearch.action.search.SearchResponse;
 import com.aliyun.tair.tairsearch.params.*;
@@ -10,7 +11,7 @@ import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -929,7 +930,7 @@ public class TairSearch {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.TFTGETSUG, index, prefix);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -967,7 +968,7 @@ public class TairSearch {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -993,7 +994,7 @@ public class TairSearch {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.TFTGETALLSUGS, index);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }

@@ -1,6 +1,7 @@
 package com.aliyun.tair.tairts;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairts.factory.TsBuilderFactory;
 import com.aliyun.tair.tairts.params.*;
 import com.aliyun.tair.tairts.results.ExtsDataPointResult;
@@ -8,6 +9,9 @@ import com.aliyun.tair.tairts.results.ExtsSkeyResult;
 import com.aliyun.tair.tairts.results.ExtsStringDataPointResult;
 import com.aliyun.tair.tairts.results.ExtsStringSkeyResult;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.CommandArguments;
+import redis.clients.jedis.CommandObject;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
@@ -18,14 +22,20 @@ import java.util.List;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairTsPipeline extends Pipeline {
+    public TairTsPipeline(Jedis jedis) {
+        super(jedis);
+    }
 
     public Response<String> extsadd(String pkey, String skey, String ts, double value) {
         return extsadd(SafeEncoder.encode(pkey), SafeEncoder.encode(skey), SafeEncoder.encode(ts), value);
     }
 
     public Response<String> extsadd(byte[] pkey, byte[] skey, byte[] ts, double value) {
-        getClient("").sendCommand(ModuleCommand.TSSADD, pkey, skey, ts, toByteArray(value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSADD)
+            .add(pkey)
+            .add(skey)
+            .add(ts)
+            .add(value), BuilderFactory.STRING));
     }
 
     public Response<String> extsadd(String pkey, String skey, String ts, double value, ExtsAttributesParams params) {
@@ -33,32 +43,32 @@ public class TairTsPipeline extends Pipeline {
     }
 
     public Response<String> extsadd(byte[] pkey, byte[] skey, byte[] ts, double value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSADD, params.getByteParams(pkey, skey, ts, toByteArray(value)));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSADD)
+            .addObjects(params.getByteParams(pkey, skey, ts, toByteArray(value))), BuilderFactory.STRING));
     }
 
     public Response<List<String>> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADD)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADD)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmadd(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADD)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmadd(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADD, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADD)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<String> extsalter(String pkey, String skey, ExtsAttributesParams params) {
@@ -66,8 +76,8 @@ public class TairTsPipeline extends Pipeline {
     }
 
     public Response<String> extsalter(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSALTER, params.getByteParams(pkey, skey));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSALTER)
+            .addObjects(params.getByteParams(pkey, skey)), BuilderFactory.STRING));
     }
 
     public Response<String> extsincr(String pkey, String skey, String ts, double value) {
@@ -75,8 +85,8 @@ public class TairTsPipeline extends Pipeline {
     }
 
     public Response<String> extsincr(byte[] pkey, byte[] skey, byte[] ts, double value) {
-        getClient("").sendCommand(ModuleCommand.TSSINCRBY, pkey, skey, ts, toByteArray(value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSINCRBY)
+            .add(pkey).add(skey).add(ts).add(value), BuilderFactory.STRING));
     }
 
     public Response<String> extsincr(String pkey, String skey, String ts, double value, ExtsAttributesParams params) {
@@ -84,32 +94,32 @@ public class TairTsPipeline extends Pipeline {
     }
 
     public Response<String> extsincr(byte[] pkey, byte[] skey, byte[] ts, double value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSINCRBY, params.getByteParams(pkey, skey, ts, toByteArray(value)));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSINCRBY)
+            .addObjects(params.getByteParams(pkey, skey, ts, toByteArray(value))), BuilderFactory.STRING));
     }
 
     public Response<List<String>> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMINCRBY)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMINCRBY)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMINCRBY)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMINCRBY, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMINCRBY)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<String> extsdel(String pkey, String skey) {
@@ -117,8 +127,8 @@ public class TairTsPipeline extends Pipeline {
     }
 
     public Response<String> extsdel(byte[] pkey, byte[] skey) {
-        getClient("").sendCommand(ModuleCommand.TSSDEL, pkey, skey);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSDEL)
+            .add(pkey).add(skey), BuilderFactory.STRING));
     }
 
     public Response<ExtsDataPointResult> extsget(String pkey, String skey) {
@@ -126,110 +136,106 @@ public class TairTsPipeline extends Pipeline {
     }
 
     public Response<ExtsDataPointResult> extsget(byte[] pkey, byte[] skey) {
-        getClient("").sendCommand(ModuleCommand.TSSGET, pkey, skey);
-        return getResponse(TsBuilderFactory.EXTSGET_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSGET)
+            .add(pkey).add(skey), TsBuilderFactory.EXTSGET_RESULT_STRING));
     }
 
     public Response<List<String>> extsquery(String pkey, ArrayList<ExtsFilter<String>> filters) {
         ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSQUERYINDEX, addList.getByteParams(pkey, filters));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSQUERYINDEX)
+            .addObjects(addList.getByteParams(pkey, filters)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsquery(byte[] pkey, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSQUERYINDEX, addList.getByteParams(pkey, filters));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSQUERYINDEX)
+            .addObjects(addList.getByteParams(pkey, filters)), BuilderFactory.STRING_LIST));
     }
 
     public Response<ExtsSkeyResult> extsrange(String pkey, String skey, String startTs, String endTs) {
-        ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSRANGE, pkey, skey, startTs, endTs);
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGE)
+            .add(pkey).add(skey).add(startTs).add(endTs), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     public Response<ExtsSkeyResult> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
-        ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSRANGE, pkey, skey, startTs, endTs);
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGE)
+            .add(pkey).add(skey).add(startTs).add(endTs), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     public Response<ExtsSkeyResult> extsrange(String pkey, String skey, String startTs, String endTs, ExtsAggregationParams params) {
-        ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSRANGE, params.getByteRangeParams(pkey, skey, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGE)
+            .addObjects(params.getByteRangeParams(pkey, skey, startTs, endTs)), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     public Response<ExtsSkeyResult> extsrange(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsAggregationParams params) {
-        ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSRANGE, params.getByteRangeParams(pkey, skey, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGE)
+            .addObjects(params.getByteRangeParams(pkey, skey, startTs, endTs)), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(String pkey, ArrayList<String> skeys, String startTs, String endTs) {
         ExtsSpecifiedKeysParams params = new ExtsSpecifiedKeysParams();
-        getClient("").sendCommand(ModuleCommand.TSSRANGESPECIFIEDKEYS, params.getByteParams(pkey, skeys, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESPECIFIEDKEYS)
+            .addObjects(params.getByteParams(pkey, skeys, startTs, endTs)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(byte[] pkey, ArrayList<byte[]> skeys, byte[] startTs, byte[] endTs) {
         ExtsSpecifiedKeysParams params = new ExtsSpecifiedKeysParams();
-        getClient("").sendCommand(ModuleCommand.TSSRANGESPECIFIEDKEYS, params.getByteParams(pkey, skeys, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESPECIFIEDKEYS)
+            .addObjects(params.getByteParams(pkey, skeys, startTs, endTs)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(String pkey, ArrayList<String> skeys, String startTs, String endTs, ExtsAggregationParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRANGESPECIFIEDKEYS, params.getByteRangeParams(pkey, skeys, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESPECIFIEDKEYS)
+            .addObjects(params.getByteRangeParams(pkey, skeys, startTs, endTs)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(byte[] pkey, ArrayList<byte[]> skeys, byte[] startTs, byte[] endTs, ExtsAggregationParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRANGESPECIFIEDKEYS, params.getByteRangeParams(pkey, skeys, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESPECIFIEDKEYS)
+            .addObjects(params.getByteRangeParams(pkey, skeys, startTs, endTs)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(String pkey, String startTs, String endTs, ArrayList<ExtsFilter<String>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
-        getClient("").sendCommand(ModuleCommand.TSSMRANGE, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGE)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(byte[] pkey, byte[] startTs, byte[] endTs, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
-        getClient("").sendCommand(ModuleCommand.TSSMRANGE, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGE)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(String pkey, String startTs, String endTs, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
-        getClient("").sendCommand(ModuleCommand.TSSMRANGE, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGE)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsSkeyResult>> extsmrange(byte[] pkey, byte[] startTs, byte[] endTs, ExtsAggregationParams params, ArrayList<ExtsFilter<byte[]>> filters) {
-        getClient("").sendCommand(ModuleCommand.TSSMRANGE, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSMRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGE)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSMRANGE_RESULT_STRING));
     }
 
     public Response<ExtsSkeyResult> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<String>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
-        getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSPRANGE)
+            .addObjects(params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters)), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     public Response<ExtsSkeyResult> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsAggregationParams params = new ExtsAggregationParams();
-        getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSPRANGE)
+            .addObjects(params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters)), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     public Response<ExtsSkeyResult> extsprange(String pkey, String startTs, String endTs, String pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
-        getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSPRANGE)
+            .addObjects(params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters)), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     public Response<ExtsSkeyResult> extsprange(byte[] pkey, byte[] startTs, byte[] endTs, byte[] pkeyAggregationType, long pkeyTimeBucket, ExtsAggregationParams params, ArrayList<ExtsFilter<byte[]>> filters) {
-        getClient("").sendCommand(ModuleCommand.TSPRANGE, params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters));
-        return getResponse(TsBuilderFactory.EXTSRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSPRANGE)
+            .addObjects(params.getBytePrangeParams(pkey, startTs, endTs, pkeyAggregationType, pkeyTimeBucket, filters)), TsBuilderFactory.EXTSRANGE_RESULT_STRING));
     }
 
     /**
@@ -244,13 +250,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsrawmodify(String pkey, String skey, String ts, double value) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMODIFY, pkey, skey, ts, String.valueOf(value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMODIFY)
+            .add(pkey).add(skey).add(ts).add(value), BuilderFactory.STRING));
     }
 
     public Response<String> extsrawmodify(byte[] pkey, byte[] skey, byte[] ts, double value) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMODIFY, pkey, skey, ts, toByteArray(value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMODIFY)
+            .add(pkey).add(skey).add(ts).add(value), BuilderFactory.STRING));
     }
 
     /**
@@ -270,13 +276,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsrawmodify(String pkey, String skey, String ts, double value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMODIFY, params.getByteParams(pkey, skey, ts, String.valueOf(value)));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMODIFY)
+            .addObjects(params.getByteParams(pkey, skey, ts, String.valueOf(value))), BuilderFactory.STRING));
     }
 
     public Response<String> extsrawmodify(byte[] pkey, byte[] skey, byte[] ts, double value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMODIFY, params.getByteParams(pkey, skey, ts, toByteArray(value)));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMODIFY)
+            .addObjects(params.getByteParams(pkey, skey, ts, toByteArray(value))), BuilderFactory.STRING));
     }
 
     /**
@@ -290,14 +296,14 @@ public class TairTsPipeline extends Pipeline {
      */
     public Response<List<String>> extsmrawmodify(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIMODIFY, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIMODIFY)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmrawmodify(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIMODIFY, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIMODIFY)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     /**
@@ -315,13 +321,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: List of OK; Fail: error.
      */
     public Response<List<String>> extsmrawmodify(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIMODIFY, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIMODIFY)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmrawmodify(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIMODIFY, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIMODIFY)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     /**
@@ -336,13 +342,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsrawincr(String pkey, String skey, String ts, double value) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWINCRBY, pkey, skey, ts, String.valueOf(value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWINCRBY)
+            .add(pkey).add(skey).add(ts).add(value), BuilderFactory.STRING));
     }
 
     public Response<String> extsrawincr(byte[] pkey, byte[] skey, byte[] ts, double value) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWINCRBY, pkey, skey, ts, toByteArray(value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWINCRBY)
+            .add(pkey).add(skey).add(ts).add(value), BuilderFactory.STRING));
     }
 
     /**
@@ -362,13 +368,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsrawincr(String pkey, String skey, String ts, double value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWINCRBY, params.getByteParams(pkey, skey, ts, String.valueOf(value)));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWINCRBY)
+            .addObjects(params.getByteParams(pkey, skey, ts, String.valueOf(value))), BuilderFactory.STRING));
     }
 
     public Response<String> extsrawincr(byte[] pkey, byte[] skey, byte[] ts, double value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWINCRBY, params.getByteParams(pkey, skey, ts, toByteArray(value)));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWINCRBY)
+            .addObjects(params.getByteParams(pkey, skey, ts, toByteArray(value))), BuilderFactory.STRING));
     }
 
     /**
@@ -382,14 +388,14 @@ public class TairTsPipeline extends Pipeline {
      */
     public Response<List<String>> extsmrawincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIINCRBY, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIINCRBY)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmrawincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys) {
         ExtsMaddParams addList = new ExtsMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIINCRBY, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIINCRBY)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     /**
@@ -407,13 +413,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: List of OK; Fail: error.
      */
     public Response<List<String>> extsmrawincr(String pkey, ArrayList<ExtsDataPoint<String>> skeys, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIINCRBY, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIINCRBY)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmrawincr(byte[] pkey, ArrayList<ExtsDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRAWMULTIINCRBY, params.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRAWMULTIINCRBY)
+            .addObjects(params.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
 
@@ -427,13 +433,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsaddstr(String pkey, String skey, String ts, String value) {
-        getClient("").sendCommand(ModuleCommand.TSSADDSTR, pkey, skey, ts, value);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSADDSTR)
+            .add(pkey).add(skey).add(ts).add(value), BuilderFactory.STRING));
     }
 
     public Response<String> extsaddstr(byte[] pkey, byte[] skey, byte[] ts, byte[] value) {
-        getClient("").sendCommand(ModuleCommand.TSSADDSTR, pkey, skey, ts, value);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSADDSTR)
+            .add(pkey).add(skey).add(ts).add(value), BuilderFactory.STRING));
     }
 
     /**
@@ -451,13 +457,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsaddstr(String pkey, String skey, String ts, String value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSADDSTR, params.getByteParams(pkey, skey, ts, value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSADDSTR)
+            .addObjects(params.getByteParams(pkey, skey, ts, value)), BuilderFactory.STRING));
     }
 
     public Response<String> extsaddstr(byte[] pkey, byte[] skey, byte[] ts, byte[] value, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSADDSTR, params.getByteParams(pkey, skey, ts, value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSADDSTR)
+            .addObjects(params.getByteParams(pkey, skey, ts, value)), BuilderFactory.STRING));
     }
 
     /**
@@ -469,14 +475,14 @@ public class TairTsPipeline extends Pipeline {
      */
     public Response<List<String>> extsmaddstr(String pkey, ArrayList<ExtsStringDataPoint<String>> skeys) {
         ExtsStringMaddParams addList = new ExtsStringMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADDSTR, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADDSTR)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmaddstr(byte[] pkey, ArrayList<ExtsStringDataPoint<byte[]>> skeys) {
         ExtsStringMaddParams addList = new ExtsStringMaddParams();
-        getClient("").sendCommand(ModuleCommand.TSSMADDSTR, addList.getByteParams(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADDSTR)
+            .addObjects(addList.getByteParams(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     /**
@@ -492,13 +498,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: List of OK; Fail: error.
      */
     public Response<List<String>> extsmaddstr(String pkey, ArrayList<ExtsStringDataPoint<String>> skeys, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSMADDSTR, params.getByteParamsStr(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADDSTR)
+            .addObjects(params.getByteParamsStr(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<String>> extsmaddstr(byte[] pkey, ArrayList<ExtsStringDataPoint<byte[]>> skeys, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSMADDSTR, params.getByteParamsStr(pkey, skeys));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMADDSTR)
+            .addObjects(params.getByteParamsStr(pkey, skeys)), BuilderFactory.STRING_LIST));
     }
 
     /**
@@ -513,13 +519,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsalterstr(String pkey, String skey, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSALTERSTR)
+            .addObjects(params.getByteParams(pkey, skey)), BuilderFactory.STRING));
     }
 
     public Response<String> extsalterstr(byte[] pkey, byte[] skey, ExtsAttributesParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSALTERSTR, params.getByteParams(pkey, skey));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSALTERSTR)
+            .addObjects(params.getByteParams(pkey, skey)), BuilderFactory.STRING));
     }
 
     /**
@@ -530,13 +536,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<String> extsdelstr(String pkey, String skey) {
-        getClient("").sendCommand(ModuleCommand.TSSDELSTR, pkey, skey);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSDELSTR)
+            .add(pkey).add(skey), BuilderFactory.STRING));
     }
 
     public Response<String> extsdelstr(byte[] pkey, byte[] skey) {
-        getClient("").sendCommand(ModuleCommand.TSSDELSTR, pkey, skey);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSDELSTR)
+            .add(pkey).add(skey), BuilderFactory.STRING));
     }
 
     /**
@@ -547,13 +553,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: ExtsDataPointResult; Fail: error.
      */
     public Response<ExtsStringDataPointResult> extsgetstr(String pkey, String skey) {
-        getClient("").sendCommand(ModuleCommand.TSSGETSTR, pkey, skey);
-        return getResponse(TsBuilderFactory.EXTSSTRING_GET_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSGETSTR)
+            .add(pkey).add(skey), TsBuilderFactory.EXTSSTRING_GET_RESULT_STRING));
     }
 
     public Response<ExtsStringDataPointResult> extsgetstr(byte[] pkey, byte[] skey) {
-        getClient("").sendCommand(ModuleCommand.TSSGETSTR, pkey, skey);
-        return getResponse(TsBuilderFactory.EXTSSTRING_GET_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSGETSTR)
+            .add(pkey).add(skey), TsBuilderFactory.EXTSSTRING_GET_RESULT_STRING));
     }
 
     /**
@@ -565,14 +571,14 @@ public class TairTsPipeline extends Pipeline {
      */
     public Response<List<String>> extsquerystr(String pkey, ArrayList<ExtsFilter<String>> filters) {
         ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSQUERYINDEXSTR, addList.getByteParams(pkey, filters));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSQUERYINDEXSTR)
+            .addObjects(addList.getByteParams(pkey, filters)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> extsquerystr(byte[] pkey, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsQueryParams addList = new ExtsQueryParams();
-        getClient("").sendCommand(ModuleCommand.TSSQUERYINDEXSTR, addList.getByteParams(pkey, filters));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSQUERYINDEXSTR)
+            .addObjects(addList.getByteParams(pkey, filters)), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -585,13 +591,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<ExtsStringSkeyResult> extsrangestr(String pkey, String skey, String startTs, String endTs) {
-        getClient("").sendCommand(ModuleCommand.TSSRANGESTR, pkey, skey, startTs, endTs);
-        return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESTR)
+            .add(pkey).add(skey).add(startTs).add(endTs), TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING));
     }
 
     public Response<ExtsStringSkeyResult> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs) {
-        getClient("").sendCommand(ModuleCommand.TSSRANGESTR, pkey, skey, startTs, endTs);
-        return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESTR)
+            .add(pkey).add(skey).add(startTs).add(endTs), TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING));
     }
 
     /**
@@ -608,13 +614,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<ExtsStringSkeyResult> extsrangestr(String pkey, String skey, String startTs, String endTs, ExtsStringAggregationParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRANGESTR, params.getByteRangeParams(pkey, skey, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESTR)
+            .addObjects(params.getByteRangeParams(pkey, skey, startTs, endTs)), TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING));
     }
 
     public Response<ExtsStringSkeyResult> extsrangestr(byte[] pkey, byte[] skey, byte[] startTs, byte[] endTs, ExtsStringAggregationParams params) {
-        getClient("").sendCommand(ModuleCommand.TSSRANGESTR, params.getByteRangeParams(pkey, skey, startTs, endTs));
-        return getResponse(TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSRANGESTR)
+            .addObjects(params.getByteRangeParams(pkey, skey, startTs, endTs)), TsBuilderFactory.EXTSSTRING_RANGE_RESULT_STRING));
     }
 
     /**
@@ -628,14 +634,14 @@ public class TairTsPipeline extends Pipeline {
      */
     public Response<List<ExtsStringSkeyResult>> extsmrangestr(String pkey, String startTs, String endTs, ArrayList<ExtsFilter<String>> filters) {
         ExtsStringAggregationParams params = new ExtsStringAggregationParams();
-        getClient("").sendCommand(ModuleCommand.TSSMRANGESTR, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGESTR)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsStringSkeyResult>> extsmrangestr(byte[] pkey, byte[] startTs, byte[] endTs, ArrayList<ExtsFilter<byte[]>> filters) {
         ExtsStringAggregationParams params = new ExtsStringAggregationParams();
-        getClient("").sendCommand(ModuleCommand.TSSMRANGESTR, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGESTR)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING));
     }
 
 
@@ -654,13 +660,13 @@ public class TairTsPipeline extends Pipeline {
      * @return Success: OK; Fail: error.
      */
     public Response<List<ExtsStringSkeyResult>> extsmrangestr(String pkey, String startTs, String endTs, ExtsStringAggregationParams params, ArrayList<ExtsFilter<String>> filters) {
-        getClient("").sendCommand(ModuleCommand.TSSMRANGESTR, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGESTR)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING));
     }
 
     public Response<List<ExtsStringSkeyResult>> extsmrangestr(byte[] pkey, byte[] startTs, byte[] endTs, ExtsStringAggregationParams params, ArrayList<ExtsFilter<byte[]>> filters) {
-        getClient("").sendCommand(ModuleCommand.TSSMRANGESTR, params.getByteMrangeParams(pkey, startTs, endTs, filters));
-        return getResponse(TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.TSSMRANGESTR)
+            .addObjects(params.getByteMrangeParams(pkey, startTs, endTs, filters)), TsBuilderFactory.EXTSSTRING_MRANGE_RESULT_STRING));
     }
 
 }

@@ -185,7 +185,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long)1, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         result = tairStringCluster.exget(key);
         assertEquals(null, result);
 
@@ -197,7 +197,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         result = tairStringCluster.exget(key);
         assertEquals(null, result);
 
@@ -210,7 +210,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         result = tairStringCluster.exget(key);
         assertEquals(null, result);
 
@@ -221,7 +221,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long)1, bresult.getVersion());
-        Thread.sleep(1500);
+        Thread.sleep(3000);
         bresult = tairStringCluster.exget(bkey);
         assertEquals(null, bresult);
 
@@ -233,7 +233,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long)2, bresult.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         bresult = tairStringCluster.exget(bkey);
         assertEquals(null, bresult);
 
@@ -246,7 +246,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long)2, bresult.getVersion());
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         bresult = tairStringCluster.exget(bkey);
         assertEquals(null, bresult);
     }
@@ -322,7 +322,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, num_string_value.equals(result.getValue()));
         assertEquals((long)1, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         result = tairStringCluster.exget(key);
         assertEquals(null, result);
 
@@ -334,7 +334,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         result = tairStringCluster.exget(key);
         assertEquals(null, result);
 
@@ -347,7 +347,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(result);
         assertEquals(true, new_string_value.equals(result.getValue()));
         assertEquals((long)2, result.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         result = tairStringCluster.exget(key);
         assertEquals(null, result);
 
@@ -358,7 +358,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(num_byte_value, bresult.getValue()));
         assertEquals((long)1, bresult.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         bresult = tairStringCluster.exget(bkey);
         assertEquals(null, bresult);
 
@@ -370,7 +370,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long)2, bresult.getVersion());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         bresult = tairStringCluster.exget(bkey);
         assertEquals(null, bresult);
 
@@ -383,7 +383,7 @@ public class TairStringClusterTest extends TairStringTestBase {
         assertNotNull(bresult);
         assertEquals(true, Arrays.equals(new_byte_value, bresult.getValue()));
         assertEquals((long)2, bresult.getVersion());
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         bresult = tairStringCluster.exget(bkey);
         assertEquals(null, bresult);
     }

@@ -1,6 +1,6 @@
 package com.aliyun.tair.tairhash.params;
 
-import redis.clients.jedis.params.Params;
+import com.aliyun.tair.jedis3.Params;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ public class ExhincrByFloatParams extends Params {
     private static final String MIN = "min";
     private static final String MAX = "max";
     private static final String NOACTIVE = "noactive";
+    private static final String KEEPTTL = "keepttl";
 
     public ExhincrByFloatParams() {
     }
@@ -76,6 +77,11 @@ public class ExhincrByFloatParams extends Params {
         return this;
     }
 
+    public ExhincrByFloatParams keepttl() {
+        addParam(KEEPTTL);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -99,6 +105,9 @@ public class ExhincrByFloatParams extends Params {
         addParamWithValue(byteParams, ABS);
         if(contains(NOACTIVE)){
             byteParams.add(SafeEncoder.encode(NOACTIVE));
+        }
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
         }
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

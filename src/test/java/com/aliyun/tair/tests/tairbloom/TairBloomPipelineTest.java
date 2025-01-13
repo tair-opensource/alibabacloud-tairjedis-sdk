@@ -1,5 +1,6 @@
 package com.aliyun.tair.tests.tairbloom;
 
+import com.aliyun.tair.tairbloom.params.BfinsertParams;
 import org.junit.Test;
 
 import java.util.List;
@@ -94,7 +95,9 @@ public class TairBloomPipelineTest extends TairBloomTestBase {
         Boolean[] ret_bool_list;
         Boolean ret_bool;
         // String
-        tairBloomPipeline.bfinsert(bbf, "CAPACITY", 100, "ERROR", 0.001, "ITEMS", "val1", "val2");
+        BfinsertParams params = new BfinsertParams();
+        params.capacity(100).error(0.001);
+        tairBloomPipeline.bfinsert(bbf, params, "ITEMS", "val1", "val2");
         tairBloomPipeline.bfmadd(bbf, "val1", "val2");
         tairBloomPipeline.bfmexists(bbf, "val1", "val2");
 
@@ -109,7 +112,7 @@ public class TairBloomPipelineTest extends TairBloomTestBase {
         assertEquals(true, Boolean[].class.cast(objs.get(i++))[1]);
 
         // binary
-        tairBloomPipeline.bfinsert(bcf, "CAPACITY".getBytes(), 100, "ERROR".getBytes(), 0.001, "ITEMS".getBytes(),
+        tairBloomPipeline.bfinsert(bcf, params, "ITEMS".getBytes(),
             "val1".getBytes(), "val2".getBytes());
         tairBloomPipeline.bfmadd(bcf, "val1".getBytes(), "val2".getBytes());
         tairBloomPipeline.bfmexists(bcf, "val1".getBytes(), "val2".getBytes());

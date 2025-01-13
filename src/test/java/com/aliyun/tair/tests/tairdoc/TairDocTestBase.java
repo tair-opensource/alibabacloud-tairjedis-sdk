@@ -16,8 +16,7 @@ public class TairDocTestBase extends TestBase {
     @BeforeClass
     public static void setUp() {
         tairDoc = new TairDoc(jedisPool);
-        tairDocPipeline = new TairDocPipeline();
-        tairDocPipeline.setClient(jedis.getClient());
+        tairDocPipeline = new TairDocPipeline(getJedis());
         tairDocCluster = new TairDocCluster(jedisCluster);
     }
 }
