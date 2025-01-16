@@ -1,6 +1,7 @@
 package com.aliyun.tair.tairts;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairts.factory.TsBuilderFactory;
 import com.aliyun.tair.tairts.params.*;
 import com.aliyun.tair.tairts.results.ExtsDataPointResult;
@@ -399,7 +400,7 @@ public class TairTs {
         try {
             ExtsQueryParams addList = new ExtsQueryParams();
             Object obj = jedis.sendCommand(ModuleCommand.TSSQUERYINDEX, addList.getByteParams(pkey, filters));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -1168,7 +1169,7 @@ public class TairTs {
         try {
             ExtsQueryParams addList = new ExtsQueryParams();
             Object obj = jedis.sendCommand(ModuleCommand.TSSQUERYINDEXSTR, addList.getByteParams(pkey, filters));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }

@@ -8,14 +8,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
+import com.aliyun.tair.jedis3.ScanResult;
+import com.aliyun.tair.jedis3.ScanParams;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
 import com.aliyun.tair.tairhash.params.*;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import static redis.clients.jedis.Protocol.toByteArray;
@@ -280,7 +280,7 @@ public class TairHashCluster {
 
     public byte[] exhget(final byte[] key, final byte[] field) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHGET, key, field);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public ExhgetwithverResult<String> exhgetwithver(final String key, final String field) {
@@ -301,7 +301,7 @@ public class TairHashCluster {
 
     public List<byte[]> exhmget(byte[] key, byte[]... fields) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHMGET, JoinParameters.joinParameters(key, fields));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public List<ExhgetwithverResult<String>> exhmgetwithver(final String key, final String... fields) {
@@ -368,12 +368,12 @@ public class TairHashCluster {
 
     public Set<String> exhkeys(final String key) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHKEYS, key);
-        return BuilderFactory.STRING_ZSET.build(obj);
+        return Jedis3BuilderFactory.STRING_ZSET.build(obj);
     }
 
     public Set<byte[]> exhkeys(byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHKEYS, key);
-        return BuilderFactory.BYTE_ARRAY_ZSET.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_ZSET.build(obj);
     }
 
     public List<String> exhvals(final String key) {
@@ -383,7 +383,7 @@ public class TairHashCluster {
 
     public List<byte[]> exhvals(byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHVALS, key);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public Map<String, String> exhgetAll(final String key) {
@@ -393,7 +393,7 @@ public class TairHashCluster {
 
     public Map<byte[], byte[]> exhgetAll(byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.EXHGETALL, key);
-        return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
     }
 
     public ScanResult<Entry<String, String>> exhscan(final String key, final String op, final String subkey) {

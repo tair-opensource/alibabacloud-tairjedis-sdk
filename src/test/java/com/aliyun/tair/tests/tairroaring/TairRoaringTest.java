@@ -1,7 +1,7 @@
 package com.aliyun.tair.tests.tairroaring;
 
 import org.junit.Test;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class TairRoaringTest extends TairRoaringTestBase {
     @Test
     public void trbit_mixed_test() {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         assertEquals(0, tairRoaring.trsetbit("foo", 10, 1));
         assertEquals(0, tairRoaring.trsetbit("foo", 20, 1));
@@ -25,12 +25,12 @@ public class TairRoaringTest extends TairRoaringTestBase {
         assertEquals(10, tairRoaring.trmin("foo"));
         assertEquals(20, tairRoaring.trmax("foo"));
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public void trbits_mixed_test() {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         assertEquals(5, tairRoaring.trsetbits("foo", 1, 3, 5, 7, 9));
         assertEquals(5, tairRoaring.trbitcount("foo"));
@@ -82,12 +82,12 @@ public class TairRoaringTest extends TairRoaringTestBase {
         assertEquals(2, tairRoaring.trmin("foo"));
         assertEquals(3, tairRoaring.trmax("foo"));
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public void trbitrangeing_mixed_test() {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         assertEquals(5, tairRoaring.trsetbits("foo", 1, 3, 5, 7, 9));
 
@@ -103,7 +103,7 @@ public class TairRoaringTest extends TairRoaringTestBase {
         expect.add((long) 1);
         expect.add((long) 3);
         assertLongListEquals(expect, result);
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TairRoaringTest extends TairRoaringTestBase {
         List<Long> expect = new ArrayList<Long>();
         assertLongListEquals(expect, result);
 
-        jedis.del("foo");
+        getJedis().del("foo");
         assertEquals(5, tairRoaring.trsetbits("foo", 1, 3, 5, 7, 9));
 
         rawresult = tairRoaring.trscan("foo", 0);
@@ -136,12 +136,12 @@ public class TairRoaringTest extends TairRoaringTestBase {
         expect.add((long) 7);
         assertLongListEquals(expect, result);
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public void trappendbitarryatest() {
-        jedis.del("foo");
+        getJedis().del("foo");
         assertEquals(5, tairRoaring.trappendbitarray("foo", 0, "101010101"));
         List<Long> result = tairRoaring.trrange("foo", 0, 10);
         List<Long> expect = new ArrayList<Long>();
@@ -152,7 +152,7 @@ public class TairRoaringTest extends TairRoaringTestBase {
         expect.add((long) 9);
         assertLongListEquals(expect, result);
 
-        jedis.del("foo");
+        getJedis().del("foo");
         assertEquals(5, tairRoaring.trappendbitarray("foo", -1, "101010101"));
         result = tairRoaring.trrange("foo", 0, 10);
         expect = new ArrayList<Long>();
@@ -163,12 +163,12 @@ public class TairRoaringTest extends TairRoaringTestBase {
         expect.add((long) 8);
         assertLongListEquals(expect, result);
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public void trstatus_mixed_test() {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         assertEquals(9, tairRoaring.trsetbits("foo", 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -203,21 +203,21 @@ public class TairRoaringTest extends TairRoaringTestBase {
                 "\trun container values: 9\r\n" +
                 "\trun container bytes: 6\r\n", tairRoaring.trstat("foo", false));
 
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public  void trloadstringtest() throws Exception {
-        jedis.del("foo");
-        jedis.set("strkey", "101010101");
+        getJedis().del("foo");
+        getJedis().set("strkey", "101010101");
 
         assertEquals(5, tairRoaring.trloadstring("foo", "strkey"));
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public  void tremptytest() throws Exception {
-        jedis.del("foo");
+        getJedis().del("foo");
         List<Long> expect = new ArrayList<Long>();
 
         List<Long> result = tairRoaring.trrange("foo", 0, 4);
@@ -238,9 +238,9 @@ public class TairRoaringTest extends TairRoaringTestBase {
 
     @Test
     public  void trbitoptest() throws Exception {
-        jedis.del("foo");
-        jedis.del("bar");
-        jedis.del("dest");
+        getJedis().del("foo");
+        getJedis().del("bar");
+        getJedis().del("dest");
 
         assertEquals("OK", tairRoaring.trappendintarray("foo", 1, 3, 5, 7, 9));
         assertEquals("OK", tairRoaring.trappendintarray("bar", 2, 4, 6, 8, 10));
@@ -248,14 +248,14 @@ public class TairRoaringTest extends TairRoaringTestBase {
         assertEquals(10, tairRoaring.trbitop("dest", "OR", "foo", "bar"));
         assertEquals(0, tairRoaring.trbitopcard("AND", "foo", "bar"));
 
-        jedis.del("foo");
-        jedis.del("bar");
-        jedis.del("dest");
+        getJedis().del("foo");
+        getJedis().del("bar");
+        getJedis().del("dest");
     }
 
     @Test
     public void trgetmultitest() {
-        jedis.del("foo");
+        getJedis().del("foo");
         assertEquals("OK", tairRoaring.trappendintarray("foo", 1, 3, 5, 7, 9, 11, 13, 15, 17, 19));
 
         List<Long> result = tairRoaring.trrange("foo", 0, 4);
@@ -263,14 +263,14 @@ public class TairRoaringTest extends TairRoaringTestBase {
         expect.add((long) 1);
         expect.add((long) 3);
         assertLongListEquals(expect, result);
-        jedis.del("foo");
+        getJedis().del("foo");
     }
 
     @Test
     public  void trmultikeytest() throws Exception {
-        jedis.del("foo");
-        jedis.del("bar");
-        jedis.del("baz");
+        getJedis().del("foo");
+        getJedis().del("bar");
+        getJedis().del("baz");
 
         assertEquals(5, tairRoaring.trsetbits("foo", 1, 3, 5, 7, 9));
         assertEquals(5, tairRoaring.trsetbits("bar", 2, 4, 6, 8, 10));
@@ -283,9 +283,9 @@ public class TairRoaringTest extends TairRoaringTestBase {
 
         assertEquals("OK", tairRoaring.trdiff("result","foo", "bar"));
 
-        jedis.del("foo");
-        jedis.del("bar");
-        jedis.del("baz");
+        getJedis().del("foo");
+        getJedis().del("bar");
+        getJedis().del("baz");
     }
 
 }

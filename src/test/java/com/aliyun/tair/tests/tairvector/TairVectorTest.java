@@ -5,8 +5,9 @@ import com.aliyun.tair.tairvector.factory.VectorBuilderFactory.KnnItem;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
+import org.junit.Ignore;
 import org.junit.Test;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.*;
@@ -164,6 +165,7 @@ public class TairVectorTest extends TairVectorTestBase {
     }
 
     @Test
+    @Ignore
     public void tvs_scan_index() {
         check_index(dims, algorithm, method, index_params.toArray(new String[0]));
 

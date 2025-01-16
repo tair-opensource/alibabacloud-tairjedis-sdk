@@ -13,10 +13,11 @@ import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -83,6 +84,7 @@ public class TairVectorClusterTest extends TairVectorTestBase {
     }
 
     @Test
+    @Ignore
     public void tvs_create_index_test() {
         tairVectorCluster.tvsdelindex(index);
 

@@ -1,6 +1,7 @@
 package com.aliyun.tair.tairsearch;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairsearch.action.search.MSearchResponse;
 import com.aliyun.tair.tairsearch.action.search.SearchResponse;
 import com.aliyun.tair.tairsearch.params.*;
@@ -8,9 +9,8 @@ import com.aliyun.tair.tairsearch.search.builder.MSearchSourceBuilder;
 import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -518,7 +518,7 @@ public class TairSearchCluster {
 
     public List<byte[]> tftgetsug(byte[] index, byte[] prefix) {
         Object obj = jc.sendCommand(index, ModuleCommand.TFTGETSUG, index, prefix);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**
@@ -544,7 +544,7 @@ public class TairSearchCluster {
         args.add(prefix);
         args.addAll(params.getParams());
         Object obj = jc.sendCommand(index, ModuleCommand.TFTGETSUG, args.toArray(new byte[args.size()][]));
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     /**
@@ -560,7 +560,7 @@ public class TairSearchCluster {
 
     public List<byte[]> tftgetallsugs(byte[] index) {
         Object obj = jc.sendCommand(index, ModuleCommand.TFTGETALLSUGS, index);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
 

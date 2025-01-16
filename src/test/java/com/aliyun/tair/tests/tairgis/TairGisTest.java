@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
-import redis.clients.jedis.GeoUnit;
+import redis.clients.jedis.args.GeoUnit;
 
 import java.util.Arrays;
 import java.util.List;
@@ -428,7 +428,7 @@ public class TairGisTest extends TairGisTestBase {
     @Test
     public void gisaddException() {
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairGis.gisadd(randomkey_, "", "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -440,7 +440,7 @@ public class TairGisTest extends TairGisTestBase {
         tairGis.gisget(randomkey_, "");
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairGis.gisget(randomkey_, "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -452,7 +452,7 @@ public class TairGisTest extends TairGisTestBase {
         tairGis.gisdel(randomkey_, "");
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairGis.gisdel(randomkey_, "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -464,7 +464,7 @@ public class TairGisTest extends TairGisTestBase {
         tairGis.gissearch(randomkey_, "");
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairGis.gissearch(randomkey_, "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -476,7 +476,7 @@ public class TairGisTest extends TairGisTestBase {
         tairGis.giscontains(randomkey_, "");
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairGis.giscontains(randomkey_, "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -488,7 +488,7 @@ public class TairGisTest extends TairGisTestBase {
         tairGis.gisintersects(randomkey_, "");
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairGis.gisintersects(randomkey_, "");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -500,7 +500,7 @@ public class TairGisTest extends TairGisTestBase {
         tairGis.gisgetall(randomkey_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairGis.gisgetall(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));

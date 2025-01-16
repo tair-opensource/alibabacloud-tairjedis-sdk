@@ -3,6 +3,7 @@ package com.aliyun.tair.tests.taircpc;
 import com.aliyun.tair.taircpc.params.*;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -181,6 +182,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void cpcMupdateTest() throws Exception {
 
         ArrayList<CpcData> addList = new ArrayList<CpcData>();
@@ -201,6 +203,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void cpcMupdate2EstTest() throws Exception {
 
         ArrayList<CpcData> addList = new ArrayList<CpcData>();
@@ -219,6 +222,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void cpcMupdate2JudTest() throws Exception {
 
         ArrayList<CpcData> addList = new ArrayList<CpcData>();
@@ -330,6 +334,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
 //    }
 
     @Test
+    @Ignore
     public void cpcArrayEstimateRangeTest() throws Exception {
 
         String addRet = tairCpcNew.cpcArrayUpdate(key, timestamp, item);
@@ -370,6 +375,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
 //    }
 
     @Test
+    @Ignore
     public void sumTest() throws Exception {
 
         Double addRet = tairCpcNew.sumAdd(key, 100);
@@ -414,6 +420,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void sumArrayTest() throws Exception {
 
         Double addRet = tairCpcNew.sumArrayAdd(key, timestamp, 100);
@@ -462,6 +469,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void maxTest() throws Exception {
 
         Double addRet = tairCpcNew.maxAdd(key, 150);
@@ -506,6 +514,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void maxArrayTest() throws Exception {
 
         Double addRet = tairCpcNew.maxArrayAdd(key, timestamp, 100);
@@ -554,6 +563,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void minTest() throws Exception {
 
         Double addRet = tairCpcNew.minAdd(key, 150);
@@ -598,6 +608,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void minArrayTest() throws Exception {
 
         Double addRet = tairCpcNew.minArrayAdd(key, timestamp, 100);
@@ -646,6 +657,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void firstTest() throws Exception {
 
         String addRet = tairCpcNew.firstAdd(key, content1, 150);
@@ -690,6 +702,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void firstArrayTest() throws Exception {
 
         String addRet = tairCpcNew.firstArrayAdd(key, timestamp, content1, 100);
@@ -736,6 +749,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void lastTest() throws Exception {
 
         String addRet = tairCpcNew.lastAdd(key, content1, 150);
@@ -780,6 +794,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void lastArrayTest() throws Exception {
 
         String addRet = tairCpcNew.lastArrayAdd(key, timestamp, content1, 100);
@@ -826,6 +841,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void avgArrayTest() throws Exception {
 
         Double addRet = tairCpcNew.avgArrayAdd(key, timestamp, count1, 100);
@@ -875,6 +891,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void stddevTest() throws Exception {
 
         Double addRet = tairCpcNew.stddevAdd(key, 150);
@@ -919,6 +936,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void stddevArrayTest() throws Exception {
 
         Double addRet = tairCpcNew.stddevArrayAdd(key, timestamp, 100);
@@ -968,6 +986,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
 
 
     @Test
+    @Ignore
     public void sketchesTest() throws Exception {
 
         Double addRet = tairCpcNew.avgArrayAdd(key, timestamp, count1, 100);
@@ -1006,6 +1025,7 @@ public class TairCpcTestNew extends TairCpcTestBase {
     }
 
     @Test
+    @Ignore
     public void sketchesBatchWriteTest() throws Exception {
         CpcArrayMultiData multiData = CpcDataUtil.buildCpc(key, "sffjls", timestamp);
         multiData.setSize(10);

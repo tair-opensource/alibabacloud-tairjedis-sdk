@@ -21,7 +21,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
     @Test
     public void tfttest() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearchPipeline.tftmappingindex("tftkey", "{\"settings\":{\"analysis\":{\"analyzer\":{\"my_custom_analyzer\":{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}},\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearchPipeline.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearchPipeline.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
@@ -59,7 +59,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
     @Test
     public void tftmaddtest() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearchPipeline.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
 
         Map<String, String> docs = new HashMap();
@@ -77,7 +77,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
         tairSearchPipeline.tftdeldoc("tftkey", "3");
         tairSearchPipeline.tftgetdoc("tftkey", "3");
         tairSearchPipeline.tftgetindexmappings("tftkey");
-        tairSearchPipeline.tftmsearch("{\"query\":{\"match\":{\"f1\":\"3\"}}}", "tftkey"); 
+        tairSearchPipeline.tftmsearch("{\"query\":{\"match\":{\"f1\":\"3\"}}}", "tftkey");
 
         List<Object> objs = tairSearchPipeline.syncAndReturnAll();
 
@@ -97,7 +97,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
     @Test
     public void tftmaddtestdocinfo() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearchPipeline.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
 
         List<DocInfo> docs = new ArrayList<>();
@@ -135,7 +135,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
     @Test
     public void tftgetsugtest() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         Set<String> visited = new HashSet<>();
         Map<String, Integer> docs = new HashMap();
         docs.put("redis is a memory database", 1);
@@ -190,7 +190,7 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
     @Test
     public void tftgetsugtestbyte() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         Set<String> visited = new HashSet<>();
         Map<String, Integer> cmpDocs = new HashMap();
@@ -251,14 +251,14 @@ public class TairSearchPipelineTest extends TairSearchTestBase {
 
         assertEquals(2, ((Long) objs.get(5)).intValue());
         assertEquals(docs.size() - 2, ((Long) objs.get(6)).intValue());
-        jedis.del("tftkey".getBytes());
+        getJedis().del("tftkey".getBytes());
     }
 
 
 
     @Test
     public void tftquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearchPipeline.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
 
         tairSearchPipeline.tftadddoc("tftkey", "{\"f0\":\"redis is a nosql database\"}", "1");

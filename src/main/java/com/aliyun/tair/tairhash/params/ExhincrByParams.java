@@ -1,6 +1,6 @@
 package com.aliyun.tair.tairhash.params;
 
-import redis.clients.jedis.params.Params;
+import com.aliyun.tair.jedis3.Params;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -16,12 +16,19 @@ public class ExhincrByParams extends Params {
     private static final String MIN = "min";
     private static final String MAX = "max";
     private static final String NOACTIVE = "noactive";
+    private static final String DEF = "def";
+    private static final String KEEPTTL = "keepttl";
 
     public ExhincrByParams() {
     }
 
     public static ExhincrByParams ExhincrByParams() {
         return new ExhincrByParams();
+    }
+
+    public ExhincrByParams def(long defValue) {
+        addParam(DEF, defValue);
+        return this;
     }
 
     public ExhincrByParams ex(int secondsToExpire) {
@@ -77,6 +84,11 @@ public class ExhincrByParams extends Params {
         return this;
     }
 
+    public ExhincrByParams keepttl() {
+        addParam(KEEPTTL);
+        return this;
+    }
+
     private void addParamWithValue(ArrayList<byte[]> byteParams, String option) {
         if (contains(option)) {
             byteParams.add(SafeEncoder.encode(option));
@@ -98,8 +110,12 @@ public class ExhincrByParams extends Params {
         addParamWithValue(byteParams, MIN);
         addParamWithValue(byteParams, VER);
         addParamWithValue(byteParams, ABS);
+        addParamWithValue(byteParams, DEF);
         if(contains(NOACTIVE)){
             byteParams.add(SafeEncoder.encode(NOACTIVE));
+        }
+        if (contains(KEEPTTL)) {
+            byteParams.add(SafeEncoder.encode(KEEPTTL));
         }
         return byteParams.toArray(new byte[byteParams.size()][]);
     }

@@ -6,10 +6,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairzset.params.ExzaddParams;
 import com.aliyun.tair.tairzset.params.ExzrangeParams;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.CommandArguments;
+import redis.clients.jedis.CommandObject;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
@@ -18,6 +22,10 @@ import static com.aliyun.tair.tairzset.LeaderBoard.joinScoresToString;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairZsetPipeline extends Pipeline {
+    public TairZsetPipeline(Jedis jedis) {
+        super(jedis);
+    }
+
     /**
      * Adds all the specified members with the specified (multi)scores to the tairzset stored at key.
      * @param key
@@ -34,13 +42,17 @@ public class TairZsetPipeline extends Pipeline {
     }
 
     public Response<Long> exzadd(final String key, final String score, final String member) {
-        getClient("").sendCommand(ModuleCommand.EXZADD, key, score, member);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .add(key)
+            .add(score)
+            .add(member), BuilderFactory.LONG));
     }
 
     public Response<Long> exzadd(final byte[] key, final byte[] score, final byte[] member) {
-        getClient("").sendCommand(ModuleCommand.EXZADD, key, score, member);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .add(key)
+            .add(score)
+            .add(member), BuilderFactory.LONG));
     }
 
     public Response<Long> exzadd(final String key, final String score, final String member, final ExzaddParams params) {
@@ -48,58 +60,54 @@ public class TairZsetPipeline extends Pipeline {
     }
 
     public Response<Long> exzadd(final byte[] key, final byte[] score, final byte[] member, final ExzaddParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZADD, params.getByteParams(key, score, member));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(params.getByteParams(key, score, member)), BuilderFactory.LONG));
     }
 
     @Deprecated
     public Response<Long> exzadd(final String key, final Map<String, String> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(SafeEncoder.encode(key));
-
         for (final Entry<String, String> entry : scoreMembers.entrySet()) {
             bparams.add(SafeEncoder.encode(entry.getKey()));
             bparams.add(SafeEncoder.encode(entry.getValue()));
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(bparams), BuilderFactory.LONG));
     }
 
     public Response<Long> exzaddMembers(final String key, final Map<String, String> members) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(SafeEncoder.encode(key));
-
         for (final Entry<String, String> entry : members.entrySet()) {
             bparams.add(SafeEncoder.encode(entry.getValue()));
             bparams.add(SafeEncoder.encode(entry.getKey()));
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(bparams), BuilderFactory.LONG));
     }
 
     @Deprecated
     public Response<Long> exzadd(final byte[] key, final Map<byte[], byte[]> scoreMembers) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(key);
-
         for (final Entry<byte[], byte[]> entry : scoreMembers.entrySet()) {
             bparams.add(entry.getKey());
             bparams.add(entry.getValue());
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(bparams), BuilderFactory.LONG));
     }
 
     public Response<Long> exzaddMembers(final byte[] key, final Map<byte[], byte[]> members) {
         final List<byte[]> bparams = new ArrayList<byte[]>();
         bparams.add(key);
-
         for (final Entry<byte[], byte[]> entry : members.entrySet()) {
             bparams.add(entry.getValue());
             bparams.add(entry.getKey());
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD, bparams.toArray(new byte[bparams.size()][]));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(bparams), BuilderFactory.LONG));
     }
 
     @Deprecated
@@ -109,9 +117,8 @@ public class TairZsetPipeline extends Pipeline {
             bparams.add(SafeEncoder.encode(entry.getKey()));
             bparams.add(SafeEncoder.encode(entry.getValue()));
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][]))), BuilderFactory.LONG));
     }
 
     public Response<Long> exzaddMembers(final String key, final Map<String, String> members, final ExzaddParams params) {
@@ -120,9 +127,8 @@ public class TairZsetPipeline extends Pipeline {
             bparams.add(SafeEncoder.encode(entry.getValue()));
             bparams.add(SafeEncoder.encode(entry.getKey()));
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][])));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(params.getByteParams(SafeEncoder.encode(key), bparams.toArray(new byte[bparams.size()][]))), BuilderFactory.LONG));
     }
 
     @Deprecated
@@ -132,9 +138,8 @@ public class TairZsetPipeline extends Pipeline {
             bparams.add(entry.getKey());
             bparams.add(entry.getValue());
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(params.getByteParams(key, bparams.toArray(new byte[bparams.size()][]))), BuilderFactory.LONG));
     }
 
     public Response<Long> exzaddMembers(final byte[] key, final Map<byte[], byte[]> members, final ExzaddParams params) {
@@ -143,9 +148,8 @@ public class TairZsetPipeline extends Pipeline {
             bparams.add(entry.getValue());
             bparams.add(entry.getKey());
         }
-        getClient("").sendCommand(ModuleCommand.EXZADD,
-            params.getByteParams(key, bparams.toArray(new byte[bparams.size()][])));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZADD)
+            .addObjects(params.getByteParams(key, bparams.toArray(new byte[bparams.size()][]))), BuilderFactory.LONG));
     }
 
     /**
@@ -156,24 +160,31 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<String> exzincrBy(final String key, final String increment, final String member) {
-        getClient("").sendCommand(ModuleCommand.EXZINCRBY, key, increment, member);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZINCRBY)
+            .add(key)
+            .add(increment)
+            .add(member), BuilderFactory.STRING));
     }
 
     public Response<byte[]> exzincrBy(final byte[] key, final byte[] increment, final byte[] member) {
-        getClient("").sendCommand(ModuleCommand.EXZINCRBY, key, increment, member);
-        return getResponse(BuilderFactory.BYTE_ARRAY);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZINCRBY)
+            .add(key)
+            .add(increment)
+            .add(member), Jedis3BuilderFactory.BYTE_ARRAY));
     }
 
     public Response<String> exzincrBy(final String key, final String member, final double... scores) {
-        getClient("").sendCommand(ModuleCommand.EXZINCRBY, key, joinScoresToString(scores), member);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZINCRBY)
+            .add(key)
+            .add(joinScoresToString(scores))
+            .add(member), BuilderFactory.STRING));
     }
 
     public Response<byte[]> exzincrBy(final byte[] key, final byte[] member, final double... scores) {
-        getClient("").sendCommand(ModuleCommand.EXZINCRBY, key,
-            SafeEncoder.encode(joinScoresToString(scores)), member);
-        return getResponse(BuilderFactory.BYTE_ARRAY);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZINCRBY)
+            .add(key)
+            .add(SafeEncoder.encode(joinScoresToString(scores)))
+            .add(member), Jedis3BuilderFactory.BYTE_ARRAY));
     }
 
     /**
@@ -183,13 +194,13 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzrem(final String key, final String... member) {
-        getClient("").sendCommand(ModuleCommand.EXZREM, JoinParameters.joinParameters(key, member));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREM)
+            .addObjects(JoinParameters.joinParameters(key, member)), BuilderFactory.LONG));
     }
 
     public Response<Long> exzrem(final byte[] key, final byte[]... member) {
-        getClient("").sendCommand(ModuleCommand.EXZREM, JoinParameters.joinParameters(key, member));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREM)
+            .addObjects(JoinParameters.joinParameters(key, member)), BuilderFactory.LONG));
     }
 
     /**
@@ -200,13 +211,17 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzremrangeByScore(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZREMRANGEBYSCORE, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREMRANGEBYSCORE)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 
     public Response<Long> exzremrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZREMRANGEBYSCORE, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREMRANGEBYSCORE)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 
     /**
@@ -217,13 +232,17 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzremrangeByRank(final String key, final long start, final long stop) {
-        return exzremrangeByRank(SafeEncoder.encode(key), start, stop);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREMRANGEBYRANK)
+            .add(key)
+            .add(toByteArray(start))
+            .add(toByteArray(stop)), BuilderFactory.LONG));
     }
 
     public Response<Long> exzremrangeByRank(final byte[] key, final long start, final long stop) {
-        getClient("").sendCommand(ModuleCommand.EXZREMRANGEBYRANK, key, toByteArray(start),
-            toByteArray(stop));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREMRANGEBYRANK)
+            .add(key)
+            .add(toByteArray(start))
+            .add(toByteArray(stop)), BuilderFactory.LONG));
     }
 
     /**
@@ -239,13 +258,17 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzremrangeByLex(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZREMRANGEBYLEX, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREMRANGEBYLEX)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 
     public Response<Long> exzremrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZREMRANGEBYLEX, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREMRANGEBYLEX)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 
     /**
@@ -255,13 +278,15 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<String> exzscore(final String key, final String member) {
-        getClient("").sendCommand(ModuleCommand.EXZSCORE, key, member);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZSCORE)
+            .add(key)
+            .add(member), BuilderFactory.STRING));
     }
 
     public Response<byte[]> exzscore(final byte[] key, final byte[] member) {
-        getClient("").sendCommand(ModuleCommand.EXZSCORE, key, member);
-        return getResponse(BuilderFactory.BYTE_ARRAY);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZSCORE)
+            .add(key)
+            .add(member), Jedis3BuilderFactory.BYTE_ARRAY));
     }
 
     /**
@@ -272,26 +297,33 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<List<String>> exzrange(final String key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGE)
+            .add(SafeEncoder.encode(key))
+            .add(toByteArray(min))
+            .add(toByteArray(max)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrange(final byte[] key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGE)
+            .add(key)
+            .add(toByteArray(min))
+            .add(toByteArray(max)), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<List<String>> exzrangeWithScores(final String key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max), SafeEncoder.encode("WITHSCORES"));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGE)
+            .add(SafeEncoder.encode(key))
+            .add(toByteArray(min))
+            .add(toByteArray(max))
+            .add(SafeEncoder.encode("WITHSCORES")), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrangeWithScores(final byte[] key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max),
-            SafeEncoder.encode("WITHSCORES"));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGE)
+            .add(key)
+            .add(toByteArray(min))
+            .add(toByteArray(max))
+            .add(SafeEncoder.encode("WITHSCORES")), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -303,26 +335,33 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<List<String>> exzrevrange(final String key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGE)
+            .add(SafeEncoder.encode(key))
+            .add(toByteArray(min))
+            .add(toByteArray(max)), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrevrange(final byte[] key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGE)
+            .add(key)
+            .add(toByteArray(min))
+            .add(toByteArray(max)), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<List<String>> exzrevrangeWithScores(final String key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGE, SafeEncoder.encode(key), toByteArray(min),
-            toByteArray(max), SafeEncoder.encode("WITHSCORES"));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGE)
+            .add(SafeEncoder.encode(key))
+            .add(toByteArray(min))
+            .add(toByteArray(max))
+            .add(SafeEncoder.encode("WITHSCORES")), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrevrangeWithScores(final byte[] key, final long min, final long max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max),
-            SafeEncoder.encode("WITHSCORES"));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGE)
+            .add(key)
+            .add(toByteArray(min))
+            .add(toByteArray(max))
+            .add(SafeEncoder.encode("WITHSCORES")), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -334,24 +373,27 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<List<String>> exzrangeByScore(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYSCORE, key, min, max);
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYSCORE)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYSCORE, key, min, max);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYSCORE)
+            .add(key)
+            .add(min)
+            .add(max), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<List<String>> exzrangeByScore(final String key, final String min, final String max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYSCORE)
+            .addObjects(params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(min), SafeEncoder.encode(max))), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrangeByScore(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(key, min, max));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYSCORE)
+            .addObjects(params.getByteParams(key, min, max)), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -364,24 +406,27 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<List<String>> exzrevrangeByScore(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYSCORE)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrevrangeByScore(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYSCORE)
+            .add(key)
+            .add(min)
+            .add(max), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<List<String>> exzrevrangeByScore(final String key, final String min, final String max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYSCORE)
+            .addObjects(params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(min), SafeEncoder.encode(max))), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrevrangeByScore(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(key, min, max));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYSCORE)
+            .addObjects(params.getByteParams(key, min, max)), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -392,24 +437,27 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<List<String>> exzrangeByLex(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYLEX, key, min, max);
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYLEX)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYLEX, key, min, max);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYLEX)
+            .add(key)
+            .add(min)
+            .add(max), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<List<String>> exzrangeByLex(final String key, final String min, final String max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYLEX, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYLEX)
+            .addObjects(params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(min), SafeEncoder.encode(max))), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrangeByLex(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZRANGEBYLEX, params.getByteParams(key, min, max));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANGEBYLEX)
+            .addObjects(params.getByteParams(key, min, max)), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -420,24 +468,27 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<List<String>> exzrevrangeByLex(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYLEX)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrevrangeByLex(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYLEX)
+            .add(key)
+            .add(min)
+            .add(max), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     public Response<List<String>> exzrevrangeByLex(final String key, final String min, final String max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(SafeEncoder.encode(key),
-            SafeEncoder.encode(min), SafeEncoder.encode(max)));
-        return getResponse(BuilderFactory.STRING_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYLEX)
+            .addObjects(params.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(min), SafeEncoder.encode(max))), BuilderFactory.STRING_LIST));
     }
 
     public Response<List<byte[]>> exzrevrangeByLex(final byte[] key, final byte[] min, final byte[] max, final ExzrangeParams params) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(key, min, max));
-        return getResponse(BuilderFactory.BYTE_ARRAY_LIST);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANGEBYLEX)
+            .addObjects(params.getByteParams(key, min, max)), Jedis3BuilderFactory.BYTE_ARRAY_LIST));
     }
 
     /**
@@ -446,13 +497,13 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzcard(final String key) {
-        getClient("").sendCommand(ModuleCommand.EXZCARD, key);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZCARD)
+            .add(key), BuilderFactory.LONG));
     }
 
     public Response<Long> exzcard(final byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXZCARD, key);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZCARD)
+            .add(key), BuilderFactory.LONG));
     }
 
     /**
@@ -463,23 +514,27 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzrank(final String key, final String member) {
-        getClient("").sendCommand(ModuleCommand.EXZRANK, key, member);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANK)
+            .add(key)
+            .add(member), BuilderFactory.LONG));
     }
 
     public Response<Long> exzrank(final byte[] key, final byte[] member) {
-        getClient("").sendCommand(ModuleCommand.EXZRANK, key, member);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANK)
+            .add(key)
+            .add(member), BuilderFactory.LONG));
     }
 
     public Response<Long> exzrevrank(final String key, final String member) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANK, key, member);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANK)
+            .add(key)
+            .add(member), BuilderFactory.LONG));
     }
 
     public Response<Long> exzrevrank(final byte[] key, final byte[] member) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANK, key, member);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANK)
+            .add(key)
+            .add(member), BuilderFactory.LONG));
     }
 
     /**
@@ -490,23 +545,27 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzrankByScore(final String key, final String score) {
-        getClient("").sendCommand(ModuleCommand.EXZRANKBYSCORE, key, score);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANKBYSCORE)
+            .add(key)
+            .add(score), BuilderFactory.LONG));
     }
 
     public Response<Long> exzrankByScore(final byte[] key, final byte[] score) {
-        getClient("").sendCommand(ModuleCommand.EXZRANKBYSCORE, key, score);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZRANKBYSCORE)
+            .add(key)
+            .add(score), BuilderFactory.LONG));
     }
 
     public Response<Long> exzrevrankByScore(final String key, final String score) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANKBYSCORE, key, score);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANKBYSCORE)
+            .add(key)
+            .add(score), BuilderFactory.LONG));
     }
 
     public Response<Long> exzrevrankByScore(final byte[] key, final byte[] score) {
-        getClient("").sendCommand(ModuleCommand.EXZREVRANKBYSCORE, key, score);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZREVRANKBYSCORE)
+            .add(key)
+            .add(score), BuilderFactory.LONG));
     }
 
     /**
@@ -517,13 +576,17 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzcount(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZCOUNT, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZCOUNT)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 
     public Response<Long> exzcount(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZCOUNT, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZCOUNT)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 
     /**
@@ -535,12 +598,16 @@ public class TairZsetPipeline extends Pipeline {
      * @return
      */
     public Response<Long> exzlexcount(final String key, final String min, final String max) {
-        getClient("").sendCommand(ModuleCommand.EXZLEXCOUNT, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZLEXCOUNT)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 
     public Response<Long> exzlexcount(final byte[] key, final byte[] min, final byte[] max) {
-        getClient("").sendCommand(ModuleCommand.EXZLEXCOUNT, key, min, max);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXZLEXCOUNT)
+            .add(key)
+            .add(min)
+            .add(max), BuilderFactory.LONG));
     }
 }

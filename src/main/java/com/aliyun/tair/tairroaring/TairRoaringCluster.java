@@ -5,7 +5,7 @@ import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import com.aliyun.tair.util.JoinParameters;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 import static redis.clients.jedis.Protocol.toByteArray;
 

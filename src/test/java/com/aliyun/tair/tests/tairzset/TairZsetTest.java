@@ -29,7 +29,7 @@ public class TairZsetTest extends TairZsetTestBase {
 
     @Before
     public void before() {
-        jedis.flushAll();
+        getJedis().flushAll();
     }
 
     @Test
@@ -63,7 +63,7 @@ public class TairZsetTest extends TairZsetTestBase {
 
     @Test
     public void zaddWithParams() {
-        jedis.del("foo");
+        getJedis().del("foo");
 
         // xx: never add new member
         long status = tairZset.exzadd("foo", "1", "a", ExzaddParams.ExzaddParams().xx());
@@ -83,7 +83,7 @@ public class TairZsetTest extends TairZsetTestBase {
         assertEquals(2L, status);
 
         // binary
-        jedis.del(bfoo);
+        getJedis().del(bfoo);
 
         // xx: never add new member
         status = tairZset.exzadd(bfoo, "1".getBytes(), ba, ExzaddParams.ExzaddParams().xx());

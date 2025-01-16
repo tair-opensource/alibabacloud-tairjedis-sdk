@@ -3,6 +3,7 @@ package com.aliyun.tair.tairdoc;
 import java.util.List;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairdoc.params.JsonsetParams;
 import com.aliyun.tair.tairdoc.params.JsongetParams;
 import com.aliyun.tair.util.JoinParameters;
@@ -58,18 +59,18 @@ public class TairDocCluster {
 
     public byte[] jsonget(final byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONGET, key);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public byte[] jsonget(final byte[] key, final byte[] path) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONGET, key, path);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public byte[] jsonget(final byte[] key, final byte[] path, final JsongetParams params) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONGET,
             params.getByteParams(key, path));
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public List<String> jsonmget(String sampleKey, String... args) {
@@ -79,7 +80,7 @@ public class TairDocCluster {
 
     public List<byte[]> jsonmget(byte[] sampleKey, byte[]... args) {
         Object obj = jc.sendCommand(sampleKey, ModuleCommand.JSONMGET, args);
-        return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
     }
 
     public Long jsondel(final String key) {
@@ -114,12 +115,12 @@ public class TairDocCluster {
 
     public byte[] jsontype(final byte[] key) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONTYPE, key);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public byte[] jsontype(final byte[] key, final byte[] path) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONTYPE, key, path);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public Double jsonnumincrBy(final String key, final Double value) {
@@ -208,12 +209,12 @@ public class TairDocCluster {
 
     public byte[] jsonarrPop(final byte[] key, final byte[] path) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONARRPOP, key, path);
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public byte[] jsonarrPop(final byte[] key, final byte[] path, int index) {
         Object obj = jc.sendCommand(key, ModuleCommand.JSONARRPOP, key, path, toByteArray(index));
-        return BuilderFactory.BYTE_ARRAY.build(obj);
+        return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
     }
 
     public Long jsonarrInsert(String sampleKey, String... args) {

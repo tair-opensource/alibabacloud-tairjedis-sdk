@@ -24,14 +24,14 @@ import com.google.gson.JsonParser;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static redis.clients.jedis.ScanParams.SCAN_POINTER_START;
+import static com.aliyun.tair.jedis3.ScanParams.SCAN_POINTER_START;
 
 public class TairSearchClusterTest extends TairSearchTestBase {
 

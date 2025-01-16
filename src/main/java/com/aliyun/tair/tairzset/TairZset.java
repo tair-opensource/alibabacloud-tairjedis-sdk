@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairzset.params.ExzaddParams;
 import com.aliyun.tair.tairzset.params.ExzrangeParams;
 import com.aliyun.tair.util.JoinParameters;
@@ -274,7 +275,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZINCRBY, key, increment, member);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -295,7 +296,7 @@ public class TairZset {
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZINCRBY, key,
                 SafeEncoder.encode(joinScoresToString(scores)), member);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -428,7 +429,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZSCORE, key, member);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -456,7 +457,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -478,7 +479,7 @@ public class TairZset {
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZRANGE, key, toByteArray(min), toByteArray(max),
                 SafeEncoder.encode("WITHSCORES"));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -507,7 +508,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -529,7 +530,7 @@ public class TairZset {
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGE, key, toByteArray(min), toByteArray(max),
                 SafeEncoder.encode("WITHSCORES"));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -557,7 +558,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYSCORE, key, min, max);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -578,7 +579,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYSCORE, params.getByteParams(key, min, max));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -607,7 +608,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, key, min, max);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -628,7 +629,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYSCORE, params.getByteParams(key, min, max));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -655,7 +656,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYLEX, key, min, max);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -676,7 +677,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZRANGEBYLEX, params.getByteParams(key, min, max));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -703,7 +704,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYLEX, key, min, max);
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -724,7 +725,7 @@ public class TairZset {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.EXZREVRANGEBYLEX, params.getByteParams(key, min, max));
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }

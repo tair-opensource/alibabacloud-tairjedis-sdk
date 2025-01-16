@@ -1,14 +1,15 @@
 package com.aliyun.tair.tairgis;
 
 import com.aliyun.tair.ModuleCommand;
+import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairgis.factory.GisBuilderFactory;
 import com.aliyun.tair.tairgis.params.GisParams;
 import com.aliyun.tair.tairgis.params.GisSearchResponse;
 import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.GeoUnit;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Protocol;
+import redis.clients.jedis.args.GeoUnit;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class TairGis {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.GISGET, key, polygonName);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -127,7 +128,7 @@ public class TairGis {
                 return new HashMap<byte[], byte[]>();
             } else {
                 List<byte[]> rawResults = (List) result.get(1);
-                return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+                return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
             }
         } finally {
             releaseJedis(jedis);
@@ -141,7 +142,7 @@ public class TairGis {
             Object obj = jedis.sendCommand(ModuleCommand.GISSEARCH,
                 gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(GisParams.RADIUS),
                     Protocol.toByteArray(longitude), Protocol.toByteArray(latitude),
-                    Protocol.toByteArray(radius), unit.raw));
+                    Protocol.toByteArray(radius), unit.getRaw()));
             return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
         } finally {
             releaseJedis(jedis);
@@ -155,7 +156,7 @@ public class TairGis {
             Object obj = jedis.sendCommand(ModuleCommand.GISSEARCH,
                 gisParams.getByteParams(key, SafeEncoder.encode(GisParams.RADIUS),
                     Protocol.toByteArray(longitude), Protocol.toByteArray(latitude),
-                    Protocol.toByteArray(radius), unit.raw));
+                    Protocol.toByteArray(radius), unit.getRaw()));
             return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
         } finally {
             releaseJedis(jedis);
@@ -168,7 +169,7 @@ public class TairGis {
         try {
             Object obj = jedis.sendCommand(ModuleCommand.GISSEARCH,
                 gisParams.getByteParams(SafeEncoder.encode(key), SafeEncoder.encode(GisParams.MEMBER),
-                    SafeEncoder.encode(member), Protocol.toByteArray(radius), unit.raw));
+                    SafeEncoder.encode(member), Protocol.toByteArray(radius), unit.getRaw()));
             return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
         } finally {
             releaseJedis(jedis);
@@ -181,7 +182,7 @@ public class TairGis {
         try {
             Object obj = jedis.sendCommand(ModuleCommand.GISSEARCH,
                 gisParams.getByteParams(key, SafeEncoder.encode(GisParams.MEMBER), member,
-                    Protocol.toByteArray(radius), unit.raw));
+                    Protocol.toByteArray(radius), unit.getRaw()));
             return GisBuilderFactory.GISSEARCH_WITH_PARAMS_RESULT.build(obj);
         } finally {
             releaseJedis(jedis);
@@ -236,7 +237,7 @@ public class TairGis {
                 return new HashMap<byte[], byte[]>();
             } else {
                 List<byte[]> rawResults = (List) result.get(1);
-                return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+                return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
             }
         } finally {
             releaseJedis(jedis);
@@ -252,7 +253,7 @@ public class TairGis {
                 return new ArrayList<byte[]>();
             } else {
                 List<byte[]> rawResults = (List) result.get(1);
-                return BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
+                return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
             }
         } finally {
             releaseJedis(jedis);
@@ -301,7 +302,7 @@ public class TairGis {
                 return new HashMap<byte[], byte[]>();
             } else {
                 List<byte[]> rawResults = (List) result.get(1);
-                return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+                return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
             }
         } finally {
             releaseJedis(jedis);
@@ -317,7 +318,7 @@ public class TairGis {
                 return new ArrayList<byte[]>();
             } else {
                 List<byte[]> rawResults = (List) result.get(1);
-                return BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
+                return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(rawResults);
             }
         } finally {
             releaseJedis(jedis);
@@ -355,7 +356,7 @@ public class TairGis {
                 return new HashMap<byte[], byte[]>();
             } else {
                 List<byte[]> rawResults = (List) result.get(1);
-                return (Map) BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
+                return (Map) Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(rawResults);
             }
         } finally {
             releaseJedis(jedis);
@@ -382,7 +383,7 @@ public class TairGis {
         Jedis jedis = getJedis();
         try {
             Object obj = jedis.sendCommand(ModuleCommand.GISDEL, key, polygonName);
-            return BuilderFactory.BYTE_ARRAY.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -427,7 +428,7 @@ public class TairGis {
             if (obj == null) {
                 return new HashMap<>();
             }
-            return BuilderFactory.BYTE_ARRAY_MAP.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_MAP.build(obj);
         } finally {
             releaseJedis(jedis);
         }
@@ -440,7 +441,7 @@ public class TairGis {
             if (obj == null) {
                 return new ArrayList<>();
             }
-            return BuilderFactory.BYTE_ARRAY_LIST.build(obj);
+            return Jedis3BuilderFactory.BYTE_ARRAY_LIST.build(obj);
         } finally {
             releaseJedis(jedis);
         }

@@ -150,13 +150,13 @@ public class TairBloomTest extends TairBloomTestBase {
         tairBloom.bfadd(randomKeyBinary_, randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairBloom.bfadd(randomkey_, randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairBloom.bfadd(randomKeyBinary_, randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -169,13 +169,13 @@ public class TairBloomTest extends TairBloomTestBase {
         tairBloom.bfmadd(randomKeyBinary_, "item".getBytes());
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairBloom.bfmadd(randomkey_, "item");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairBloom.bfmadd(randomKeyBinary_, "item".getBytes());
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -188,13 +188,13 @@ public class TairBloomTest extends TairBloomTestBase {
         tairBloom.bfexists(randomKeyBinary_, randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairBloom.bfexists(randomkey_, randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairBloom.bfexists(randomKeyBinary_, randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -207,13 +207,13 @@ public class TairBloomTest extends TairBloomTestBase {
         tairBloom.bfmexists(randomKeyBinary_, randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairBloom.bfmexists(randomkey_, randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairBloom.bfmexists(randomKeyBinary_, randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -226,13 +226,13 @@ public class TairBloomTest extends TairBloomTestBase {
         tairBloom.bfinsert(randomKeyBinary_, new BfinsertParams(), randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairBloom.bfinsert(randomkey_, new BfinsertParams(), randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairBloom.bfinsert(randomKeyBinary_, new BfinsertParams(), randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -245,13 +245,13 @@ public class TairBloomTest extends TairBloomTestBase {
         tairBloom.bfreserve(randomKeyBinary_, 1, 0.1);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairBloom.bfreserve(randomkey_, 1, 0.1);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairBloom.bfreserve(randomKeyBinary_, 1, 0.1);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
@@ -264,13 +264,13 @@ public class TairBloomTest extends TairBloomTestBase {
         tairBloom.bfdebug(randomKeyBinary_);
 
         try {
-            jedis.set(randomkey_, "bar");
+            getJedis().set(randomkey_, "bar");
             tairBloom.bfdebug(randomkey_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
         try {
-            jedis.set(randomKeyBinary_, "bar".getBytes());
+            getJedis().set(randomKeyBinary_, "bar".getBytes());
             tairBloom.bfdebug(randomKeyBinary_);
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("WRONGTYPE"));

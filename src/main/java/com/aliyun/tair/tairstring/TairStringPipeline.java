@@ -10,6 +10,9 @@ import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
 import com.aliyun.tair.tairstring.results.ExincrbyVersionResult;
 import redis.clients.jedis.BuilderFactory;
+import redis.clients.jedis.CommandArguments;
+import redis.clients.jedis.CommandObject;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
@@ -17,14 +20,19 @@ import redis.clients.jedis.util.SafeEncoder;
 import static redis.clients.jedis.Protocol.toByteArray;
 
 public class TairStringPipeline extends Pipeline {
+    public TairStringPipeline(Jedis jedis) {
+        super(jedis);
+    }
 
     public Response<Long> cas(String key, String oldvalue, String newvalue) {
         return cas(SafeEncoder.encode(key), SafeEncoder.encode(oldvalue), SafeEncoder.encode(newvalue));
     }
 
     public Response<Long> cas(byte[] key, byte[] oldvalue, byte[] newvalue) {
-        getClient("").sendCommand(ModuleCommand.CAS, key, oldvalue, newvalue);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.CAS)
+            .add(key)
+            .add(oldvalue)
+            .add(newvalue), BuilderFactory.LONG));
     }
 
     public Response<Long> cas(String key, String oldvalue, String newvalue, CasParams params) {
@@ -32,8 +40,8 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> cas(byte[] key, byte[] oldvalue, byte[] newvalue, CasParams params) {
-        getClient("").sendCommand(ModuleCommand.CAS, params.getByteParams(key, oldvalue, newvalue));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.CAS)
+            .addObjects(params.getByteParams(key, oldvalue, newvalue)), BuilderFactory.LONG));
     }
 
     public Response<Long> cad(String key, String value) {
@@ -41,60 +49,61 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> cad(byte[] key, byte[] value) {
-        getClient("").sendCommand(ModuleCommand.CAD, key, value);
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.CAD)
+            .add(key)
+            .add(value), BuilderFactory.LONG));
     }
 
     public Response<String> exset(String key, String value) {
-        getClient("").sendCommand(ModuleCommand.EXSET, key, value);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXSET)
+            .add(key)
+            .add(value), BuilderFactory.STRING));
     }
 
     public Response<String> exset(byte[] key, byte[] value) {
-        getClient("").sendCommand(ModuleCommand.EXSET, key, value);
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXSET)
+            .add(key)
+            .add(value), BuilderFactory.STRING));
     }
 
     public Response<String> exset(String key, String value, ExsetParams params) {
-        getClient("").sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXSET)
+            .addObjects(params.getByteParams(key, value)), BuilderFactory.STRING));
     }
 
     public Response<String> exset(byte[] key, byte[] value, ExsetParams params) {
-        getClient("").sendCommand(ModuleCommand.EXSET, params.getByteParams(key, value));
-        return getResponse(BuilderFactory.STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXSET)
+            .addObjects(params.getByteParams(key, value)), BuilderFactory.STRING));
     }
 
     public Response<Long> exsetVersion(String key, String value, ExsetParams params) {
-        getClient("").sendCommand(ModuleCommand.EXSET,
-            params.getByteParams(key, value, "WITHVERSION"));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXSET)
+            .addObjects(params.getByteParams(key, value, "WITHVERSION")), BuilderFactory.LONG));
     }
 
     public Response<Long> exsetVersion(byte[] key, byte[] value, ExsetParams params) {
-        getClient("").sendCommand(ModuleCommand.EXSET,
-            params.getByteParams(key, value, "WITHVERSION".getBytes()));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXSET)
+            .addObjects(params.getByteParams(key, value, "WITHVERSION".getBytes())), BuilderFactory.LONG));
     }
 
     public Response<ExgetResult<String>> exget(String key) {
-        getClient("").sendCommand(ModuleCommand.EXGET, key);
-        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXGET)
+            .add(key), StringBuilderFactory.EXGET_RESULT_STRING));
     }
 
     public Response<ExgetResult<byte[]>> exget(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXGET, key);
-        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXGET)
+            .add(key), StringBuilderFactory.EXGET_RESULT_BYTE));
     }
 
     public Response<ExgetResult<String>> exgetFlags(String key) {
-        getClient("").sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS");
-        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXGET)
+            .add(key).add("WITHFLAGS"), StringBuilderFactory.EXGET_RESULT_STRING));
     }
 
     public Response<ExgetResult<byte[]>> exgetFlags(byte[] key) {
-        getClient("").sendCommand(ModuleCommand.EXGET, key, "WITHFLAGS".getBytes());
-        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXGET)
+            .add(key).add("WITHFLAGS"), StringBuilderFactory.EXGET_RESULT_BYTE));
     }
 
     public Response<Long> exsetver(String key, long version) {
@@ -102,8 +111,9 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> exsetver(byte[] key, long version) {
-        getClient("").sendCommand(ModuleCommand.EXSETVER, key, toByteArray(version));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXSETVER)
+            .add(key)
+            .add(version), BuilderFactory.LONG));
     }
 
     public Response<Long> exincrBy(String key, long incr) {
@@ -111,8 +121,9 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> exincrBy(byte[] key, long incr) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBY, key, toByteArray(incr));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXINCRBY)
+            .add(key)
+            .add(incr), BuilderFactory.LONG));
     }
 
     public Response<Long> exincrBy(String key, long incr, ExincrbyParams params) {
@@ -120,8 +131,8 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> exincrBy(byte[] key, long incr, ExincrbyParams params) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBY, params.getByteParams(key, toByteArray(incr)));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXINCRBY)
+            .addObjects(params.getByteParams(key, toByteArray(incr))), BuilderFactory.LONG));
     }
 
     public Response<ExincrbyVersionResult> exincrByVersion(String key, long incr, ExincrbyParams params) {
@@ -129,9 +140,9 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<ExincrbyVersionResult> exincrByVersion(byte[] key, long incr, ExincrbyParams params) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBY,
-            params.getByteParams(key, toByteArray(incr), "WITHVERSION".getBytes()));
-        return getResponse(StringBuilderFactory.EXINCRBY_VERSION_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXINCRBY)
+            .addObjects(params.getByteParams(key, toByteArray(incr), "WITHVERSION".getBytes())),
+            StringBuilderFactory.EXINCRBY_VERSION_RESULT_STRING));
     }
 
     public Response<Double> exincrByFloat(String key, Double incr) {
@@ -139,8 +150,9 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Double> exincrByFloat(byte[] key, Double incr) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, key, toByteArray(incr));
-        return getResponse(BuilderFactory.DOUBLE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXINCRBYFLOAT)
+            .add(key)
+            .add(incr), BuilderFactory.DOUBLE));
     }
 
     public Response<Double> exincrByFloat(String key, Double incr, ExincrbyFloatParams params) {
@@ -148,18 +160,22 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Double> exincrByFloat(byte[] key, Double incr, ExincrbyFloatParams params) {
-        getClient("").sendCommand(ModuleCommand.EXINCRBYFLOAT, params.getByteParams(key, toByteArray(incr)));
-        return getResponse(BuilderFactory.DOUBLE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXINCRBYFLOAT)
+            .addObjects(params.getByteParams(key, toByteArray(incr))), BuilderFactory.DOUBLE));
     }
 
     public Response<ExcasResult<String>> excas(String key, String value, long version) {
-        getClient("").sendCommand(ModuleCommand.EXCAS, key, value, String.valueOf(version));
-        return getResponse(StringBuilderFactory.EXCAS_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXCAS)
+            .add(key)
+            .add(value)
+            .add(version), StringBuilderFactory.EXCAS_RESULT_STRING));
     }
 
     public Response<ExcasResult<byte[]>> excas(byte[] key, byte[] value, long version) {
-        getClient("").sendCommand(ModuleCommand.EXCAS, key, value, toByteArray(version));
-        return getResponse(StringBuilderFactory.EXCAS_RESULT_BYTE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXCAS)
+            .add(key)
+            .add(value)
+            .add(version), StringBuilderFactory.EXCAS_RESULT_BYTE));
     }
 
     public Response<Long> excad(String key, long version) {
@@ -167,8 +183,9 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> excad(byte[] key, long version) {
-        getClient("").sendCommand(ModuleCommand.EXCAD, key, toByteArray(version));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXCAD)
+            .add(key)
+            .add(version), BuilderFactory.LONG));
     }
 
     public Response<Long> exappend(String key, String value, String nxxx, String verabs, long version) {
@@ -176,9 +193,12 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> exappend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
-        getClient("").sendCommand(ModuleCommand.EXAPPEND, key, value, SafeEncoder.encode(nxxx),
-            SafeEncoder.encode(verabs), toByteArray(version));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXAPPEND)
+            .add(key)
+            .add(value)
+            .add(nxxx)
+            .add(verabs)
+            .add(version), BuilderFactory.LONG));
     }
 
     public Response<Long> exprepend(String key, String value, String nxxx, String verabs, long version) {
@@ -186,19 +206,25 @@ public class TairStringPipeline extends Pipeline {
     }
 
     public Response<Long> exprepend(byte[] key, byte[] value, String nxxx, String verabs, long version) {
-        getClient("").sendCommand(ModuleCommand.EXPREPEND, key, value, SafeEncoder.encode(nxxx),
-            SafeEncoder.encode(verabs), toByteArray(version));
-        return getResponse(BuilderFactory.LONG);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXPREPEND)
+            .add(key)
+            .add(value)
+            .add(nxxx)
+            .add(verabs)
+            .add(version), BuilderFactory.LONG));
     }
 
     public Response<ExgetResult<String>> exgae(String key, String expxwithat, long time) {
-        getClient("").sendCommand(ModuleCommand.EXGAE, key, expxwithat, Long.toString(time));
-        return getResponse(StringBuilderFactory.EXGET_RESULT_STRING);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXGAE)
+            .add(key)
+            .add(expxwithat)
+            .add(time), StringBuilderFactory.EXGET_RESULT_STRING));
     }
 
     public Response<ExgetResult<byte[]>> exgae(byte[] key, String expxwithat, long time) {
-        getClient("").sendCommand(ModuleCommand.EXGAE, key, SafeEncoder.encode(expxwithat),
-            toByteArray(time));
-        return getResponse(StringBuilderFactory.EXGET_RESULT_BYTE);
+        return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.EXGAE)
+            .add(key)
+            .add(expxwithat)
+            .add(time), StringBuilderFactory.EXGET_RESULT_BYTE));
     }
 }

@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisMonitor;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

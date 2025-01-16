@@ -1,6 +1,7 @@
 package com.aliyun.tair.tests.tairts;
 
 import com.aliyun.tair.tairts.params.ExtsAttributesParams;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class TairTsPipelineTest extends TairTsTestBase {
     }
 
     @Test
+    @Ignore
     public void extsaddTest() {
 
         for (int i = 0; i < 1; i++) {

@@ -23,20 +23,20 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.Assert;
 import org.junit.Test;
-import redis.clients.jedis.ScanResult;
+import com.aliyun.tair.jedis3.ScanResult;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static redis.clients.jedis.ScanParams.SCAN_POINTER_START;
+import static com.aliyun.tair.jedis3.ScanParams.SCAN_POINTER_START;
 
 public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftcreateindex() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -47,7 +47,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftupdateindex() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -63,7 +63,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftgetindex() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"settings\":{\"analysis\":{\"analyzer\":{\"my_custom_analyzer\":{\"type\":\"custom\",\"tokenizer\":\"whitespace\"}}}},\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -91,7 +91,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftadddoc() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
@@ -111,7 +111,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfupdatedocfield() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -129,7 +129,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfincrlongdocfield() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         try {
             tairSearch.tftincrlongdocfield("tftkey", "1", "f0", 1);
@@ -146,7 +146,7 @@ public class TairSearchTest extends TairSearchTestBase {
             assertTrue(e.getMessage().contains("incrlongdocfield only supports field of int or long type"));
         }
 
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
         assertEquals(ret, "OK");
@@ -159,7 +159,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfincrfloatdocfield() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         try {
             tairSearch.tftincrfloatdocfield("tftkey", "1", "f0", 1.1);
@@ -176,7 +176,7 @@ public class TairSearchTest extends TairSearchTestBase {
             assertTrue(e.getMessage().contains("incrfloatdocfield only supports field of double type"));
         }
 
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"double\"}}}}");
         assertEquals(ret, "OK");
@@ -191,7 +191,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftdeldocfield() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         assertEquals(0, tairSearch.tftdeldocfield("tftkey", "1", "f0").intValue());
 
@@ -206,7 +206,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfdeldoc() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
@@ -223,7 +223,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfdelall() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
@@ -237,7 +237,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfscandocid() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
@@ -258,7 +258,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftanalyzer() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         String res = tairSearch.tftanalyzer("standard", "tair is a nosql database");
         assertEquals("{\"tokens\":[{\"token\":\"tair\",\"start_offset\":0,\"end_offset\":4,\"position\":0},{\"token\":\"nosql\",\"start_offset\":10,\"end_offset\":15,\"position\":3},{\"token\":\"database\",\"start_offset\":16,\"end_offset\":24,\"position\":4}]}", res);
@@ -282,7 +282,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftanalyzerwithunicodekey() {
-        jedis.del("这是一个unicode_key");
+        getJedis().del("这是一个unicode_key");
         tairSearch.tftcreateindex("这是一个unicode_key", "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"my_jieba_analyzer\"}}},\"settings\":{\"analysis\":{\"analyzer\":{\"my_jieba_analyzer\":{\"type\":\"jieba\",\"userwords\":[\"key-value数据结构存储\"],\"use_hmm\":true}}}}}");
 
         String res = tairSearch.tftanalyzer("jieba", "Redis是完全开源免费的，遵守BSD协议，是一个灵活的高性能key-value数据结构存储，可以用来作为数据库、缓存和消息队列。Redis比其他key-value缓存产品有以下三个特点：Redis支持数据的持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载到内存使用。");
@@ -294,7 +294,7 @@ public class TairSearchTest extends TairSearchTestBase {
         Assert.assertTrue(res.contains("key-value数据结构存储"));
 
         // unicode key
-        jedis.del("这是一个unicode_key");
+        getJedis().del("这是一个unicode_key");
         tairSearch.tftcreateindex("这是一个unicode_key".getBytes(StandardCharsets.UTF_8), "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"my_jieba_analyzer\"}}},\"settings\":{\"analysis\":{\"analyzer\":{\"my_jieba_analyzer\":{\"type\":\"jieba\",\"userwords\":[\"key-value数据结构存储\"],\"use_hmm\":true}}}}}".getBytes(StandardCharsets.UTF_8));
 
         res = tairSearch.tftanalyzer("my_jieba_analyzer".getBytes(StandardCharsets.UTF_8), "Redis是完全开源免费的，遵守BSD协议，是一个灵活的高性能key-value数据结构存储，可以用来作为数据库、缓存和消息队列。Redis比其他key-value缓存产品有以下三个特点：Redis支持数据的持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载到内存使用。".getBytes(StandardCharsets.UTF_8), new TFTAnalyzerParams().index("这是一个unicode_key"));
@@ -303,7 +303,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
         // bytes key
         byte[] bytes_key = new byte[]{0x00};
-        jedis.del(bytes_key);
+        getJedis().del(bytes_key);
         tairSearch.tftcreateindex(bytes_key, "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"my_jieba_analyzer\"}}},\"settings\":{\"analysis\":{\"analyzer\":{\"my_jieba_analyzer\":{\"type\":\"jieba\",\"userwords\":[\"key-value数据结构存储\"],\"use_hmm\":true}}}}}".getBytes(StandardCharsets.UTF_8));
         res = tairSearch.tftanalyzer("my_jieba_analyzer".getBytes(StandardCharsets.UTF_8), "Redis是完全开源免费的，遵守BSD协议，是一个灵活的高性能key-value数据结构存储，可以用来作为数据库、缓存和消息队列。Redis比其他key-value缓存产品有以下三个特点：Redis支持数据的持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载到内存使用。".getBytes(StandardCharsets.UTF_8), new TFTAnalyzerParams().index(bytes_key));
         assertEquals("{\"tokens\":[{\"token\":\"redis\",\"start_offset\":0,\"end_offset\":5,\"position\":0},{\"token\":\"完全\",\"start_offset\":6,\"end_offset\":8,\"position\":2},{\"token\":\"开源\",\"start_offset\":8,\"end_offset\":10,\"position\":3},{\"token\":\"免费\",\"start_offset\":10,\"end_offset\":12,\"position\":4},{\"token\":\"遵守\",\"start_offset\":14,\"end_offset\":16,\"position\":7},{\"token\":\"bsd\",\"start_offset\":16,\"end_offset\":19,\"position\":8},{\"token\":\"协议\",\"start_offset\":19,\"end_offset\":21,\"position\":9},{\"token\":\"一个\",\"start_offset\":23,\"end_offset\":25,\"position\":12},{\"token\":\"灵活\",\"start_offset\":25,\"end_offset\":27,\"position\":13},{\"token\":\"性能\",\"start_offset\":29,\"end_offset\":31,\"position\":15},{\"token\":\"高性能\",\"start_offset\":28,\"end_offset\":31,\"position\":16},{\"token\":\"数据\",\"start_offset\":40,\"end_offset\":42,\"position\":17},{\"token\":\"结构\",\"start_offset\":42,\"end_offset\":44,\"position\":18},{\"token\":\"存储\",\"start_offset\":44,\"end_offset\":46,\"position\":19},{\"token\":\"key-value数据结构存储\",\"start_offset\":31,\"end_offset\":46,\"position\":20},{\"token\":\"数据\",\"start_offset\":53,\"end_offset\":55,\"position\":25},{\"token\":\"数据库\",\"start_offset\":53,\"end_offset\":56,\"position\":26},{\"token\":\"缓存\",\"start_offset\":57,\"end_offset\":59,\"position\":28},{\"token\":\"消息\",\"start_offset\":60,\"end_offset\":62,\"position\":30},{\"token\":\"队列\",\"start_offset\":62,\"end_offset\":64,\"position\":31},{\"token\":\"redis\",\"start_offset\":65,\"end_offset\":70,\"position\":33},{\"token\":\"key\",\"start_offset\":73,\"end_offset\":76,\"position\":36},{\"token\":\"value\",\"start_offset\":77,\"end_offset\":82,\"position\":38},{\"token\":\"缓存\",\"start_offset\":82,\"end_offset\":84,\"position\":39},{\"token\":\"产品\",\"start_offset\":84,\"end_offset\":86,\"position\":40},{\"token\":\"以下\",\"start_offset\":87,\"end_offset\":89,\"position\":42},{\"token\":\"三个\",\"start_offset\":89,\"end_offset\":91,\"position\":43},{\"token\":\"特点\",\"start_offset\":91,\"end_offset\":93,\"position\":44},{\"token\":\"redis\",\"start_offset\":94,\"end_offset\":99,\"position\":46},{\"token\":\"支持\",\"start_offset\":99,\"end_offset\":101,\"position\":47},{\"token\":\"数据\",\"start_offset\":101,\"end_offset\":103,\"position\":48},{\"token\":\"持久\",\"start_offset\":104,\"end_offset\":106,\"position\":50},{\"token\":\"化\",\"start_offset\":106,\"end_offset\":107,\"position\":51},{\"token\":\"内存\",\"start_offset\":111,\"end_offset\":113,\"position\":55},{\"token\":\"中\",\"start_offset\":113,\"end_offset\":114,\"position\":56},{\"token\":\"数据\",\"start_offset\":115,\"end_offset\":117,\"position\":58},{\"token\":\"保存\",\"start_offset\":117,\"end_offset\":119,\"position\":59},{\"token\":\"磁盘\",\"start_offset\":120,\"end_offset\":122,\"position\":61},{\"token\":\"中\",\"start_offset\":122,\"end_offset\":123,\"position\":62},{\"token\":\"重启\",\"start_offset\":124,\"end_offset\":126,\"position\":64},{\"token\":\"再次\",\"start_offset\":131,\"end_offset\":133,\"position\":68},{\"token\":\"加载\",\"start_offset\":133,\"end_offset\":135,\"position\":69},{\"token\":\"内存\",\"start_offset\":136,\"end_offset\":138,\"position\":71},{\"token\":\"使用\",\"start_offset\":138,\"end_offset\":140,\"position\":72}]}", res);
@@ -312,7 +312,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfscandocidwithcount() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
@@ -340,7 +340,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfscandocidwithmatch() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1_redis_doc");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2_redis_doc");
@@ -368,14 +368,14 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void unicodetest() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"chinese\"}}}}");
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"analyzer\":\"chinese\",\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\"}}}}}", tairSearch.tftgetindexmappings("tftkey"));
 
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"search_analyzer\":\"chinese\"}}}}");
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\",\"search_analyzer\":\"chinese\"}}}}}", tairSearch.tftgetindexmappings("tftkey"));
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"chinese\", \"search_analyzer\":\"chinese\"}}}}");
         assertEquals("{\"tftkey\":{\"mappings\":{\"_source\":{\"enabled\":true,\"excludes\":[],\"includes\":[]},\"dynamic\":\"false\",\"properties\":{\"f0\":{\"analyzer\":\"chinese\",\"boost\":1.0,\"enabled\":true,\"ignore_above\":-1,\"index\":true,\"similarity\":\"classic\",\"type\":\"text\",\"search_analyzer\":\"chinese\"}}}}}", tairSearch.tftgetindexmappings("tftkey"));
@@ -386,7 +386,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void searchcachetest() throws Exception {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"v1\",\"f1\":\"3\"}", "2");
@@ -413,8 +413,8 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void msearchtest() throws Exception {
-        jedis.del("{tftkey}1");
-        jedis.del("{tftkey}2");
+        getJedis().del("{tftkey}1");
+        getJedis().del("{tftkey}2");
         tairSearch.tftmappingindex("{tftkey}1", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
         tairSearch.tftadddoc("{tftkey}1", "{\"f0\":1234}", "1");
         tairSearch.tftmappingindex("{tftkey}2", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"long\"}}}}");
@@ -426,7 +426,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmaddteststring() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         Map<String, String> docs = new HashMap();
         docs.put("{\"f0\":\"v0\",\"f1\":\"3\"}", "1");
@@ -449,7 +449,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmaddtestbyte() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         Map<byte[], byte[]> docs = new HashMap();
         docs.put("{\"f0\":\"v0\",\"f1\":\"3\"}".getBytes(), "1".getBytes());
@@ -472,7 +472,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmaddtestdocinfo() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         List<DocInfo> docs = new ArrayList<>();
         docs.add(new DocInfo("{\"f0\":\"v0\",\"f1\":\"3\"}", "3"));
@@ -495,7 +495,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmaddtestdocinfobyte() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         tairSearch.tftmappingindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"},\"f1\":{\"type\":\"text\"}}}}");
         List<DocInfoByte> docs = new ArrayList<>();
         docs.add(new DocInfoByte("{\"f0\":\"v0\",\"f1\":\"3\"}".getBytes(), "3".getBytes()));
@@ -518,7 +518,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftgetsugtest() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         Set<String> visited = new HashSet<>();
         Map<String, Integer> docs = new HashMap();
         docs.put("redis is a memory database", 1);
@@ -566,7 +566,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftgetsugtestbyte() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
 
         Set<String> visited = new HashSet<>();
         Map<String, Integer> cmpDocs = new HashMap();
@@ -619,12 +619,12 @@ public class TairSearchTest extends TairSearchTestBase {
 
         assertEquals(2, tairSearch.tftdelsug("tftkey".getBytes(), "redis cluster".getBytes(), "redis".getBytes()).intValue());
         assertEquals(docs.size() - 2, tairSearch.tftsugnum("tftkey".getBytes()).intValue());
-        jedis.del("tftkey".getBytes());
+        getJedis().del("tftkey".getBytes());
     }
 
     @Test
     public void tfttermquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -656,7 +656,7 @@ public class TairSearchTest extends TairSearchTestBase {
         Map<String,Object> tmp = result.getHits().getAt(0).getSourceAsMap();
         assertEquals("redis is a nosql database",tmp.get("f0"));
 
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"whitespace\"}}}}");
         assertEquals(ret, "OK");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"Redis is a nosql database\"}", "1");
@@ -670,7 +670,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftsourceasmaptest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"properties\":{\"f1\":{\"type\":\"text\"}}},\"f2\":{\"type\":\"long\"},\"f3\":{\"type\":\"double\"},\"f4\":{\"type\":\"integer\"}}}}");
         assertEquals(ret, "OK");
 
@@ -704,7 +704,7 @@ public class TairSearchTest extends TairSearchTestBase {
         int f4 = ((Number)tmp.get("f4")).intValue();
         assertEquals(10, f4);
 
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret1 = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"properties\":{\"f1\":{\"type\":\"long\"}}}}}}");
         assertEquals(ret1, "OK");
 
@@ -727,7 +727,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfttermsquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -762,7 +762,7 @@ public class TairSearchTest extends TairSearchTestBase {
         assertEquals("{\"hits\":{\"hits\":[{\"_id\":\"1\",\"_index\":\"tftkey\",\"_score\":0.21745,\"_source\":{\"f0\":\"redis is a nosql database\"}}],\"max_score\":0.21745,\"total\":{\"relation\":\"eq\",\"value\":1}}}",
             result.toString());
 
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\",\"analyzer\":\"whitespace\"}}}}");
         assertEquals(ret, "OK");
         tairSearch.tftadddoc("tftkey", "{\"f0\":\"Redis is a nosql database\"}", "1");
@@ -776,7 +776,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftwildcardquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -798,7 +798,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftprefixquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -821,7 +821,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmatchallquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -840,7 +840,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftrangequerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -900,7 +900,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmatchquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -940,7 +940,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftconstantscorequerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -961,7 +961,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftdismaxquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -986,7 +986,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftboolquerybuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -1028,7 +1028,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftsearchsourcebuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -1083,9 +1083,9 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmsearchsourcebuildertest(){
-        jedis.del("key0");
-        jedis.del("key1");
-        jedis.del("key2");
+        getJedis().del("key0");
+        getJedis().del("key1");
+        getJedis().del("key2");
         String ret = tairSearch.tftcreateindex("key0", "{\"mappings\":{\"properties\":{\"describe\":{\"type\":\"text\"}, \"name\":{\"type\":\"keyword\"}, \"id\":{\"type\":\"long\"}, \"price\":{\"type\":\"integer\"}, \"sale\":{\"type\":\"double\"}}}}");
         assertEquals(ret, "OK");
         ret = tairSearch.tftcreateindex("key1", "{\"mappings\":{\"properties\":{\"describe\":{\"type\":\"text\"}, \"name\":{\"type\":\"keyword\"}, \"id\":{\"type\":\"long\"}, \"price\":{\"type\":\"integer\"}, \"sale\":{\"type\":\"double\"}}}}");
@@ -1162,7 +1162,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftsumaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
             + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
             + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1197,7 +1197,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftmaxaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
             + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
             + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1232,7 +1232,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftavgaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1267,7 +1267,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftminaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1303,7 +1303,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftsumofsquaresaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1338,7 +1338,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftvarianceaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1373,7 +1373,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftstddeviationaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1408,7 +1408,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftextendedstatsaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1449,7 +1449,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftvaluecountaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1485,7 +1485,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftfilteraggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1535,7 +1535,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tfttermsaggsbuildertest(){
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"properties\":{\"shares_name\":{\"type"
                 + "\":\"keyword\"}, \"logictime\":{\"type\":\"long\"}, \"purchase_type\":{\"type\":\"integer\"}, "
                 + "\"purchase_price\":{\"type\":\"double\"}, \"purchase_count\":{\"type\":\"long\"}, "
@@ -1655,7 +1655,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftexplaincosttest() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 
@@ -1675,7 +1675,7 @@ public class TairSearchTest extends TairSearchTestBase {
 
     @Test
     public void tftexplainscoretest() {
-        jedis.del("tftkey");
+        getJedis().del("tftkey");
         String ret = tairSearch.tftcreateindex("tftkey", "{\"mappings\":{\"dynamic\":\"false\",\"properties\":{\"f0\":{\"type\":\"text\"}}}}");
         assertEquals(ret, "OK");
 

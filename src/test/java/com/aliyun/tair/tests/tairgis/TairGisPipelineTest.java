@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
-import redis.clients.jedis.GeoUnit;
+import redis.clients.jedis.args.GeoUnit;
 import redis.clients.jedis.Response;
 
 import java.util.*;
