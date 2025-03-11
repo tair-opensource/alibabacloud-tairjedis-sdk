@@ -2,8 +2,8 @@ package com.aliyun.tair.tests.example;
 
 import com.aliyun.tair.tairstring.TairString;
 import com.aliyun.tair.tairstring.params.ExincrbyParams;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class BargainRush {
     // init timeout

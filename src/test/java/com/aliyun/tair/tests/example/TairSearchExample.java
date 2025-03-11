@@ -1,9 +1,9 @@
 package com.aliyun.tair.tests.example;
 
 import com.aliyun.tair.tairsearch.TairSearch;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class TairSearchExample {
     // init timeout

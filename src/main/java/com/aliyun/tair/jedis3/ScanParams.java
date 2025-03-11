@@ -8,12 +8,12 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import redis.clients.jedis.Protocol;
-import redis.clients.jedis.Protocol.Keyword;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Protocol;
+import io.valkey.Protocol.Keyword;
+import io.valkey.util.SafeEncoder;
 
-import static redis.clients.jedis.Protocol.Keyword.COUNT;
-import static redis.clients.jedis.Protocol.Keyword.MATCH;
+import static io.valkey.Protocol.Keyword.COUNT;
+import static io.valkey.Protocol.Keyword.MATCH;
 
 /**
  * paste from jedis3

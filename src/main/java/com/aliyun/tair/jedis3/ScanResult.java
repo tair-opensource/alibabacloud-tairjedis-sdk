@@ -2,7 +2,7 @@ package com.aliyun.tair.jedis3;
 
 import java.util.List;
 
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 /**
  * paste from jedis3

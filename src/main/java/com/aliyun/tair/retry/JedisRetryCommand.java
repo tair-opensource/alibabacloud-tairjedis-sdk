@@ -6,9 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisException;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
+import io.valkey.exceptions.JedisException;
 
 public abstract class JedisRetryCommand<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(JedisRetryCommand.class);

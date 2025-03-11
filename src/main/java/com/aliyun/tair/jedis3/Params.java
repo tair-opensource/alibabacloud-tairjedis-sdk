@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import redis.clients.jedis.Protocol;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Protocol;
+import io.valkey.util.SafeEncoder;
 
 /**
  * paste from Jedis3

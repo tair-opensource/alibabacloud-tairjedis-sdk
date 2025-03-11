@@ -1,13 +1,13 @@
 package com.aliyun.tair.tairsearch.params;
 
-import redis.clients.jedis.Protocol;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Protocol;
+import io.valkey.util.SafeEncoder;
 
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import static redis.clients.jedis.Protocol.Keyword.COUNT;
-import static redis.clients.jedis.Protocol.Keyword.MATCH;
+import static io.valkey.Protocol.Keyword.COUNT;
+import static io.valkey.Protocol.Keyword.MATCH;
 
 public class TFTScanParams {
     public static final String SCAN_POINTER_START = String.valueOf(0);

@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.aliyun.tair.jedis3.ScanResult;
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Builder;
+import io.valkey.util.SafeEncoder;
 
 public class VectorBuilderFactory {
     public static final String VECTOR_TAG = "VECTOR";

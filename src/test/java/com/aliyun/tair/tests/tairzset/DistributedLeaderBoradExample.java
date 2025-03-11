@@ -1,7 +1,7 @@
 package com.aliyun.tair.tests.tairzset;
 
 import com.aliyun.tair.tairzset.DistributedLeaderBoard;
-import redis.clients.jedis.JedisPool;
+import io.valkey.JedisPool;
 
 public class DistributedLeaderBoradExample {
     private static final int shardKeySize = 10;  // 底层子排行榜的数量

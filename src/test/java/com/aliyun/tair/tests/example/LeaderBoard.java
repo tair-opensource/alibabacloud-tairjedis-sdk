@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aliyun.tair.tairzset.TairZset;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class LeaderBoard {
     // init timeout

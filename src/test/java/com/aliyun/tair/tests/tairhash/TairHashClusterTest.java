@@ -19,7 +19,7 @@
 //import org.junit.Assert;
 //import org.junit.ComparisonFailure;
 //import org.junit.Test;
-//import redis.clients.jedis.Response;
+//import io.valkey.Response;
 //import com.aliyun.tair.jedis3.ScanResult;
 //
 //import static junit.framework.TestCase.assertTrue;

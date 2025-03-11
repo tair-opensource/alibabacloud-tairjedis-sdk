@@ -1,8 +1,8 @@
 package com.aliyun.tair.tests.example;
 
 import com.aliyun.tair.taircpc.TairCpc;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class FraudPrevention {
     // init timeout

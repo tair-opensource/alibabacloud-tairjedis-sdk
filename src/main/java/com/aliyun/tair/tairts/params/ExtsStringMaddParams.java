@@ -1,11 +1,11 @@
 package com.aliyun.tair.tairts.params;
 
 import com.aliyun.tair.jedis3.Params;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class ExtsStringMaddParams extends Params {
     public byte[][] getByteParams(String pkey, ArrayList<ExtsStringDataPoint<String>> args) {

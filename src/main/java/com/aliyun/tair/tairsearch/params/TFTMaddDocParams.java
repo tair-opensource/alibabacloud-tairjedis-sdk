@@ -1,6 +1,6 @@
 package com.aliyun.tair.tairsearch.params;
 
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;

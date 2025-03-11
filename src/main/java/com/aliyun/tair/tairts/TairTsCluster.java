@@ -8,14 +8,14 @@ import com.aliyun.tair.tairts.results.ExtsDataPointResult;
 import com.aliyun.tair.tairts.results.ExtsSkeyResult;
 import com.aliyun.tair.tairts.results.ExtsStringDataPointResult;
 import com.aliyun.tair.tairts.results.ExtsStringSkeyResult;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.JedisCluster;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairTsCluster {
     private JedisCluster jc;

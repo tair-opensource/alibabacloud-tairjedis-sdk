@@ -3,9 +3,9 @@ package com.aliyun.tair.tairzset.params;
 import java.util.ArrayList;
 
 import com.aliyun.tair.jedis3.Params;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class ExzrangeParams extends Params {
     private static final String WITHSCORES = "withscores";

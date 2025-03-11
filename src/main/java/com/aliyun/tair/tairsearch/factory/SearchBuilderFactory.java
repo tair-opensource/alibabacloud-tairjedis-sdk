@@ -1,8 +1,8 @@
 package com.aliyun.tair.tairsearch.factory;
 
 import com.aliyun.tair.tairsearch.action.search.SearchResponse;
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Builder;
+import io.valkey.util.SafeEncoder;
 
 public class SearchBuilderFactory {
     public static final Builder<SearchResponse> SEARCH_RESPONSE = new Builder<SearchResponse>() {

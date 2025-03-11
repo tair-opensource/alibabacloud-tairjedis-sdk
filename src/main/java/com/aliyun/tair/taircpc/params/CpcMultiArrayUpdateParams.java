@@ -3,12 +3,12 @@ package com.aliyun.tair.taircpc.params;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.taircpc.CommonResult;
 import com.aliyun.tair.jedis3.Params;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 
 import static com.aliyun.tair.taircpc.params.CpcDataUtil.*;
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class CpcMultiArrayUpdateParams extends Params {
     public CpcMultiArrayUpdateParams() {}

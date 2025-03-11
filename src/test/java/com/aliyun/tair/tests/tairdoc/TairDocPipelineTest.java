@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.aliyun.tair.tairdoc.params.JsongetParams;
 import com.aliyun.tair.tairdoc.params.JsonsetParams;
 import org.junit.Test;
-import redis.clients.jedis.Response;
+import io.valkey.Response;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,8 +1,8 @@
 package com.aliyun.tair.mcommamd.factory;
 
 import com.aliyun.tair.mcommamd.results.SlotAndNodeIndex;
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Builder;
+import io.valkey.util.SafeEncoder;
 
 public class AliyunRedisCommandBuilderFactory {
     public static final Builder<SlotAndNodeIndex> SlotAndNodeIndexResult = new Builder<SlotAndNodeIndex>() {

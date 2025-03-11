@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairTsPipelineTest extends TairTsTestBase {
     private String randomSkey;

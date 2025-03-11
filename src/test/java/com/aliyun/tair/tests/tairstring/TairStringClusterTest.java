@@ -6,7 +6,7 @@ import com.aliyun.tair.tairstring.params.ExsetParams;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import org.junit.Test;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.Arrays;
 import java.util.UUID;

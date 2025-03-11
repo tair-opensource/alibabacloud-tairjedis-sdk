@@ -8,12 +8,12 @@ import com.aliyun.tair.jedis3.ScanParams;
 import com.aliyun.tair.jedis3.ScanResult;
 import com.aliyun.tair.mcommamd.factory.AliyunRedisCommandBuilderFactory;
 import com.aliyun.tair.mcommamd.results.SlotAndNodeIndex;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisMonitor;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Protocol.Command;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.Jedis;
+import io.valkey.JedisMonitor;
+import io.valkey.JedisPool;
+import io.valkey.Protocol.Command;
+import io.valkey.util.SafeEncoder;
 
 public class AliyunRedisCommand {
     private Jedis jedis;

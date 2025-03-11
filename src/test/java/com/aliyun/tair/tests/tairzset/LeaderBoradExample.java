@@ -1,7 +1,7 @@
 package com.aliyun.tair.tests.tairzset;
 
 import com.aliyun.tair.tairzset.LeaderBoard;
-import redis.clients.jedis.JedisPool;
+import io.valkey.JedisPool;
 
 public class LeaderBoradExample {
     public static void main(String[] args) {

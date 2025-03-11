@@ -6,7 +6,7 @@ import com.aliyun.tair.tairhash.params.ExhsetParams;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import redis.clients.jedis.Response;
+import io.valkey.Response;
 
 import java.util.HashMap;
 import java.util.List;

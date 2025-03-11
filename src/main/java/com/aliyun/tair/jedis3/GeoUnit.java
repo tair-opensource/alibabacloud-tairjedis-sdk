@@ -1,6 +1,6 @@
 package com.aliyun.tair.jedis3;
 
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 public enum GeoUnit {
   M, KM, MI, FT;

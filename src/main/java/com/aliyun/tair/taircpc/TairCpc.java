@@ -4,18 +4,18 @@ import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.taircpc.factory.CpcBuilderFactory;
 import com.aliyun.tair.taircpc.params.*;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisConnectionException;
-import redis.clients.jedis.exceptions.JedisDataException;
-import redis.clients.jedis.util.JedisClusterCRC16;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
+import io.valkey.exceptions.JedisConnectionException;
+import io.valkey.exceptions.JedisDataException;
+import io.valkey.util.JedisClusterCRC16;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairCpc {
 

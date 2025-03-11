@@ -18,8 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import com.aliyun.tair.jedis3.ScanResult;
-import redis.clients.jedis.exceptions.JedisDataException;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.exceptions.JedisDataException;
+import io.valkey.util.SafeEncoder;
 
 public class TairVectorClusterTest extends TairVectorTestBase {
     final String index = "default_index_cluster";

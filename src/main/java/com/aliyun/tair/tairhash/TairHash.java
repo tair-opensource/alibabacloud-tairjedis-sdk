@@ -14,12 +14,12 @@ import com.aliyun.tair.jedis3.ScanParams;
 import com.aliyun.tair.tairhash.factory.HashBuilderFactory;
 import com.aliyun.tair.tairhash.params.*;
 import com.aliyun.tair.util.JoinParameters;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
+import io.valkey.util.SafeEncoder;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairHash {
     private Jedis jedis;

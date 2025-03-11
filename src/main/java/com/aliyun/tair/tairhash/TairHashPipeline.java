@@ -17,15 +17,15 @@ import com.aliyun.tair.tairhash.params.ExhincrByFloatParams;
 import com.aliyun.tair.tairhash.params.ExhincrByParams;
 import com.aliyun.tair.tairhash.params.ExhmsetwithoptsParams;
 import com.aliyun.tair.tairhash.params.ExhsetParams;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.CommandArguments;
-import redis.clients.jedis.CommandObject;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.CommandArguments;
+import io.valkey.CommandObject;
+import io.valkey.Jedis;
+import io.valkey.Pipeline;
+import io.valkey.Response;
+import io.valkey.util.SafeEncoder;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairHashPipeline extends Pipeline {
     public TairHashPipeline(Jedis jedis) {

@@ -1,7 +1,7 @@
 package com.aliyun.tair;
 
-import redis.clients.jedis.commands.ProtocolCommand;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.commands.ProtocolCommand;
+import io.valkey.util.SafeEncoder;
 
 public enum ModuleCommand implements ProtocolCommand {
     // com.kvstore.jedis.TairDoc command

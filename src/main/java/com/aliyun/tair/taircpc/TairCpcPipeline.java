@@ -4,20 +4,20 @@ import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.taircpc.factory.CpcBuilderFactory;
 import com.aliyun.tair.taircpc.params.*;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.CommandArguments;
-import redis.clients.jedis.CommandObject;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.util.JedisClusterCRC16;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.CommandArguments;
+import io.valkey.CommandObject;
+import io.valkey.Jedis;
+import io.valkey.Pipeline;
+import io.valkey.Response;
+import io.valkey.util.JedisClusterCRC16;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairCpcPipeline extends Pipeline {
     public TairCpcPipeline(Jedis jedis) {

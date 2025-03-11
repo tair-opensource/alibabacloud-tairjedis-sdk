@@ -3,7 +3,7 @@ package com.aliyun.tair.tairstring.factory;
 import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.results.ExincrbyVersionResult;
-import redis.clients.jedis.Builder;
+import io.valkey.Builder;
 
 import java.util.List;
 

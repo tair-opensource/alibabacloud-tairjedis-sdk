@@ -3,9 +3,9 @@ package com.aliyun.tair.taircpc.factory;
 import com.aliyun.tair.taircpc.results.Update2EstWithKeyResult;
 import com.aliyun.tair.taircpc.results.Update2JudResult;
 import com.aliyun.tair.taircpc.results.Update2JudWithKeyResult;
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Builder;
+import io.valkey.BuilderFactory;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

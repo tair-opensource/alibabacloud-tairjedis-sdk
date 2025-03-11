@@ -9,7 +9,7 @@ import com.aliyun.tair.tairzset.params.ExzaddParams;
 import com.aliyun.tair.tairzset.params.ExzrangeParams;
 import org.junit.Before;
 import org.junit.Test;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;

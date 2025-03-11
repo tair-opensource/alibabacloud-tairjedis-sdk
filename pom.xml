@@ -55,9 +55,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>5.2.0</version>
+            <groupId>io.valkey</groupId>
+            <artifactId>valkey-java</artifactId>
+            <version>5.3.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

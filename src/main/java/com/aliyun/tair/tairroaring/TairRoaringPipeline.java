@@ -6,14 +6,14 @@ import java.util.List;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.jedis3.ScanResult;
 import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.CommandArguments;
-import redis.clients.jedis.CommandObject;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
+import io.valkey.BuilderFactory;
+import io.valkey.CommandArguments;
+import io.valkey.CommandObject;
+import io.valkey.Jedis;
+import io.valkey.Pipeline;
+import io.valkey.Response;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairRoaringPipeline extends Pipeline {
     public TairRoaringPipeline(Jedis jedis) {

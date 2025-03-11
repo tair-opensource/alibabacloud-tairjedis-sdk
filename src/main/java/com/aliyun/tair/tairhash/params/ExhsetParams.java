@@ -3,7 +3,7 @@ package com.aliyun.tair.tairhash.params;
 import java.util.ArrayList;
 
 import com.aliyun.tair.jedis3.Params;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 public class ExhsetParams extends Params {
     private static final String XX = "xx";

@@ -3,11 +3,11 @@ package com.aliyun.tair.tairroaring;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import com.aliyun.tair.util.JoinParameters;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.JedisCluster;
+import io.valkey.BuilderFactory;
+import io.valkey.JedisCluster;
 import com.aliyun.tair.jedis3.ScanResult;
-import redis.clients.jedis.util.SafeEncoder;
-import static redis.clients.jedis.Protocol.toByteArray;
+import io.valkey.util.SafeEncoder;
+import static io.valkey.Protocol.toByteArray;
 
 
 import java.util.ArrayList;

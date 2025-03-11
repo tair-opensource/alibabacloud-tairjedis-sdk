@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.util.JedisByteHashMap;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Builder;
+import io.valkey.util.JedisByteHashMap;
+import io.valkey.util.SafeEncoder;
 
 /**
  * paste from jedis3

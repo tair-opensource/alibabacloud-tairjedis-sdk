@@ -4,8 +4,8 @@ import com.aliyun.tair.tairvector.TairVector;
 import com.aliyun.tair.tairvector.factory.VectorBuilderFactory;
 import com.aliyun.tair.tairvector.params.DistanceMethod;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class VectorSearch {
     // init timeout

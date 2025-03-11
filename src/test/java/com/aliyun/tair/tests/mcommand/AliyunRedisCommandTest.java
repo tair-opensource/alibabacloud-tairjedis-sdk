@@ -5,8 +5,8 @@ import com.aliyun.tair.mcommamd.results.SlotAndNodeIndex;
 import com.aliyun.tair.tests.TestBase;
 import org.junit.Assert;
 import org.junit.Test;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisMonitor;
+import io.valkey.Jedis;
+import io.valkey.JedisMonitor;
 import com.aliyun.tair.jedis3.ScanResult;
 
 import static org.junit.Assert.assertEquals;

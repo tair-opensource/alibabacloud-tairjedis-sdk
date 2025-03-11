@@ -3,7 +3,7 @@ package com.aliyun.tair.tairzset.params;
 import java.util.ArrayList;
 
 import com.aliyun.tair.jedis3.Params;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 public class RankParams extends Params {
     private static final String APPROXIMATE = "APPROXIMATE";

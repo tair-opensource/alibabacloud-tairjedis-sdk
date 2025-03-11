@@ -6,13 +6,13 @@ import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairdoc.params.JsonsetParams;
 import com.aliyun.tair.tairdoc.params.JsongetParams;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.CommandArguments;
-import redis.clients.jedis.CommandObject;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.CommandArguments;
+import io.valkey.CommandObject;
+import io.valkey.Jedis;
+import io.valkey.Pipeline;
+import io.valkey.Response;
+import io.valkey.util.SafeEncoder;
 
 public class TairDocPipeline extends Pipeline {
     public TairDocPipeline(Jedis jedis) {

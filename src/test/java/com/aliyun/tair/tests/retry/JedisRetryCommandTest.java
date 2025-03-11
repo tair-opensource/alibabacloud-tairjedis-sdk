@@ -8,9 +8,9 @@ import com.aliyun.tair.tests.TestBase;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Protocol;
-import redis.clients.jedis.exceptions.JedisException;
+import io.valkey.Jedis;
+import io.valkey.Protocol;
+import io.valkey.exceptions.JedisException;
 
 public class JedisRetryCommandTest extends TestBase {
     @Test

@@ -1,7 +1,7 @@
 package com.aliyun.tair.tairvector.params;
 
-import redis.clients.jedis.Protocol;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Protocol;
+import io.valkey.util.SafeEncoder;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

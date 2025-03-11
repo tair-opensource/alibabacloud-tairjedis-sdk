@@ -6,12 +6,12 @@ import java.util.List;
 import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairroaring.factory.RoaringBuilderFactory;
 import com.aliyun.tair.util.JoinParameters;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import io.valkey.BuilderFactory;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
 import com.aliyun.tair.jedis3.ScanResult;
-import redis.clients.jedis.util.SafeEncoder;
-import static redis.clients.jedis.Protocol.toByteArray;
+import io.valkey.util.SafeEncoder;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairRoaring {
     private Jedis jedis;

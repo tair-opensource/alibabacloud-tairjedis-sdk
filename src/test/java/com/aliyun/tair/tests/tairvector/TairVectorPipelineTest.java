@@ -7,7 +7,7 @@ import com.aliyun.tair.tairvector.params.HscanParams;
 import com.aliyun.tair.tairvector.params.IndexAlgorithm;
 import org.junit.Test;
 import com.aliyun.tair.jedis3.ScanResult;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.*;
 import java.util.stream.Collectors;

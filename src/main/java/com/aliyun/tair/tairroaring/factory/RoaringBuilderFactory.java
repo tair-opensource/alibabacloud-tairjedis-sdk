@@ -1,7 +1,7 @@
 package com.aliyun.tair.tairroaring.factory;
 
 import java.util.*;
-import redis.clients.jedis.Builder;
+import io.valkey.Builder;
 import com.aliyun.tair.jedis3.ScanResult;
 
 public class RoaringBuilderFactory {

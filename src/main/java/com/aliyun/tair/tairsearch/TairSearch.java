@@ -8,17 +8,17 @@ import com.aliyun.tair.tairsearch.params.*;
 import com.aliyun.tair.tairsearch.search.builder.MSearchSourceBuilder;
 import com.aliyun.tair.tairsearch.search.builder.SearchSourceBuilder;
 import com.aliyun.tair.util.JoinParameters;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import io.valkey.BuilderFactory;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
 import com.aliyun.tair.jedis3.ScanResult;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairSearch {
     private Jedis jedis;

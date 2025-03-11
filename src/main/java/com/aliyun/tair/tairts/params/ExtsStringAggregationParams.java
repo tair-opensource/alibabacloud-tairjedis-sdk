@@ -1,7 +1,7 @@
 package com.aliyun.tair.tairts.params;
 
 import com.aliyun.tair.jedis3.Params;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;

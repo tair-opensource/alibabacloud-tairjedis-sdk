@@ -6,7 +6,7 @@ import com.aliyun.tair.taircpc.results.Update2JudResult;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import redis.clients.jedis.exceptions.JedisDataException;
+import io.valkey.exceptions.JedisDataException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,14 +5,14 @@ import com.aliyun.tair.ModuleCommand;
 import com.aliyun.tair.tairbloom.factory.BloomBuilderFactory;
 import com.aliyun.tair.tairbloom.params.BfinsertParams;
 import com.aliyun.tair.tairbloom.params.BfmexistParams;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
+import io.valkey.util.SafeEncoder;
 
 import java.util.List;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairBloom {
     private Jedis jedis;

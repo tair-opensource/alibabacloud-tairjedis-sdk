@@ -3,8 +3,8 @@ package com.aliyun.tair.tests.example;
 import java.util.UUID;
 
 import com.aliyun.tair.tairbloom.TairBloom;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class BloomFilter {
     // init timeout

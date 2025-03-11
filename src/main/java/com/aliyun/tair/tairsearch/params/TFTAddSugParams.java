@@ -1,11 +1,11 @@
 package com.aliyun.tair.tairsearch.params;
 
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TFTAddSugParams {
     public byte[][] getByteParams(String key, Map<String, Integer> docs) {

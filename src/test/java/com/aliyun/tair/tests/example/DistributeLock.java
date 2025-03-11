@@ -4,10 +4,10 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import com.aliyun.tair.tairstring.TairString;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.params.SetParams;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
+import io.valkey.params.SetParams;
 
 public class DistributeLock {
     // init timeout

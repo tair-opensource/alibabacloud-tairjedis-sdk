@@ -1,7 +1,7 @@
 package com.aliyun.tair.tairts.factory;
 
 import com.aliyun.tair.tairts.results.*;
-import redis.clients.jedis.Builder;
+import io.valkey.Builder;
 
 import java.util.ArrayList;
 import java.util.List;

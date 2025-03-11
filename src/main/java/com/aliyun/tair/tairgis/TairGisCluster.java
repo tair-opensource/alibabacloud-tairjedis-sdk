@@ -5,11 +5,11 @@ import com.aliyun.tair.jedis3.Jedis3BuilderFactory;
 import com.aliyun.tair.tairgis.factory.GisBuilderFactory;
 import com.aliyun.tair.tairgis.params.GisParams;
 import com.aliyun.tair.tairgis.params.GisSearchResponse;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.Protocol;
-import redis.clients.jedis.args.GeoUnit;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.JedisCluster;
+import io.valkey.Protocol;
+import io.valkey.args.GeoUnit;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

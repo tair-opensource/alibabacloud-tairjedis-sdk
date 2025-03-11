@@ -1,9 +1,9 @@
 package com.aliyun.tair.tairgis.factory;
 
 import com.aliyun.tair.tairgis.params.GisSearchResponse;
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Builder;
+import io.valkey.BuilderFactory;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

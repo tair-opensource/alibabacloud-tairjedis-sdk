@@ -1,6 +1,6 @@
 package com.aliyun.tair.tairgis.params;
 
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 public class GisSearchResponse {
     private byte[] field;

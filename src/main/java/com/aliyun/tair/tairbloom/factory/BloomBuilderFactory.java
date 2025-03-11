@@ -1,6 +1,6 @@
 package com.aliyun.tair.tairbloom.factory;
 
-import redis.clients.jedis.Builder;
+import io.valkey.Builder;
 
 import java.util.List;
 

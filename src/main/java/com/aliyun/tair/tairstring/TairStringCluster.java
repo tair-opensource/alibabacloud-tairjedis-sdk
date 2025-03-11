@@ -9,11 +9,11 @@ import com.aliyun.tair.tairstring.results.ExcasResult;
 import com.aliyun.tair.tairstring.results.ExgetResult;
 import com.aliyun.tair.tairstring.factory.StringBuilderFactory;
 import com.aliyun.tair.tairstring.results.ExincrbyVersionResult;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.JedisCluster;
+import io.valkey.util.SafeEncoder;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TairStringCluster {
     private JedisCluster jc;

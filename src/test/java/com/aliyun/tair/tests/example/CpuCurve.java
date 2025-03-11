@@ -2,8 +2,8 @@ package com.aliyun.tair.tests.example;
 
 import com.aliyun.tair.tairts.TairTs;
 import com.aliyun.tair.tairts.results.ExtsSkeyResult;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class CpuCurve {
     // init timeout

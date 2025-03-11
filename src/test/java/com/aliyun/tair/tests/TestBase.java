@@ -3,11 +3,11 @@ package com.aliyun.tair.tests;
 import java.util.HashSet;
 import java.util.Set;
 
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import io.valkey.HostAndPort;
+import io.valkey.Jedis;
+import io.valkey.JedisCluster;
+import io.valkey.JedisPool;
+import io.valkey.JedisPoolConfig;
 
 public class TestBase {
     protected static final String HOST = "127.0.0.1";

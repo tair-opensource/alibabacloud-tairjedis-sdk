@@ -9,14 +9,14 @@ import com.aliyun.tair.tairzset.params.RankParams;
 import com.aliyun.tair.util.JoinParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.BuilderFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Protocol.Command;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.BuilderFactory;
+import io.valkey.Jedis;
+import io.valkey.JedisPool;
+import io.valkey.Pipeline;
+import io.valkey.Protocol.Command;
+import io.valkey.util.SafeEncoder;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class LeaderBoard {
     private static final Logger LOGGER = LoggerFactory.getLogger(LeaderBoard.class);

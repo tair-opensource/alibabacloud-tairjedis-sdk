@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 
 import com.aliyun.tair.jedis3.ScanResult;
 import com.aliyun.tair.tairhash.params.ExhgetwithverResult;
-import redis.clients.jedis.Builder;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.Builder;
+import io.valkey.util.SafeEncoder;
 
 public class HashBuilderFactory {
 

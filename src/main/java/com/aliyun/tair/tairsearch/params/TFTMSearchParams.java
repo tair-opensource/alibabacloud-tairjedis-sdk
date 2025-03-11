@@ -1,10 +1,10 @@
 package com.aliyun.tair.tairsearch.params;
 
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 import java.util.ArrayList;
 
-import static redis.clients.jedis.Protocol.toByteArray;
+import static io.valkey.Protocol.toByteArray;
 
 public class TFTMSearchParams {
     public byte[][] getByteParams(String request, String... indexes) {

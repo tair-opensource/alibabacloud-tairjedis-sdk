@@ -2,9 +2,9 @@ package com.aliyun.tair.tairgis.params;
 
 import java.util.ArrayList;
 
-import redis.clients.jedis.Protocol;
+import io.valkey.Protocol;
 import com.aliyun.tair.jedis3.Params;
-import redis.clients.jedis.util.SafeEncoder;
+import io.valkey.util.SafeEncoder;
 
 public class GisParams extends Params {
     public static final String RADIUS = "radius";
