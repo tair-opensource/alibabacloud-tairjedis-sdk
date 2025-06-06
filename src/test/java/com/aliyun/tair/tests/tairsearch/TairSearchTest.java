@@ -722,6 +722,23 @@ public class TairSearchTest extends TairSearchTestBase {
         Map<String, Object> f0Map = (Map<String, Object>)(tmp1.get("f0"));
         long f0F1 = ((Number)f0Map.get("f1")).longValue();
         assertEquals(10, f0F1);
+
+        tairSearch.tftadddoc("tftkey", "{\"f0\":{\"f1\":100},\"f2\":[10,\"abc\",20]}", "10");
+        TermQueryBuilder qb2 = QueryBuilders.termQuery("f0.f1",100).boost(2.0F);
+        assertEquals("f0.f1", qb2.fieldName());
+        assertEquals(100, qb2.value());
+        assertEquals(2.0, qb2.boost(),0.01);
+        SearchSourceBuilder ssb2 = new SearchSourceBuilder().query(qb2);
+        SearchResponse result2 = tairSearch.tftsearch("tftkey", ssb2);
+        Map<String,Object> tmp2 = result2.getHits().getAt(0).getSourceAsMap();
+        Map<String, Object> f0Map2 = (Map<String, Object>)(tmp2.get("f0"));
+        f0F1 = ((Number)f0Map2.get("f1")).longValue();
+        assertEquals(100, f0F1);
+        ArrayList<Object> list = (ArrayList<Object>)(tmp2.get("f2"));
+        assertEquals(10, ((Number)list.get(0)).longValue());
+        assertEquals("abc", list.get(1));
+        assertEquals(20, ((Number)list.get(2)).longValue());
+        assertEquals(3, list.size());
     }
 
 
