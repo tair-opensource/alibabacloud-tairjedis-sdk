@@ -37,6 +37,7 @@ import com.google.gson.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * A single search hit.
@@ -116,28 +117,36 @@ public class SearchHit {
         return sourceAsMap;
     }
 
+    private Object getJsonElementAsObject(JsonElement element){
+        if (element.isJsonPrimitive()) {
+            JsonPrimitive value = element.getAsJsonPrimitive();
+            if (value.isString()) {
+                return value.getAsString();
+            } else if (value.isNumber()) {
+                return value.getAsNumber();
+            } else if (value.isBoolean()) {
+                return value.getAsBoolean();
+            }
+        } else if(element.isJsonArray()) {
+            JsonArray array = element.getAsJsonArray();
+            ArrayList<Object> list = new ArrayList<>();
+            for (JsonElement ele : array) {
+                list.add(getJsonElementAsObject(ele));
+            }
+            return list;
+        } else if(element.isJsonObject()) {
+            return getJsonObjectAsMap(element.getAsJsonObject());
+        }
+        return null;
+    }
+
     private Map<String, Object> getJsonObjectAsMap(JsonObject json)
     {
         Map<String, Object> result = new HashMap<>();
         for(Map.Entry<String, JsonElement> entry : json.entrySet())
         {
             JsonElement value = entry.getValue();
-            if(value.isJsonPrimitive()) {
-                JsonPrimitive v = (JsonPrimitive) value;
-                if (v.isString()) {
-                    result.put(entry.getKey(), value.getAsString());
-                } else if (v.isNumber()) {
-                    result.put(entry.getKey(), value.getAsNumber());
-                } else if (v.isBoolean()) {
-                    result.put(entry.getKey(), value.getAsBoolean());
-                }
-                else {
-                    result.put(entry.getKey(), null);
-                }
-            }
-            else if(value.isJsonObject()){
-                result.put(entry.getKey(), getJsonObjectAsMap(value.getAsJsonObject()));
-            }
+            result.put(entry.getKey(), getJsonElementAsObject(value));
         }
         return result;
     }
