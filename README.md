@@ -30,7 +30,12 @@ A client packaged based on [Jedis](https://github.com/xetorthio/jedis) that oper
 ```
 
 The latest verison：[here](https://s01.oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)  
-JavaDoc: [here](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
+JavaDoc: [here](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)  
+## How to choose the version
+1. What is the difference between 3.x and 5.x?
+> The difference between version 3.x and version 5.x is that version 3.x depends on Jedis version 3.6.0, and version 5.x depends on version 5.3.0 of [valkey-java](https://github.com/valkey-io/valkey-java). There is incompatibility between the two. For details, see [3to5.md](https://github.com/tair-opensource/alibabacloud-tairjedis-sdk/blob/master/docs/3to5.md).  
+2. How should I choose the version? 
+> If you are a new user, it is recommended to use the latest version 5.x directly. If you have already used version 3.x, you can continue to use the latest version of 3.x. We will ensure that the function-related code is ported back.
 
 # Example
 Refer to the complete example under [tests/example/*](https://github.com/alibaba/alibabacloud-tairjedis-sdk/tree/master/src/test/java/com/aliyun/tair/tests/example)
