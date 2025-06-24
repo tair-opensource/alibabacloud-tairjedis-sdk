@@ -287,4 +287,14 @@ public class TairDocPipeline extends Pipeline {
         return appendCommand(new CommandObject<>(new CommandArguments(ModuleCommand.JSONARRTRIM).key(key).add(path)
             .add(start).add(stop), BuilderFactory.LONG));
     }
+
+    public Response<String> jsonMerge(final String key, final String path, final String value) {
+        getClient("").sendCommand(ModuleCommand.JSONMERGE, key, path, value);
+        return getResponse(BuilderFactory.STRING);
+    }
+
+    public Response<String> jsonMerge(final byte[] key, final byte[] path, final byte[] value) {
+        getClient("").sendCommand(ModuleCommand.JSONMERGE, key, path, value);
+        return getResponse(BuilderFactory.STRING);
+    }
 }
