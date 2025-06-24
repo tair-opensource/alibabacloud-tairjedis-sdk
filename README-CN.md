@@ -28,7 +28,11 @@
 
 最新版本查阅：[这里](https://s01.oss.sonatype.org/#nexus-search;quick~alibabacloud-tairjedis-sdk)  
 JavaDoc地址：[这里](https://javadoc.io/doc/com.aliyun.tair/alibabacloud-tairjedis-sdk/latest/index.html)
-
+## 如何选择版本
+1. 3.x版本与5.x版本的区别是什么？
+> 3.x版本依赖Jedis 3.6.0版本，5.x版本依赖[valkey-java](https://github.com/valkey-io/valkey-java)的5.3.0版本，两者之间存在不兼容，详见[3to5-CN.md](https://github.com/tair-opensource/alibabacloud-tairjedis-sdk/blob/master/docs/3to5-CN.md)。  
+2. 我应该如何选择版本?
+> 如果您是新用户，建议直接使用最新的 5.x 版本，如果您已经使用了3.x版本，可以继续使用3.x最新版本，我们会保证功能相关的代码移植回去。
 # Example
 参考 [tests/example/*](https://github.com/alibaba/alibabacloud-tairjedis-sdk/tree/master/src/test/java/com/aliyun/tair/tests/example) 下完整示例。
 
