@@ -259,4 +259,14 @@ public class TairDocCluster {
             toByteArray(stop));
         return BuilderFactory.LONG.build(obj);
     }
+
+    public String jsonMerge(final String key, final String path, final String value) {
+        Object obj = jc.sendCommand(key, ModuleCommand.JSONMERGE, key, path, value);
+        return BuilderFactory.STRING.build(obj);
+    }
+
+    public String jsonMerge(final byte[] key, final byte[] path, final byte[] value) {
+        Object obj = jc.sendCommand(key, ModuleCommand.JSONMERGE, key, path, value);
+        return BuilderFactory.STRING.build(obj);
+    }
 }

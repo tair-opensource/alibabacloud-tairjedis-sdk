@@ -609,4 +609,42 @@ public class TairDoc {
             releaseJedis(jedis);
         }
     }
+
+    /**
+     * JSON.MERGE <key> <path> <value>
+     * Merges the given value into the JSON value at the specified path.
+     *
+     * @param key   the key of the JSON document
+     * @param path  the path within the JSON document
+     * @param value the value to merge
+     * @return      OK if successful, throw error otherwise
+     */
+    public String jsonMerge(final String key, final String path, final String value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.JSONMERGE, key, path, value);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
+
+    /**
+     * JSON.MERGE <key> <path> <value>
+     * Merges the given value into the JSON value at the specified path.
+     *
+     * @param key   the key of the JSON document
+     * @param path  the path within the JSON document
+     * @param value the value to merge
+     * @return      OK if successful, throw error otherwise
+     */
+    public String jsonMerge(final byte[] key, final byte[] path, final byte[] value) {
+        Jedis jedis = getJedis();
+        try {
+            Object obj = jedis.sendCommand(ModuleCommand.JSONMERGE, key, path, value);
+            return BuilderFactory.STRING.build(obj);
+        } finally {
+            releaseJedis(jedis);
+        }
+    }
 }

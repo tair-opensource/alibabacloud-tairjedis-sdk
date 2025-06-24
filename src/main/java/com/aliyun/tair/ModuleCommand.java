@@ -18,6 +18,7 @@ public enum ModuleCommand implements ProtocolCommand {
     JSONARRINSERT("JSON.ARRINSERT"),
     JSONARRLEN("JSON.ARRLEN"),
     JSONARRTRIM("JSON.ARRTRIM"),
+    JSONMERGE("JSON.MERGE"),
 
     // TairHash command
     EXHSET("EXHSET"),

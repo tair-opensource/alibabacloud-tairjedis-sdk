@@ -589,4 +589,124 @@ public class TairDocTest extends TairDocTestBase {
             assertTrue(e.getMessage().contains("WRONGTYPE"));
         }
     }
+
+    @Test
+    public void jsonMergeCreatePathTest() {
+        String ret = tairDoc.jsonset(jsonKey, ".", "{\"a\":2}");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey, ".b", "8");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonget(jsonKey, ".");
+        assertEquals("{\"a\":2,\"b\":8}", ret);
+    }
+
+    @Test
+    public void jsonMergeReplaceValueTest() {
+        String ret = tairDoc.jsonset(jsonKey, ".", "{\"a\":2}");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey, ".a", "3");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonget(jsonKey, ".");
+        assertEquals("{\"a\":3}", ret);
+    }
+
+    @Test
+    public void jsonMergeDeleteValueTest() {
+        String ret = tairDoc.jsonset(jsonKey, ".", "{\"a\":2}");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey, ".", "{\"a\":null}");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonget(jsonKey, ".");
+        assertEquals("{}", ret);
+    }
+
+    @Test
+    public void jsonMergeReplaceArrayTest() {
+        String ret = tairDoc.jsonset(jsonKey, ".", "{\"a\":[2,4,6,8]}");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey, ".a", "[10,12]");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonget(jsonKey, ".");
+        assertEquals("{\"a\":[10,12]}", ret);
+    }
+
+    @Test
+    public void jsonMergeMultiPathsTest() {
+        String ret = tairDoc.jsonset(jsonKey, ".", "{\"f1\":{\"a\":1},\"f2\":{\"a\":2}}");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey, ".", "{\"f1\":null,\"f2\":{\"a\":3,\"b\":4},\"f3\":[2,4,6]}");
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonget(jsonKey, ".");
+        assertEquals("{\"f2\":{\"a\":3,\"b\":4},\"f3\":[2,4,6]}", ret);
+    }
+
+    @Test
+    public void jsonMergeCreatePathTestBinary() {
+        String ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), "{\"a\":2}".getBytes());
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey.getBytes(), ".b".getBytes(), "8".getBytes());
+        assertEquals("OK", ret);
+        
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".".getBytes());
+        assertEquals("{\"a\":2,\"b\":8}", new String(bret));
+    }
+
+    @Test
+    public void jsonMergeReplaceValueTestBinary() {
+        String ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), "{\"a\":2}".getBytes());
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey.getBytes(), ".a".getBytes(), "3".getBytes());
+        assertEquals("OK", ret);
+        
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".".getBytes());
+        assertEquals("{\"a\":3}", new String(bret));
+    }
+
+    @Test
+    public void jsonMergeDeleteValueTestBinary() {
+        String ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), "{\"a\":2}".getBytes());
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey.getBytes(), ".".getBytes(), "{\"a\":null}".getBytes());
+        assertEquals("OK", ret);
+        
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".".getBytes());
+        assertEquals("{}", new String(bret));
+    }
+
+    @Test
+    public void jsonMergeReplaceArrayTestBinary() {
+        String ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), "{\"a\":[2,4,6,8]}".getBytes());
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey.getBytes(), ".a".getBytes(), "[10,12]".getBytes());
+        assertEquals("OK", ret);
+        
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".".getBytes());
+        assertEquals("{\"a\":[10,12]}", new String(bret));
+    }
+
+    @Test
+    public void jsonMergeMultiPathsTestBinary() {
+        String ret = tairDoc.jsonset(jsonKey.getBytes(), ".".getBytes(), "{\"f1\":{\"a\":1},\"f2\":{\"a\":2}}".getBytes());
+        assertEquals("OK", ret);
+        
+        ret = tairDoc.jsonMerge(jsonKey.getBytes(), ".".getBytes(), "{\"f1\":null,\"f2\":{\"a\":3,\"b\":4},\"f3\":[2,4,6]}".getBytes());
+        assertEquals("OK", ret);
+        
+        byte[] bret = tairDoc.jsonget(jsonKey.getBytes(), ".".getBytes());
+        assertEquals("{\"f2\":{\"a\":3,\"b\":4},\"f3\":[2,4,6]}", new String(bret));
+    }
 }
