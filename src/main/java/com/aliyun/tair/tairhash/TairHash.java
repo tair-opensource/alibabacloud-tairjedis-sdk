@@ -902,11 +902,14 @@ public class TairHash {
      * @param key the key
      * @param cursor the cursor
      * @return ScanResult
+     * @deprecated This command is no longer supported on v4 persistent memory instances. Use exhscan instead.
      */
+    @Deprecated
     public ScanResult<Entry<String, String>> exhscanunorder(final String key, final String cursor) {
         return exhscanunorder(key, cursor, new ScanParams());
     }
 
+    @Deprecated
     public ScanResult<Entry<byte[], byte[]>> exhscanunorder(final byte[] key, final byte[] cursor) {
         return exhscanunorder(key, cursor, new ScanParams());
     }
@@ -917,7 +920,9 @@ public class TairHash {
      * @param cursor
      * @param params
      * @return
+     * @deprecated This command is no longer supported on v4 persistent memory instances. Use exhscan instead.
      */
+    @Deprecated
     public ScanResult<Entry<String, String>> exhscanunorder(final String key, final String cursor,
         final ScanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
@@ -934,6 +939,7 @@ public class TairHash {
         }
     }
 
+    @Deprecated
     public ScanResult<Entry<byte[], byte[]>> exhscanunorder(final byte[] key, final byte[] cursor,
         final ScanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
