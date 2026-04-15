@@ -447,14 +447,26 @@ public class TairHashPipeline extends Pipeline {
             HashBuilderFactory.EXHSCAN_RESULT_BYTE));
     }
 
+    /**
+     * @deprecated This command is no longer supported on v4 persistent memory instances. Use exhscan instead.
+     */
+    @Deprecated
     public Response<ScanResult<Entry<String, String>>> exhscanunorder(final String key, final String cursor) {
         return exhscanunorder(key, cursor, new ScanParams());
     }
 
+    /**
+     * @deprecated This command is no longer supported on v4 persistent memory instances. Use exhscan instead.
+     */
+    @Deprecated
     public Response<ScanResult<Entry<byte[], byte[]>>> exhscanunorder(final byte[] key, final byte[] cursor) {
         return exhscanunorder(key, cursor, new ScanParams());
     }
 
+    /**
+     * @deprecated This command is no longer supported on v4 persistent memory instances. Use exhscan instead.
+     */
+    @Deprecated
     public Response<ScanResult<Entry<String, String>>> exhscanunorder(final String key, final String cursor,
         final ScanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
@@ -466,6 +478,10 @@ public class TairHashPipeline extends Pipeline {
             HashBuilderFactory.EXHSCAN_RESULT_STRING));
     }
 
+    /**
+     * @deprecated This command is no longer supported on v4 persistent memory instances. Use exhscan instead.
+     */
+    @Deprecated
     public Response<ScanResult<Entry<byte[], byte[]>>> exhscanunorder(final byte[] key, final byte[] cursor,
         final ScanParams params) {
         final List<byte[]> args = new ArrayList<byte[]>();
